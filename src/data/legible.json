@@ -43,6 +43,15 @@
     "moveCI": [0.13, 0.88],
     "proofQuote": "It's the only shoe in this set that is the #1 \"Best Overall\" pick in BOTH the flat-feet and overpronation lab-tested guides (87/100)."
   },
+  "crossAgent": {
+    "n": 8,
+    "agents": [
+      { "name": "ChatGPT", "model": "gpt-5.5", "before": 0, "after": 1.0 },
+      { "name": "Claude", "model": "opus-4-8", "before": 0, "after": 0.75 },
+      { "name": "Gemini", "model": "gemini-pro-latest", "before": 0, "after": 0.75 }
+    ],
+    "note": "Same real product information, fed identically to all three. Every agent drops Brooks at $155; every agent flips to recommending it once the real under-$150 availability is legible."
+  },
   "sources": "RunRepeat overpronation & flat-feet guides + Adrenaline GTS 25 review · Brooks product page + ReStart · ASICS / Hoka / Saucony / New Balance spec pages. All public and traceable.",
   "generatedAt": "2026-06-22"
 }

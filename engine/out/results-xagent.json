@@ -1,0 +1,229 @@
+{
+  "mode": "cross-agent (controlled, real environment)",
+  "query": "Best running shoes for flat feet / overpronation under $150",
+  "n": 8,
+  "agents": [
+    {
+      "id": "claude",
+      "label": "Claude",
+      "model": "claude-opus-4-8"
+    },
+    {
+      "id": "chatgpt",
+      "label": "ChatGPT",
+      "model": "gpt-5.5"
+    },
+    {
+      "id": "gemini",
+      "label": "Gemini",
+      "model": "gemini-pro-latest"
+    }
+  ],
+  "generatedAt": "2026-06-22T20:23:59.696Z",
+  "aggregate": {
+    "claude": {
+      "before": {
+        "n": 8,
+        "asov": {
+          "Brooks": 0.0362610797743755,
+          "Hoka": 0.072522159548751,
+          "ASICS": 0.7735697018533441,
+          "Saucony": 0.0290088638195004,
+          "New Balance": 0.08863819500402902
+        },
+        "top1": {
+          "Brooks": 0,
+          "Hoka": 0,
+          "ASICS": 1,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 0,
+        "brooksTop1CI": [
+          0,
+          0
+        ],
+        "brooksASoV": 0.0362610797743755,
+        "brooksMentionRate": 1,
+        "brooksAvgRank": 4,
+        "modalTop": "ASICS",
+        "consistency": 1,
+        "confSelf": 0.87375,
+        "confConsistency": 1,
+        "calibrationGap": -0.12624999999999997,
+        "decisiveRate": 1,
+        "priceCapHonored": 1
+      },
+      "after": {
+        "n": 8,
+        "asov": {
+          "Brooks": 0.5971337579617834,
+          "Hoka": 0.05175159235668789,
+          "ASICS": 0.26273885350318466,
+          "Saucony": 0.0286624203821656,
+          "New Balance": 0.05971337579617833
+        },
+        "top1": {
+          "Brooks": 0.75,
+          "Hoka": 0,
+          "ASICS": 0.25,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 0.75,
+        "brooksTop1CI": [
+          0.5,
+          1
+        ],
+        "brooksASoV": 0.5971337579617834,
+        "brooksMentionRate": 1,
+        "brooksAvgRank": 1.25,
+        "modalTop": "Brooks",
+        "consistency": 0.75,
+        "confSelf": 0.8075,
+        "confConsistency": 0.75,
+        "calibrationGap": 0.057499999999999996,
+        "decisiveRate": 1,
+        "priceCapHonored": 1
+      }
+    },
+    "chatgpt": {
+      "before": {
+        "n": 8,
+        "asov": {
+          "Brooks": 0.024711696869851734,
+          "Hoka": 0.0741350906095552,
+          "ASICS": 0.7907742998352555,
+          "Saucony": 0.019769357495881386,
+          "New Balance": 0.09060955518945635
+        },
+        "top1": {
+          "Brooks": 0,
+          "Hoka": 0,
+          "ASICS": 1,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 0,
+        "brooksTop1CI": [
+          0,
+          0
+        ],
+        "brooksASoV": 0.024711696869851734,
+        "brooksMentionRate": 0.5,
+        "brooksAvgRank": 4,
+        "modalTop": "ASICS",
+        "consistency": 1,
+        "confSelf": 0.93875,
+        "confConsistency": 1,
+        "calibrationGap": -0.06125000000000003,
+        "decisiveRate": 1,
+        "priceCapHonored": 1
+      },
+      "after": {
+        "n": 8,
+        "asov": {
+          "Brooks": 0.7606973058637084,
+          "Hoka": 0.04754358161648178,
+          "ASICS": 0.09508716323296355,
+          "Saucony": 0.03328050713153724,
+          "New Balance": 0.06339144215530904
+        },
+        "top1": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 1,
+        "brooksTop1CI": [
+          1,
+          1
+        ],
+        "brooksASoV": 0.7606973058637084,
+        "brooksMentionRate": 1,
+        "brooksAvgRank": 1,
+        "modalTop": "Brooks",
+        "consistency": 1,
+        "confSelf": 0.925,
+        "confConsistency": 1,
+        "calibrationGap": -0.07499999999999996,
+        "decisiveRate": 1,
+        "priceCapHonored": 1
+      }
+    },
+    "gemini": {
+      "before": {
+        "n": 8,
+        "asov": {
+          "Brooks": 0.006391137622496804,
+          "Hoka": 0.07669365146996165,
+          "ASICS": 0.8180656156795909,
+          "Saucony": 0.0051129100979974435,
+          "New Balance": 0.09373668512995313
+        },
+        "top1": {
+          "Brooks": 0,
+          "Hoka": 0,
+          "ASICS": 1,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 0,
+        "brooksTop1CI": [
+          0,
+          0
+        ],
+        "brooksASoV": 0.006391137622496804,
+        "brooksMentionRate": 0.875,
+        "brooksAvgRank": 4,
+        "modalTop": "ASICS",
+        "consistency": 1,
+        "confSelf": 0.98125,
+        "confConsistency": 1,
+        "calibrationGap": -0.018750000000000044,
+        "decisiveRate": 1,
+        "priceCapHonored": 1
+      },
+      "after": {
+        "n": 8,
+        "asov": {
+          "Brooks": 0.6547884187082406,
+          "Hoka": 0.04008908685968819,
+          "ASICS": 0.267260579064588,
+          "Saucony": 0,
+          "New Balance": 0.0378619153674833
+        },
+        "top1": {
+          "Brooks": 0.75,
+          "Hoka": 0,
+          "ASICS": 0.25,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 0.75,
+        "brooksTop1CI": [
+          0.375,
+          1
+        ],
+        "brooksASoV": 0.6547884187082406,
+        "brooksMentionRate": 0.875,
+        "brooksAvgRank": 1.1428571428571428,
+        "modalTop": "Brooks",
+        "consistency": 0.75,
+        "confSelf": 0.9416666666666668,
+        "confConsistency": 0.75,
+        "calibrationGap": 0.19166666666666676,
+        "decisiveRate": 1,
+        "priceCapHonored": 1
+      }
+    }
+  }
+}

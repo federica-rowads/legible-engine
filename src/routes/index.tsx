@@ -21,6 +21,7 @@ const BRAND = legible.brand;
 const v = legible.verdict;
 const d = legible.diagnosis;
 const f = legible.flip;
+const cross = legible.crossAgent;
 
 function Index() {
   const [moved, setMoved] = useState(false);
@@ -210,6 +211,50 @@ function Index() {
           <p className="mono-label mt-6">
             agent: {legible.agentModel} · {legible.mode} · N={legible.n} · {BRAND} vs {legible.competitors.join(" / ")} · {legible.sources}
           </p>
+        </div>
+      </section>
+
+      {/* 04 — EVERY AGENT */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-[1280px] px-6 py-24 sm:px-10 sm:py-28">
+          <p className="eyebrow">04 — Every Agent</p>
+          <h2 className="display-lg mt-4 max-w-[22ch]">Same blind spot — on every agent your buyer uses.</h2>
+          <p className="mt-4 max-w-2xl text-muted-foreground">
+            We fed the same real product information to ChatGPT, Claude and Gemini. N={cross.n} per condition. How often
+            each recommends {BRAND} #1, before and after the move:
+          </p>
+
+          <div className="mt-12 grid gap-4 sm:grid-cols-3">
+            {cross.agents.map((a) => (
+              <div key={a.name} className="rounded-2xl border border-border bg-card p-6">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-lg font-extrabold tracking-tight">{a.name}</span>
+                  <span className="mono-label">{a.model}</span>
+                </div>
+                <div className="mt-6 flex items-end justify-between">
+                  <div>
+                    <div className="mono-label">at $155</div>
+                    <div className="font-display text-5xl font-extrabold tracking-[-0.04em] text-foreground/80">{pct(a.before)}</div>
+                  </div>
+                  <div className="px-1 pb-2 text-2xl text-signal">→</div>
+                  <div className="text-right">
+                    <div className="mono-label">under $150</div>
+                    <div className="font-display text-5xl font-extrabold tracking-[-0.04em] text-signal">{pct(a.after)}</div>
+                  </div>
+                </div>
+                <div className="mono-label mt-4">{BRAND} #1 · winner ASICS → {BRAND}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 rounded-2xl border border-signal/40 bg-signal/[0.06] p-6">
+            <span className="mono-label text-signal">the finding</span>
+            <p className="mt-2 text-lg font-medium sm:text-xl">
+              It's not one model's quirk. ChatGPT, Claude and Gemini <span className="font-bold">all</span> drop the world's
+              #1 shoe for $5 — and <span className="font-bold text-signal">all</span> recommend it the moment its real
+              under-$150 availability is legible.
+            </p>
+          </div>
         </div>
       </section>
 
