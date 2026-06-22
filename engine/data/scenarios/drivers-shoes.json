@@ -1,0 +1,31 @@
+{
+  "id": "drivers-shoes",
+  "category": "running shoes — driver matrix",
+  "query": "Best running shoes for flat feet and overpronation",
+  "focal": "Brooks",
+  "focalModel": "Adrenaline GTS 25",
+  "brands": [
+    { "name": "Brooks", "aliases": ["brook"] },
+    { "name": "ASICS", "aliases": ["asic"] },
+    { "name": "Hoka", "aliases": ["hoka"] },
+    { "name": "Saucony", "aliases": ["saucony"] },
+    { "name": "New Balance", "aliases": ["new balance", "nb 860", "860v14"] }
+  ],
+  "sourceHint": ["brooks-adrenaline-gts-25", "asics-gt-2000-13", "hoka-arahi-7", "saucony-tempus", "nb-860v14"],
+  "focalAnchorSnippet": "Brooks Adrenaline GTS 25 — a stability running shoe",
+  "baseEnv": [
+    "1) Brooks Adrenaline GTS 25 — a stability running shoe.",
+    "2) ASICS GT-2000 13 — a stability running shoe.",
+    "3) Hoka Arahi 7 — a stability running shoe.",
+    "4) Saucony Tempus — a stability running shoe.",
+    "5) New Balance Fresh Foam X 860v14 — a stability running shoe."
+  ],
+  "levers": [
+    { "id": "owned", "label": "Owned claim (your own page)", "controllable": true, "add": "   - Brooks markets the Adrenaline GTS 25 as purpose-built for overpronation and flat feet, powered by its GuideRails support system." },
+    { "id": "editorial", "label": "Editorial authority (3rd-party)", "controllable": false, "add": "   - RunRepeat (independent lab testing) names it the #1 \"Best Overall\" shoe for overpronation, scoring 87/100." },
+    { "id": "specs", "label": "Structured specs / quantified", "controllable": true, "add": "   - Specs: 36.1/25.9 mm stack, GuideRails medial support, 138 SA heel shock absorption, world-class outsole durability, widths Narrow to X-Wide." },
+    { "id": "community", "label": "Community proof (Reddit)", "controllable": false, "add": "   - On Reddit's r/RunningShoeGeeks it is repeatedly recommended as a top pick for overpronation and flat feet." },
+    { "id": "recency", "label": "Recency (current generation)", "controllable": true, "add": "   - It is the current 2025 model (GTS 25), the latest generation, updated this year." }
+  ],
+  "sources": "RunRepeat lab guides/review; Brooks owned pages; r/RunningShoeGeeks threads (engine/data/provenance.csv). All facts true as of June 2026."
+}

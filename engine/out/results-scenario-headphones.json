@@ -3,7 +3,7 @@
   "category": "noise-cancelling headphones",
   "query": "Best noise-cancelling headphones under $350",
   "focal": "Sony",
-  "n": 1,
+  "n": 8,
   "agents": [
     {
       "id": "claude",
@@ -21,7 +21,7 @@
   "aggregate": {
     "claude": {
       "before": {
-        "n": 1,
+        "n": 8,
         "top1": {
           "Sony": 0,
           "Bose": 0,
@@ -38,7 +38,7 @@
         "priceCap": 1
       },
       "after": {
-        "n": 1,
+        "n": 8,
         "top1": {
           "Sony": 1,
           "Bose": 0,
@@ -57,7 +57,7 @@
     },
     "chatgpt": {
       "before": {
-        "n": 1,
+        "n": 8,
         "top1": {
           "Sony": 0,
           "Bose": 0,
@@ -74,7 +74,7 @@
         "priceCap": 1
       },
       "after": {
-        "n": 1,
+        "n": 8,
         "top1": {
           "Sony": 1,
           "Bose": 0,
@@ -93,7 +93,7 @@
     },
     "gemini": {
       "before": {
-        "n": 1,
+        "n": 8,
         "top1": {
           "Sony": 0,
           "Bose": 0,
@@ -110,7 +110,7 @@
         "priceCap": 1
       },
       "after": {
-        "n": 1,
+        "n": 8,
         "top1": {
           "Sony": 1,
           "Bose": 0,
@@ -128,5 +128,5 @@
       }
     }
   },
-  "generatedAt": "2026-06-22T21:04:18.346Z"
+  "generatedAt": "2026-06-22T21:08:35.726Z"
 }

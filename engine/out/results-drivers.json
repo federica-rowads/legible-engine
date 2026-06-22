@@ -1,0 +1,50 @@
+{
+  "scenario": "drivers-control",
+  "query": "Best running shoes for flat feet and overpronation",
+  "focal": "Veloura",
+  "n": 5,
+  "baseline": 0,
+  "levers": [
+    {
+      "id": "editorial",
+      "label": "Editorial authority (3rd-party)",
+      "controllable": false,
+      "add": "   - Independent expert lab reviewers rate it the #1 \"Best Overall\" stability shoe for overpronation, scoring 87/100.",
+      "rate": 1,
+      "delta": 1
+    },
+    {
+      "id": "specs",
+      "label": "Structured specs / quantified",
+      "controllable": true,
+      "add": "   - Specs: 36/26 mm stack, dual-rail medial support, 138 SA heel shock absorption, excellent outsole durability, widths Narrow to X-Wide.",
+      "rate": 1,
+      "delta": 1
+    },
+    {
+      "id": "owned",
+      "label": "Owned claim (brand's own page)",
+      "controllable": true,
+      "add": "   - Veloura markets the Stride GTS as purpose-built for overpronation and flat feet, with its dual-rail medial support system.",
+      "rate": 0.6666666666666666,
+      "delta": 0.6666666666666666
+    },
+    {
+      "id": "community",
+      "label": "Community proof",
+      "controllable": false,
+      "add": "   - It is widely recommended across online running communities as a top pick for overpronation and flat feet.",
+      "rate": 0.6666666666666666,
+      "delta": 0.6666666666666666
+    },
+    {
+      "id": "recency",
+      "label": "Recency (current generation)",
+      "controllable": true,
+      "add": "   - It is a current 2025 release, the latest generation, updated this year.",
+      "rate": 0.6666666666666666,
+      "delta": 0.6666666666666666
+    }
+  ],
+  "generatedAt": "2026-06-22T21:25:13.061Z"
+}

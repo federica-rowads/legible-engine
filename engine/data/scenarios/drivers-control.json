@@ -1,0 +1,32 @@
+{
+  "id": "drivers-control",
+  "category": "running shoes — driver matrix (synthetic-brand control)",
+  "query": "Best running shoes for flat feet and overpronation",
+  "focal": "Veloura",
+  "focalModel": "Stride GTS",
+  "_note": "Veloura Stride GTS is a SYNTHETIC brand invented purely as an experimental control: the agent has no training memory of it, so (a) any movement is driven by the live information we provide (isolating the training prior — Marco's point), and (b) each signal's effect is measurable without a famous-brand ceiling. The main findings remain on real brands (Brooks, Sony).",
+  "brands": [
+    { "name": "Veloura", "aliases": ["veloura", "stride gts"] },
+    { "name": "ASICS", "aliases": ["asic"] },
+    { "name": "Hoka", "aliases": ["hoka"] },
+    { "name": "Saucony", "aliases": ["saucony"] },
+    { "name": "New Balance", "aliases": ["new balance", "nb 860", "860v14"] }
+  ],
+  "sourceHint": ["veloura-stride-gts", "asics-gt-2000-13", "hoka-arahi-7", "saucony-tempus", "nb-860v14"],
+  "focalAnchorSnippet": "Veloura Stride GTS — a stability running shoe",
+  "baseEnv": [
+    "1) Veloura Stride GTS — a stability running shoe.",
+    "2) ASICS GT-2000 13 — a stability running shoe.",
+    "3) Hoka Arahi 7 — a stability running shoe.",
+    "4) Saucony Tempus — a stability running shoe.",
+    "5) New Balance Fresh Foam X 860v14 — a stability running shoe."
+  ],
+  "levers": [
+    { "id": "owned", "label": "Owned claim (brand's own page)", "controllable": true, "add": "   - Veloura markets the Stride GTS as purpose-built for overpronation and flat feet, with its dual-rail medial support system." },
+    { "id": "editorial", "label": "Editorial authority (3rd-party)", "controllable": false, "add": "   - Independent expert lab reviewers rate it the #1 \"Best Overall\" stability shoe for overpronation, scoring 87/100." },
+    { "id": "specs", "label": "Structured specs / quantified", "controllable": true, "add": "   - Specs: 36/26 mm stack, dual-rail medial support, 138 SA heel shock absorption, excellent outsole durability, widths Narrow to X-Wide." },
+    { "id": "community", "label": "Community proof", "controllable": false, "add": "   - It is widely recommended across online running communities as a top pick for overpronation and flat feet." },
+    { "id": "recency", "label": "Recency (current generation)", "controllable": true, "add": "   - It is a current 2025 release, the latest generation, updated this year." }
+  ],
+  "sources": "Synthetic control brand; competitor names are real. Used only to isolate signal-driven behavior from training memory."
+}
