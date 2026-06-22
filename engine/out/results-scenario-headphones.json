@@ -1,0 +1,132 @@
+{
+  "scenario": "headphones",
+  "category": "noise-cancelling headphones",
+  "query": "Best noise-cancelling headphones under $350",
+  "focal": "Sony",
+  "n": 1,
+  "agents": [
+    {
+      "id": "claude",
+      "model": "claude-opus-4-8"
+    },
+    {
+      "id": "chatgpt",
+      "model": "gpt-5.5"
+    },
+    {
+      "id": "gemini",
+      "model": "gemini-pro-latest"
+    }
+  ],
+  "aggregate": {
+    "claude": {
+      "before": {
+        "n": 1,
+        "top1": {
+          "Sony": 0,
+          "Bose": 0,
+          "Anker": 0,
+          "Cambridge": 1,
+          "Beats": 0
+        },
+        "focalTop1": 0,
+        "focalCI": [
+          0,
+          0
+        ],
+        "modal": "Cambridge",
+        "priceCap": 1
+      },
+      "after": {
+        "n": 1,
+        "top1": {
+          "Sony": 1,
+          "Bose": 0,
+          "Anker": 0,
+          "Cambridge": 0,
+          "Beats": 0
+        },
+        "focalTop1": 1,
+        "focalCI": [
+          1,
+          1
+        ],
+        "modal": "Sony",
+        "priceCap": 1
+      }
+    },
+    "chatgpt": {
+      "before": {
+        "n": 1,
+        "top1": {
+          "Sony": 0,
+          "Bose": 0,
+          "Anker": 0,
+          "Cambridge": 1,
+          "Beats": 0
+        },
+        "focalTop1": 0,
+        "focalCI": [
+          0,
+          0
+        ],
+        "modal": "Cambridge",
+        "priceCap": 1
+      },
+      "after": {
+        "n": 1,
+        "top1": {
+          "Sony": 1,
+          "Bose": 0,
+          "Anker": 0,
+          "Cambridge": 0,
+          "Beats": 0
+        },
+        "focalTop1": 1,
+        "focalCI": [
+          1,
+          1
+        ],
+        "modal": "Sony",
+        "priceCap": 1
+      }
+    },
+    "gemini": {
+      "before": {
+        "n": 1,
+        "top1": {
+          "Sony": 0,
+          "Bose": 0,
+          "Anker": 0,
+          "Cambridge": 1,
+          "Beats": 0
+        },
+        "focalTop1": 0,
+        "focalCI": [
+          0,
+          0
+        ],
+        "modal": "Cambridge",
+        "priceCap": 1
+      },
+      "after": {
+        "n": 1,
+        "top1": {
+          "Sony": 1,
+          "Bose": 0,
+          "Anker": 0,
+          "Cambridge": 0,
+          "Beats": 0
+        },
+        "focalTop1": 1,
+        "focalCI": [
+          1,
+          1
+        ],
+        "modal": "Sony",
+        "priceCap": 1
+      }
+    }
+  },
+  "generatedAt": "2026-06-22T21:04:18.346Z"
+}
