@@ -52,6 +52,25 @@
     ],
     "note": "Same real product information, fed identically to all three. Every agent drops Brooks at $155; every agent flips to recommending it once the real under-$150 availability is legible."
   },
+  "sections": { "everyAgent": true, "law": true, "drivers": true },
+  "law": {
+    "note": "Same pattern, two unrelated categories, every agent: the editorial best is dropped on a constraint it could have met — and flips to the #1 recommendation once the real qualifying fact is made legible.",
+    "cases": [
+      { "category": "Running shoes", "brand": "Brooks Adrenaline GTS 25", "constraint": "$5 over a $150 budget" },
+      { "category": "Noise-cancelling headphones", "brand": "Sony WH-1000XM5", "constraint": "$50 over a $350 budget" }
+    ]
+  },
+  "drivers": {
+    "controlBrand": "Veloura Stride GTS",
+    "items": [
+      { "label": "Editorial authority (3rd-party)", "lift": 1.0, "controllable": false },
+      { "label": "Structured specs / quantified", "lift": 1.0, "controllable": true },
+      { "label": "Owned claim (your own page)", "lift": 0.67, "controllable": true },
+      { "label": "Community proof", "lift": 0.67, "controllable": false },
+      { "label": "Recency (current generation)", "lift": 0.67, "controllable": true }
+    ],
+    "controlNote": "Veloura is a brand we invented — the agents had never heard of it. Yet they recommended it 100% of the time once we attached third-party authority or structured specs. Proof: the recommendation is driven by legible information, not training memory."
+  },
   "sources": "RunRepeat overpronation & flat-feet guides + Adrenaline GTS 25 review · Brooks product page + ReStart · ASICS / Hoka / Saucony / New Balance spec pages. All public and traceable.",
   "generatedAt": "2026-06-22"
 }

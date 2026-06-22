@@ -22,6 +22,9 @@ const v = legible.verdict;
 const d = legible.diagnosis;
 const f = legible.flip;
 const cross = legible.crossAgent;
+const S = legible.sections;
+const law = legible.law;
+const drivers = legible.drivers;
 
 function Index() {
   const [moved, setMoved] = useState(false);
@@ -214,7 +217,8 @@ function Index() {
         </div>
       </section>
 
-      {/* 04 — EVERY AGENT */}
+      {/* 04 — EVERY AGENT (toggle: sections.everyAgent) */}
+      {S.everyAgent && (
       <section className="border-t border-border">
         <div className="mx-auto max-w-[1280px] px-6 py-24 sm:px-10 sm:py-28">
           <p className="eyebrow">04 — Every Agent</p>
@@ -257,6 +261,70 @@ function Index() {
           </div>
         </div>
       </section>
+      )}
+
+      {/* 05 — THE LAW (toggle: sections.law) */}
+      {S.law && (
+      <section className="light-section bg-background text-foreground border-t border-border">
+        <div className="mx-auto max-w-[1280px] px-6 py-24 sm:px-10 sm:py-28">
+          <p className="eyebrow">05 — The Law</p>
+          <h2 className="display-lg mt-4 max-w-[24ch]">It's not shoes. It's how agents think.</h2>
+          <p className="mt-4 max-w-2xl text-muted-foreground">{law.note}</p>
+          <div className="mt-12 grid gap-4 sm:grid-cols-2">
+            {law.cases.map((c) => (
+              <article key={c.category} className="rounded-2xl border border-border bg-card p-6">
+                <div className="mono-label text-foreground/70">{c.category}</div>
+                <div className="mt-1 text-xl font-extrabold tracking-tight">{c.brand}</div>
+                <div className="mono-label mt-1 text-[11px] text-muted-foreground">dropped for {c.constraint}</div>
+                <div className="mt-6 flex items-end gap-3">
+                  <div>
+                    <div className="mono-label">before</div>
+                    <div className="font-display text-5xl font-extrabold tracking-[-0.04em] text-foreground/80">0%</div>
+                  </div>
+                  <div className="pb-2 text-2xl text-signal">→</div>
+                  <div>
+                    <div className="mono-label">after</div>
+                    <div className="font-display text-5xl font-extrabold tracking-[-0.04em] text-signal">#1</div>
+                  </div>
+                </div>
+                <div className="mono-label mt-3">across ChatGPT, Claude &amp; Gemini</div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+      )}
+
+      {/* 06 — WHAT DRIVES AN AGENT (toggle: sections.drivers) */}
+      {S.drivers && (
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-[1280px] px-6 py-24 sm:px-10 sm:py-28">
+          <p className="eyebrow">06 — What Drives an Agent</p>
+          <h2 className="display-lg mt-4 max-w-[26ch]">The signals that move an agent, ranked.</h2>
+          <p className="mt-4 max-w-2xl text-muted-foreground">
+            We took a brand the agents had never heard of — <span className="text-foreground">{drivers.controlBrand}</span>,
+            invented — and added one real signal at a time. How far each lifts it from invisible (0%):
+          </p>
+          <div className="mt-12 space-y-3">
+            {drivers.items.map((it, i) => (
+              <div key={it.label} className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 sm:gap-4">
+                <span className="mono-label w-5 text-foreground/50">{i + 1}</span>
+                <span className="w-44 shrink-0 text-sm font-semibold sm:w-56">{it.label}</span>
+                <div className="h-3 flex-1 rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-signal" style={{ width: pct(it.lift) }} />
+                </div>
+                <span className="mono-label w-12 text-right">{pct(it.lift)}</span>
+                <span className="mono-label hidden w-24 text-right text-[10px] sm:inline">{it.controllable ? "✓ you control" : "earned"}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 rounded-2xl border border-signal/40 bg-signal/[0.06] p-6">
+            <span className="mono-label text-signal">the control</span>
+            <p className="mt-2 text-lg font-medium sm:text-xl">{drivers.controlNote}</p>
+          </div>
+        </div>
+      </section>
+      )}
 
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-[1280px] flex-col items-start justify-between gap-4 px-6 py-10 sm:flex-row sm:items-center sm:px-10">
