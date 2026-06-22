@@ -1,0 +1,52 @@
+{
+  "mode": "live",
+  "model": "claude-opus-4-8",
+  "fetchTool": "web_fetch_20250910",
+  "query": "Best running shoes for flat feet / overpronation under $150",
+  "urls": [
+    "https://runrepeat.com/guides/best-overpronation-running-shoes",
+    "https://runrepeat.com/guides/best-flat-feet-running-shoes",
+    "https://www.brooksrunning.com/en_us/mens/shoes/road-running-shoes/adrenaline-gts-25/110454.html",
+    "https://runrepeat.com/asics-gt-2000-13",
+    "https://runrepeat.com/hoka-arahi-7",
+    "https://runrepeat.com/saucony-tempus",
+    "https://runrepeat.com/new-balance-fresh-foam-x-860-v14",
+    "https://paste.rs/xb0U7"
+  ],
+  "n": 8,
+  "nRequested": 8,
+  "generatedAt": "2026-06-22T19:42:24.694Z",
+  "aggregate": {
+    "n": 8,
+    "asov": {
+      "Brooks": 0.4089292769656262,
+      "Hoka": 0.05610430659818253,
+      "ASICS": 0.4267088107467404,
+      "Saucony": 0.041090478071908326,
+      "New Balance": 0.06716712761754247
+    },
+    "top1": {
+      "Brooks": 0.5,
+      "Hoka": 0,
+      "ASICS": 0.5,
+      "Saucony": 0,
+      "New Balance": 0
+    },
+    "outOfSetTopRate": 0,
+    "brooksTop1": 0.5,
+    "brooksTop1CI": [
+      0.125,
+      0.875
+    ],
+    "brooksASoV": 0.4089292769656262,
+    "brooksMentionRate": 1,
+    "brooksAvgRank": 2.25,
+    "modalTop": "Brooks",
+    "consistency": 0.5,
+    "confSelf": 0.7675,
+    "confConsistency": 0.5,
+    "calibrationGap": 0.26749999999999996,
+    "decisiveRate": 1,
+    "priceCapHonored": 1
+  }
+}

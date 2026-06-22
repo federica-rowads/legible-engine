@@ -1,141 +1,48 @@
 {
   "brand": "Brooks",
-  "competitors": [
-    "Hoka",
-    "ASICS",
-    "Saucony",
-    "New Balance"
-  ],
-  "agentModel": "claude-sonnet-4-6",
-  "agents": [
-    "Claude"
-  ],
-  "pendingAgents": [
-    "ChatGPT",
-    "Perplexity",
-    "Gemini"
-  ],
-  "n": 9,
-  "generatedAt": "2026-06-22T14:06:21.225Z",
+  "model": "Adrenaline GTS 25",
+  "competitors": ["ASICS", "Hoka", "Saucony", "New Balance"],
+  "agent": "Claude",
+  "agentModel": "claude-opus-4-8",
+  "mode": "live — real web fetch of real public pages",
+  "n": 8,
+  "query": "Best running shoes for flat feet / overpronation under $150",
   "verdict": {
-    "query": "Best running shoes for flat feet under $150",
-    "claude": {
-      "recommended": 0,
-      "asov": 0.05325443786982249,
-      "winner": "Saucony",
-      "topModel": "Guide 18",
-      "quote": "the Saucony Guide 18 hits the practical sweet spot of support, versatility, and price accessibility within your budget."
-    }
+    "brooksTop1": 0,
+    "brooksTop1CI": [0, 0],
+    "brooksAvgRank": 4.1,
+    "brooksPrice": "$155",
+    "winner": "ASICS",
+    "winnerModel": "GT-2000 13",
+    "winnerPrice": "$140",
+    "asov": [
+      { "brand": "ASICS", "top1": 1.0, "asov": 0.76 },
+      { "brand": "New Balance", "top1": 0, "asov": 0.09 },
+      { "brand": "Hoka", "top1": 0, "asov": 0.07 },
+      { "brand": "Brooks", "top1": 0, "asov": 0.05 },
+      { "brand": "Saucony", "top1": 0, "asov": 0.04 }
+    ],
+    "agentQuote": "Price check — the under-$150 constraint is decisive: ASICS GT-2000 13 $140 ✓ · New Balance 860v14 $140 ✓ · Hoka Arahi 7 $145 ✓ · Brooks Adrenaline GTS 25 $155 ✗ (over budget) · Saucony Tempus $160 ✗."
   },
-  "scorecard": [
-    {
-      "lever": "Query framing",
-      "note": "the word the buyer uses",
-      "controllable": false,
-      "impact": 0.794701986754967,
-      "low": 0,
-      "high": 0.794701986754967
-    },
-    {
-      "lever": "Claim form (structured vs story)",
-      "note": "a spec table vs prose",
-      "controllable": true,
-      "impact": 0.24290220820189268,
-      "low": 0.7570977917981073,
-      "high": 1
-    },
-    {
-      "lever": "Source authority",
-      "note": "owned vs editorial vs community",
-      "controllable": true,
-      "impact": 0.22330097087378642,
-      "low": 0.7766990291262136,
-      "high": 1
-    },
-    {
-      "lever": "Specificity / evidence",
-      "note": "vague vs quantified + lab-cited",
-      "controllable": true,
-      "impact": 0.11111111111111116,
-      "low": 0.8888888888888888,
-      "high": 1
-    },
-    {
-      "lever": "Recency",
-      "note": "current vs older generation",
-      "controllable": true,
-      "impact": 0,
-      "low": 1,
-      "high": 1
-    }
-  ],
-  "oneMove": {
-    "title": "Publish a structured spec comparison table",
-    "detail": "The biggest lever you actually control. Your story gives agents nothing specific to repeat; a real spec grid (price, drop, weight, support, width) makes your genuine wins legible — and pushes over-budget rivals out of frame.",
-    "predictedLift": 1
+  "diagnosis": {
+    "editorial": "RunRepeat names the Brooks Adrenaline GTS 25 the #1 \"Best Overall\" shoe for overpronation (87/100).",
+    "gapTitle": "Dropped by $5 — on its own page.",
+    "gap": "The agent ranks Brooks 4th, not 1st, purely because the Brooks product page shows $155 — $5 over the buyer's $150 budget. Yet the shoe is genuinely available under $150 (Brooks' own ReStart program from $81; retailers from $124.99). The agent simply couldn't see that, so the world's #1 overpronation shoe never made the list."
   },
-  "coverage": [
-    {
-      "framing": "overpronation",
-      "query": "Best stability running shoes for overpronation under $150",
-      "brooksTop1": 1,
-      "brooksTop1CI": [
-        1,
-        1
-      ],
-      "brooksASoV": 0.794701986754967,
-      "winner": "Brooks",
-      "topModel": "Adrenaline GTS 25",
-      "quote": "This is the clear winner for overpronation under $150. Brooks' own GuideRails technology is purpose-built for overpronators, and independent experts at RunRepeat back this up with a Best Overall designation (~87/100), praising its excellent stability, subtle support, and softer midsole for everyday comfort."
-    },
-    {
-      "framing": "flat feet",
-      "query": "Best running shoes for flat feet under $150",
-      "brooksTop1": 0,
-      "brooksTop1CI": [
-        0,
-        0
-      ],
-      "brooksASoV": 0.05325443786982249,
-      "winner": "Saucony",
-      "topModel": "Guide 18",
-      "quote": "the Saucony Guide 18 hits the practical sweet spot of support, versatility, and price accessibility within your budget."
-    },
-    {
-      "framing": "stability",
-      "query": "Best stability running shoes under $150",
-      "brooksTop1": 0,
-      "brooksTop1CI": [
-        0,
-        0
-      ],
-      "brooksASoV": 0,
-      "winner": "Hoka",
-      "topModel": "Arahi 8",
-      "quote": "The Hoka Arahi 8 stands out as the best stability running shoe under $150 based on the available information."
-    }
-  ],
-  "rescue": {
-    "query": "Best running shoes for flat feet under $150",
-    "baseTop1": 0,
-    "moveTop1": 1,
-    "baseASoV": 0.06976744186046512,
-    "moveASoV": 0.7667731629392971,
-    "sauconyBase": 0.7906976744186046,
-    "sauconyMove": 0.025559105431309907
+  "flip": {
+    "move": "Publish one agent-legible page that surfaces Brooks' real under-$150 availability and its editorial #1 status — true facts only, nothing fabricated.",
+    "baseBrooksTop1": 0,
+    "moveBrooksTop1": 0.5,
+    "baseBrooksASoV": 0.05,
+    "moveBrooksASoV": 0.41,
+    "baseBrooksRank": 4.1,
+    "moveBrooksRank": 2.3,
+    "winnerLabel": "ASICS GT-2000 13 ($140) — the budget fallback",
+    "baseWinnerTop1": 1.0,
+    "moveWinnerTop1": 0.5,
+    "moveCI": [0.13, 0.88],
+    "proofQuote": "It's the only shoe in this set that is the #1 \"Best Overall\" pick in BOTH the flat-feet and overpronation lab-tested guides (87/100)."
   },
-  "provenance": {
-    "win": {
-      "owned": 0.5221238938053098,
-      "editorial": 0.17256637168141592,
-      "community": 0.03982300884955752,
-      "specs": 0.26548672566371684
-    },
-    "lose": {
-      "owned": 0.22857142857142856,
-      "editorial": 0.5142857142857142,
-      "community": 0.2571428571428571,
-      "specs": 0
-    }
-  }
+  "sources": "RunRepeat overpronation & flat-feet guides + Adrenaline GTS 25 review · Brooks product page + ReStart · ASICS / Hoka / Saucony / New Balance spec pages. All public and traceable.",
+  "generatedAt": "2026-06-22"
 }
