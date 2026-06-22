@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legible — your brand, the way an AI agent sees it</title>
+<meta name="description" content="Brand visibility & discovery in the age of agents. A live experiment on real AI agents.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070809; --bg2:#0C0E11; --panel:#101317; --panel2:#15191F; --line:#21252D; --line2:#2C313A;
+    --ink:#EAEDF0; --mut:#9097A0; --dim:#646B74;
+    --signal:#C6F432; --signal-dim:#8FA827; --sig-glow:rgba(198,244,50,.25);
+    --blue:#6FB1FF; --amber:#FFC247; --red:#FF6B6B; --violet:#B79CFF;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:16px;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(1100px 520px at 78% -8%,rgba(198,244,50,.07),transparent 60%),radial-gradient(900px 500px at 10% 8%,rgba(111,177,255,.04),transparent 55%)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 26px}
+  .mono{font-family:var(--mono)}
+  .sig{color:var(--signal)} .mut{color:var(--mut)} .dim{color:var(--dim)}
+  a{color:var(--signal);text-decoration:none}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);background:rgba(7,8,9,.72);border-bottom:1px solid var(--line)}
+  nav .row{display:flex;align-items:center;justify-content:space-between;height:58px}
+  .brand{font-weight:800;font-size:18px;letter-spacing:-.02em}
+  .brand .d{color:var(--signal)}
+  .navmeta{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.04em}
+  .navmeta b{color:var(--mut);font-weight:500}
+
+  /* hero */
+  .hero{padding:84px 0 64px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--signal-dim);margin-bottom:22px}
+  h1{font-size:clamp(34px,5.4vw,62px);line-height:1.04;letter-spacing:-.035em;font-weight:800}
+  h1 .alt{color:var(--signal);text-shadow:0 0 38px var(--sig-glow)}
+  .hero p.sub{margin-top:24px;max-width:62ch;color:var(--mut);font-size:17px;line-height:1.6}
+  .hero p.sub b{color:var(--ink);font-weight:600}
+  .qchip{display:inline-flex;align-items:center;gap:10px;margin-top:30px;padding:11px 16px;border:1px solid var(--line2);border-radius:10px;background:var(--panel);font-size:14px}
+  .qchip .lab{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+  .qchip .q{color:var(--ink);font-weight:500}
+  .heromETA{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+  .chip{font-family:var(--mono);font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:20px;padding:5px 11px}
+  .chip b{color:var(--signal);font-weight:600}
+
+  /* sections */
+  section.act{padding:74px 0;border-bottom:1px solid var(--line)}
+  .actnum{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--signal-dim);text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .actnum::before{content:"";width:34px;height:1px;background:var(--signal-dim)}
+  h2{font-size:clamp(26px,3.5vw,40px);line-height:1.1;letter-spacing:-.025em;font-weight:800;max-width:20ch}
+  h2 .u{background:linear-gradient(180deg,transparent 62%,var(--sig-glow) 62%)}
+  .deck{margin-top:18px;max-width:64ch;color:var(--mut);font-size:16.5px}
+  .deck b{color:var(--ink);font-weight:600}
+
+  /* engine columns (act 1) */
+  .engines{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px}
+  @media(max-width:820px){.engines{grid-template-columns:1fr}}
+  .eng{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .eng .head{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .eng .name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:9px}
+  .eng .dotmodel{font-family:var(--mono);font-size:10px;color:var(--dim)}
+  .eng .led{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 10px var(--sig-glow)}
+  .rank{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line2)}
+  .rank:last-child{border-bottom:none}
+  .rank .pos{font-family:var(--mono);font-size:12px;color:var(--dim);width:18px}
+  .rank .b{font-weight:600;font-size:14.5px;flex:1}
+  .rank .rate{font-family:var(--mono);font-size:11.5px;color:var(--mut)}
+  .rank.win{background:linear-gradient(90deg,rgba(198,244,50,.07),transparent)}
+  .rank.win .b{color:var(--signal)}
+  .rank.alt{background:rgba(111,177,255,.05)}
+  .rank.alt .b{color:var(--blue)}
+  .rank.alt .pos{color:var(--blue)}
+  .rank.split .b{color:var(--violet)}
+  .takeaway{margin-top:30px;padding:20px 22px;border:1px solid var(--line2);border-left:2px solid var(--signal);border-radius:10px;background:var(--panel);font-size:16px}
+  .takeaway b{color:var(--ink)}
+
+  /* mechanism (act 2) */
+  .mech{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:38px}
+  @media(max-width:820px){.mech{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .card h3{font-size:13px;font-family:var(--mono);letter-spacing:.04em;color:var(--mut);font-weight:600;margin-bottom:18px;text-transform:uppercase}
+  .citerow{margin:16px 0}
+  .citerow .lbl{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:7px}
+  .citerow .lbl .who{color:var(--ink);font-weight:600}
+  .citerow .lbl .val{font-family:var(--mono);color:var(--mut)}
+  .bar{height:10px;border-radius:6px;background:var(--panel2);overflow:hidden;border:1px solid var(--line)}
+  .bar>span{display:block;height:100%;border-radius:6px}
+  .bar.g>span{background:linear-gradient(90deg,var(--signal-dim),var(--signal))}
+  .bar.b>span{background:linear-gradient(90deg,#3a6fa6,var(--blue))}
+  .src{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:4px}
+  .prov .pl{display:flex;align-items:center;gap:12px;margin:13px 0}
+  .prov .tag{font-family:var(--mono);font-size:11px;width:54px;color:var(--mut)}
+  .prov .track{flex:1;height:22px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);display:flex;overflow:hidden}
+  .prov .seg{height:100%;font-family:var(--mono);font-size:9px;display:flex;align-items:center;justify-content:center;color:#0a0a0a;font-weight:600}
+  .seg.owned{background:var(--signal)} .seg.specs{background:var(--signal-dim)} .seg.edit{background:var(--blue)} .seg.comm{background:var(--violet)}
+  .note{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:14px}
+
+  /* flip (act 3) */
+  .predict{margin-top:34px;display:grid;grid-template-columns:1fr;gap:0}
+  .flipctl{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:32px 0 8px;padding:18px 22px;border:1px solid var(--line2);border-radius:12px;background:var(--panel)}
+  .flipctl .asset{flex:1;min-width:240px}
+  .flipctl .asset .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .flipctl .asset .v{font-weight:600;margin-top:3px}
+  .flipctl .asset .v small{color:var(--mut);font-weight:400;font-size:13px}
+  .toggle{position:relative;display:inline-flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+  .toggle .sw{width:60px;height:32px;border-radius:20px;background:var(--panel2);border:1px solid var(--line2);position:relative;transition:.3s}
+  .toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--mut);transition:.3s}
+  .toggle.on .sw{background:rgba(198,244,50,.2);border-color:var(--signal)}
+  .toggle.on .sw::after{left:33px;background:var(--signal);box-shadow:0 0 12px var(--sig-glow)}
+  .toggle .t{font-family:var(--mono);font-size:12px;color:var(--mut)}
+  .toggle.on .t{color:var(--signal)}
+  .flipgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+  @media(max-width:820px){.flipgrid{grid-template-columns:1fr}}
+  .fcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;transition:border-color .3s}
+  .fcard .en{font-weight:700;font-size:15px;margin-bottom:4px}
+  .fcard .en small{font-family:var(--mono);font-size:10px;color:var(--dim);font-weight:400}
+  .fcard .alt2{font-family:var(--mono);font-size:12px;color:var(--dim);margin-bottom:16px}
+  .meter{margin:14px 0}
+  .meter .ml{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+  .meter .ml .nm{color:var(--ink);font-weight:600}
+  .meter .ml .nm .em{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--line2);color:var(--mut);margin-left:6px}
+  .meter .ml .pv{font-family:var(--mono);color:var(--mut)}
+  .mbar{height:9px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+  .mbar>span{display:block;height:100%;width:0;transition:width .7s cubic-bezier(.2,.8,.2,1);border-radius:6px}
+  .mbar.saucony>span{background:linear-gradient(90deg,#7a4ea6,var(--violet))}
+  .mbar.asics>span{background:linear-gradient(90deg,#3a6fa6,var(--blue))}
+  .fcard .verdict{font-family:var(--mono);font-size:11.5px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line2);color:var(--mut);min-height:34px}
+  .fcard.moved{border-color:var(--signal)}
+  .fcard.moved .verdict{color:var(--signal)}
+  .pending{font-family:var(--mono);font-size:12px;color:var(--amber)}
+
+  /* close */
+  .close{padding:80px 0 30px}
+  .close h2{max-width:24ch}
+  .closegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+  @media(max-width:820px){.closegrid{grid-template-columns:1fr}}
+  .cc{padding:20px 22px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  .cc .i{font-size:20px}
+  .cc h4{font-size:15px;margin:10px 0 6px}
+  .cc p{font-size:13.5px;color:var(--mut)}
+  .limit{margin-top:30px;padding:16px 20px;border:1px dashed var(--line2);border-radius:10px;font-size:13.5px;color:var(--mut)}
+  .limit b{color:var(--amber);font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+  footer{padding:40px 0 90px;color:var(--dim);font-family:var(--mono);font-size:11.5px;line-height:1.8}
+  .banner{background:linear-gradient(90deg,rgba(198,244,50,.1),transparent);border:1px solid var(--line2);border-radius:10px;padding:11px 16px;font-family:var(--mono);font-size:12px;color:var(--mut);margin-top:22px}
+  .banner b{color:var(--signal)}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap row">
+  <div class="brand">Legible<span class="d">.</span></div>
+  <div class="navmeta">LIVE EXPERIMENT · <b>Brooks</b> vs the field · real AI agents</div>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Brand visibility &amp; discovery in the age of agents</div>
+  <h1>Your brand doesn't have<br>one ranking in AI.<br><span class="alt">It has three.</span></h1>
+  <p class="sub">People don't scroll ten blue links anymore — they ask an AI what to buy. So we asked the real flagships the same question, dropped them into the <b>same controlled evidence environment built from real public sources</b>, and measured what they actually recommend. Same question, same evidence. <b>The engines don't agree — and we can prove why.</b></p>
+  <div class="qchip"><span class="lab">the question, held constant</span><span class="q">"Best stability running shoes for overpronation under $150"</span></div>
+  <div class="heromETA">
+    <span class="chip">real brand · <b>Brooks</b> vs Hoka · ASICS · Saucony · NB</span>
+    <span class="chip"><b>28</b> real public sources</span>
+    <span class="chip">ChatGPT <b>GPT-5.5</b></span>
+    <span class="chip">Claude <b>Opus 4.8</b></span>
+    <span class="chip">Gemini <b>Pro</b></span>
+  </div>
+  <div class="banner">⬦ <b>First cut — for feedback.</b> Every number below is a real recorded agent run. Tell us where to push.</div>
+</div></header>
+
+<!-- ACT 1 -->
+<section class="act"><div class="wrap">
+  <div class="actnum">Act 1 · the finding</div>
+  <h2>They agree on the winner.<br>They <span class="u">disagree on the alternative.</span></h2>
+  <p class="deck">Drop all three flagships into the identical evidence environment and ask the identical question. Every engine crowns <b>Brooks #1 — 100% of the time</b>. But the moment you look at the <b>second</b> recommendation — the alternative a buyer is steered toward — the consensus shatters.</p>
+
+  <div class="engines">
+    <div class="eng">
+      <div class="head"><span class="name"><span class="led"></span>ChatGPT</span><span class="dotmodel">GPT-5.5</span></div>
+      <div class="rank win"><span class="pos">1</span><span class="b">Brooks</span><span class="rate">100%</span></div>
+      <div class="rank alt"><span class="pos">2</span><span class="b">Saucony</span><span class="rate">67% of runs</span></div>
+      <div class="rank"><span class="pos">3</span><span class="b mut">ASICS / others</span><span class="rate"></span></div>
+    </div>
+    <div class="eng">
+      <div class="head"><span class="name"><span class="led"></span>Gemini</span><span class="dotmodel">Gemini Pro</span></div>
+      <div class="rank win"><span class="pos">1</span><span class="b">Brooks</span><span class="rate">100%</span></div>
+      <div class="rank alt"><span class="pos">2</span><span class="b">ASICS</span><span class="rate">56% of runs</span></div>
+      <div class="rank"><span class="pos">3</span><span class="b mut">Saucony / others</span><span class="rate"></span></div>
+    </div>
+    <div class="eng">
+      <div class="head"><span class="name"><span class="led"></span>Claude</span><span class="dotmodel">Opus 4.8</span></div>
+      <div class="rank win"><span class="pos">1</span><span class="b">Brooks</span><span class="rate">100%</span></div>
+      <div class="rank split"><span class="pos">2</span><span class="b">ASICS / Saucony</span><span class="rate">split</span></div>
+      <div class="rank"><span class="pos">3</span><span class="b mut">tight field</span><span class="rate"></span></div>
+    </div>
+  </div>
+
+  <div class="takeaway">Same 28 sources. Same question. <b>Unanimous on #1 — divided on #2.</b> If you're Saucony, you're the obvious alternative inside ChatGPT and nearly invisible inside Gemini. The challenger game is already <b>three different games</b> — and no brand can see it from the outside. <span class="dim mono">· N=9 recorded runs / engine</span></div>
+</div></section>
+
+<!-- ACT 2 -->
+<section class="act"><div class="wrap">
+  <div class="actnum">Act 2 · the mechanism</div>
+  <h2>Because they don't<br><span class="u">read the same sources.</span></h2>
+  <p class="deck">This isn't randomness — it's <b>provenance</b>. We traced every recommendation back to the sources the agent actually cited. The divergence has a cause you can point at: <b>one expert review, weighted completely differently by each engine.</b></p>
+
+  <div class="mech">
+    <div class="card">
+      <h3>The same review · "Believe in the Run" (prefers ASICS Kayano / Saucony Guide)</h3>
+      <div class="citerow">
+        <div class="lbl"><span class="who">Gemini cites it</span><span class="val">6 of 9 runs</span></div>
+        <div class="bar b"><span style="width:67%"></span></div>
+        <div class="src">→ so Gemini elevates <b style="color:var(--blue)">ASICS</b> to the alternative slot</div>
+      </div>
+      <div class="citerow">
+        <div class="lbl"><span class="who">ChatGPT cites it</span><span class="val">1 of 9 runs</span></div>
+        <div class="bar g"><span style="width:11%"></span></div>
+        <div class="src">→ so ChatGPT ignores that signal and lands on <b style="color:var(--violet)">Saucony</b></div>
+      </div>
+      <div class="note">An agent's recommendation is only as good as the source it chooses to trust. Which voice each engine privileges decides which challenger wins.</div>
+    </div>
+
+    <div class="card prov">
+      <h3>Where the belief comes from</h3>
+      <div class="pl"><span class="tag" style="color:var(--signal)">WINS</span><div class="track">
+        <span class="seg owned" style="width:54%">owned 54</span><span class="seg specs" style="width:22%">specs 22</span><span class="seg edit" style="width:19%">ed 19</span><span class="seg comm" style="width:5%"></span>
+      </div></div>
+      <div class="pl"><span class="tag" style="color:var(--red)">LOSES</span><div class="track">
+        <span class="seg owned" style="width:23%">own 23</span><span class="seg edit" style="width:51%">editorial 51</span><span class="seg comm" style="width:26%">comm 26</span>
+      </div></div>
+      <div class="note">Brooks wins when the agent leans on its <b style="color:var(--signal)">owned + spec</b> content (76%). It loses precisely when <b style="color:var(--blue)">independent editorial</b> + <b style="color:var(--violet)">community</b> voices take over (77%). <span style="color:var(--amber)">Directional — re-confirming flagship-clean.</span></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ACT 3 -->
+<section class="act"><div class="wrap">
+  <div class="actnum">Act 3 · the system that acts</div>
+  <h2>So we don't just measure it.<br>We <span class="u">move it.</span></h2>
+  <p class="deck">A dashboard tells you you're losing. <b>Legible changes the outcome.</b> The loop the brief asks for — we <b>pre-register a prediction</b>, inject <b>one real asset</b> (a head-to-head spec table; every cell a verbatim real number, no endorsement), re-run the live agents, and check whether they obeyed.</p>
+
+  <div class="card" style="margin-top:30px;border-left:2px solid var(--blue)">
+    <h3 style="color:var(--blue)">▸ the pre-registered prediction</h3>
+    <p style="font-size:15px;color:var(--ink)">The table makes one real fact unavoidable — <b>Saucony Tempus is $159.95, over budget</b> — so it should <b>evict Saucony from the alternative slot.</b></p>
+  </div>
+  <div class="card" style="margin-top:14px;border-left:2px solid var(--signal)">
+    <h3 style="color:var(--signal)">▸ the result — and the real surprise</h3>
+    <p style="font-size:15px;color:var(--ink)"><b>Confirmed in all three engines</b> — Saucony's grip on the alternative drops to <b>0%</b> everywhere. But what each engine did <i>next</i> split them apart: the same asset is a <b style="color:var(--signal)">scalpel</b> in ChatGPT and a <b style="color:var(--red)">wrecking ball</b> in Gemini. <span class="mut">Toggle it ↓</span></p>
+  </div>
+
+  <div class="flipctl">
+    <div class="asset">
+      <div class="k">the one real asset we inject</div>
+      <div class="v">Head-to-head spec table <small>· 6 real spec sources · price / weight / drop / support / width — facts only</small></div>
+    </div>
+    <div class="toggle" id="flipToggle" onclick="toggleFlip()">
+      <span class="t" id="flipLabel">show baseline</span>
+      <span class="sw"></span>
+    </div>
+  </div>
+
+  <div class="flipgrid" id="flipGrid">
+    <div class="fcard" data-engine="chatgpt">
+      <div class="en">ChatGPT <small>GPT-5.5</small></div>
+      <div class="alt2">⌁ the scalpel</div>
+      <div class="meter">
+        <div class="ml"><span class="nm">Saucony <span class="em">alternative</span></span><span class="pv" data-pv>—</span></div>
+        <div class="mbar saucony"><span data-bar></span></div>
+      </div>
+      <div class="verdict" data-verdict>—</div>
+    </div>
+    <div class="fcard" data-engine="gemini">
+      <div class="en">Gemini <small>Gemini Pro</small></div>
+      <div class="alt2">⌁ the wrecking ball</div>
+      <div class="meter">
+        <div class="ml"><span class="nm">Saucony <span class="em">alternative</span></span><span class="pv" data-pv>—</span></div>
+        <div class="mbar saucony"><span data-bar></span></div>
+      </div>
+      <div class="verdict" data-verdict>—</div>
+    </div>
+    <div class="fcard" data-engine="claude">
+      <div class="en">Claude <small>Opus 4.8</small></div>
+      <div class="alt2">⌁ the spread</div>
+      <div class="meter">
+        <div class="ml"><span class="nm">Saucony <span class="em">alternative</span></span><span class="pv" data-pv>—</span></div>
+        <div class="mbar saucony"><span data-bar></span></div>
+      </div>
+      <div class="verdict" data-verdict>—</div>
+    </div>
+  </div>
+  <p class="pending" id="flipPending" style="margin-top:18px;color:var(--dim)">⬦ N=6 recorded runs per engine · the toggle replays the real before → after. One real asset; three different consequences.</p>
+</div></section>
+
+<!-- CLOSE -->
+<section class="close"><div class="wrap">
+  <h2>The instrument <span class="u">and</span> the lever for the age of agents.</h2>
+  <div class="closegrid">
+    <div class="cc"><div class="i">📊</div><h4>See every engine</h4><p>Where each agent ranks you, not one blended score that hides the disagreement that actually decides sales.</p></div>
+    <div class="cc"><div class="i">🔎</div><h4>Know why</h4><p>The exact sources each engine trusts — the provenance behind the belief, traced to the citation.</p></div>
+    <div class="cc"><div class="i">⚡</div><h4>Move it, live</h4><p>The one real asset that changes the recommendation — proven on the live agents, per engine. A demo, not a slide.</p></div>
+  </div>
+  <div class="limit"><b>HONEST LIMITATION ·</b> One brand, one category, three engines so far (Perplexity lands next). The provenance win/loss split pools across conditions — we're re-running it flagship-clean. We'd rather show you the real numbers than a polished average.</div>
+</div></section>
+
+<footer><div class="wrap">
+  LEGIBLE · brand visibility &amp; discovery in the age of agents · a Rowads experiment for the PMG AI &amp; Tech Sandbox · Cannes Lions 2026<br>
+  every figure is a real recorded run of ChatGPT (GPT-5.5), Claude (Opus 4.8) &amp; Gemini (Pro) on real public sources · extraction by an independent model · first cut, June 22
+</div></footer>
+
+<script>
+  // Real measured numbers (N=6 runs/engine). base/move = % of runs Saucony holds
+  // the alternative slot, before vs after injecting the real spec table.
+  var FLIP = {
+    chatgpt:{ base:1.00, move:0.00, verdictBase:"Saucony is the clear alternative.", verdictMove:"Evicted → ASICS takes the slot (83%). Brooks #1 barely flinches (100→83%).", moved:true },
+    gemini:{ base:0.67, move:0.00, verdictBase:"Saucony leads the alternative.", verdictMove:"Evicted — and the incumbent CRACKS: New Balance seizes #1 (Brooks 100→67%).", moved:true },
+    claude:{ base:0.50, move:0.00, verdictBase:"Saucony shares the alternative.", verdictMove:"Evicted → Brooks holds #1; ASICS + New Balance split the rest.", moved:true }
+  };
+
+  var flipped = false;
+  function toggleFlip(){
+    flipped = !flipped;
+    document.getElementById('flipToggle').classList.toggle('on', flipped);
+    document.getElementById('flipLabel').textContent = flipped ? 'asset injected' : 'show baseline';
+    render();
+  }
+  function render(){
+    if(!FLIP){ return; }
+    document.querySelectorAll('#flipGrid .fcard').forEach(function(card){
+      var k = card.getAttribute('data-engine');
+      var d = FLIP[k]; if(!d) return;
+      var val = flipped ? d.move : d.base;
+      card.querySelector('[data-pv]').textContent = Math.round(val*100)+'% of runs';
+      card.querySelector('[data-bar]').style.width = Math.round(val*100)+'%';
+      card.querySelector('[data-verdict]').textContent = flipped ? d.verdictMove : d.verdictBase;
+      card.classList.toggle('moved', flipped && d.moved);
+    });
+  }
+  render();
+</script>
+</body>
+</html>

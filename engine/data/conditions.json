@@ -1,0 +1,223 @@
+{
+  "focal": "Brooks",
+  "competitors": [
+    "Hoka",
+    "ASICS",
+    "Saucony",
+    "New Balance"
+  ],
+  "queries": [
+    "What are the best running shoes for flat feet / overpronation under $150?",
+    "Best stability running shoes for overpronation under $150",
+    "Best running shoes for flat feet under $150 (neutral or stability)"
+  ],
+  "dimensions": [
+    {
+      "dimension": "source-authority",
+      "rationale": "Holds the query and content constant and adds exactly ONE authority layer per step: owned-only -> +editorial -> +community. This isolates whether Brooks' agent visibility survives once independent voices enter the environment. Brooks is strongest when only its OWN pages exist (it defines the problem AND names the Adrenaline GTS as the answer via brooks-overpronation-solutions). Adding editorial keeps Brooks #1 for the literal overpronation query (runrepeat-overpronation-guide names GTS 25 Best Overall) but introduces the first real substitution voice (believeintherun-gts25 prefers ASICS Kayano/Saucony Guide). Adding community reveals parity framing — Brooks is co-equal with ASICS/Saucony/NB, not the runaway leader. Each adjacent pair differs by exactly one authority tier; nothing else changes.",
+      "levels": [
+        {
+          "id": "auth-owned-only",
+          "label": "Owned-only environment (Brooks pages alone)",
+          "source_ids": [
+            "brooks-adrenaline-gts-25-pdp",
+            "brooks-adrenaline-gts-series",
+            "brooks-overpronation-solutions",
+            "brooks-adrenaline-gts-evolution"
+          ],
+          "structuring": "Verbatim Brooks owned copy presented as-is: GuideRails / 'Go-To Support' / 25-year-legacy hero narrative plus the PDP spec table. The brand defines overpronation and routes the buyer straight to the Adrenaline GTS — maximally Brooks-favorable because no independent voice can contest it.",
+          "priority": "must"
+        },
+        {
+          "id": "auth-owned-plus-editorial",
+          "label": "Owned + editorial (add expert/publisher reviews)",
+          "source_ids": [
+            "brooks-adrenaline-gts-25-pdp",
+            "brooks-adrenaline-gts-series",
+            "brooks-overpronation-solutions",
+            "brooks-adrenaline-gts-evolution",
+            "runrepeat-overpronation-guide",
+            "believeintherun-gts25",
+            "marathonhandbook-adrenaline-vs-kayano"
+          ],
+          "structuring": "Same owned copy, now with editorial verdicts appended verbatim: RunRepeat's #1-overall framing (pro), Believe in the Run's mixed-to-anti expert who substitutes ASICS Kayano / Saucony Guide, and Marathon Handbook's conditional 'Brooks=mild, Kayano=moderate-severe' split. Single change vs prior arm = the editorial tier is present.",
+          "priority": "must"
+        },
+        {
+          "id": "auth-owned-editorial-community",
+          "label": "Full footprint: owned + editorial + community (BASELINE)",
+          "source_ids": [
+            "brooks-adrenaline-gts-25-pdp",
+            "brooks-adrenaline-gts-series",
+            "brooks-overpronation-solutions",
+            "brooks-adrenaline-gts-evolution",
+            "runrepeat-overpronation-guide",
+            "believeintherun-gts25",
+            "marathonhandbook-adrenaline-vs-kayano",
+            "askrsg-new-runner-flat-pronated",
+            "askrsg-overpronation-flatfeet-midfoot",
+            "rsg-shoes-for-flat-feet-overpronation",
+            "running-flat-feet-prefers-newbalance",
+            "running-saucony-nb-or-brooks"
+          ],
+          "structuring": "All three authority tiers present, each in native form (owned hero+specs, editorial verdicts, raw Reddit quotes). Community adds both pro-Brooks (askrsg-new-runner: 'most commonly recommended... sweet spot in price/comfort/performance') and parity/anti signals (running-flat-feet-prefers-newbalance picks NB; running-saucony-nb-or-brooks frames a tight three-way). Single change vs prior arm = the community tier is present.",
+          "priority": "must"
+        }
+      ]
+    },
+    {
+      "dimension": "claim-form",
+      "rationale": "Holds the SAME real Brooks evidence constant and only changes HOW it is presented: emotional narrative vs structured/quantified vs comparison-table. This isolates whether form alone moves the answer, independent of which facts are present. The emotional arm uses Brooks' own soft hero copy (gts-series 'legacy', Ghost 'softness with every step'); the structured arm uses the SAME models' hard numbers (drop, weight, MSRP, stack from the spec sources); the comparison-table arm restructures those same numbers side-by-side against rivals. No new facts enter — only the rhetorical container changes. The comparison-table arm IS the prediction-loop move.",
+      "levels": [
+        {
+          "id": "form-emotional-narrative",
+          "label": "Emotional / heritage narrative (vague hero copy)",
+          "source_ids": [
+            "brooks-adrenaline-gts-series",
+            "brooks-overpronation-solutions",
+            "brooks-ghost-17-pdp",
+            "brooks-run-happy-promise"
+          ],
+          "structuring": "Brooks' own soft/authority copy as flowing narrative: '25 years running', GuideRails 'keeps excess movement in check', Ghost's 'say hello to softness with every step', plus the 90-day 'run in it, sweat in it, get it dirty' Run Happy Promise. Concrete numbers deliberately withheld — feeling and legacy only.",
+          "priority": "must"
+        },
+        {
+          "id": "form-structured-quantified",
+          "label": "Structured / quantified bullets (same models, hard specs)",
+          "source_ids": [
+            "brooks-adrenaline-gts-25-pdp",
+            "brooks-adrenaline-gts-23",
+            "brooks-ghost-16",
+            "brooks-ghost-17-pdp",
+            "brooks-overpronation-solutions"
+          ],
+          "structuring": "The SAME Brooks models stripped to quantified bullets: GTS 23 $140 / 10.1oz / 12mm drop / GuideRails / torsional rigidity 4-5 / Wide+X-Wide; Ghost 16 $139.95 / 9.8oz / 12mm; GTS 25 10mm drop, DNA LOFT v3, $155. Same evidence as the emotional arm, now numeric. Single change = claim-form (narrative -> quantified bullets).",
+          "priority": "must"
+        },
+        {
+          "id": "form-comparison-table",
+          "label": "Head-to-head comparison table (Brooks vs 4 rivals, real specs) — PREDICTION MOVE",
+          "source_ids": [
+            "brooks-adrenaline-gts-23",
+            "brooks-ghost-16",
+            "hoka-arahi-7",
+            "asics-gt-2000-13",
+            "saucony-tempus-1",
+            "nb-860v14"
+          ],
+          "structuring": "The SAME real spec numbers reorganized into one side-by-side stability table: price (GTS23 $140, GT-2000 $140, NB860 $139.95 vs Arahi 7 $145, Tempus $159.95 OUT of budget), weight, drop, support mechanism (GuideRails guidance vs Arahi J-Frame vs NB full-length medial wedge vs ASICS 3D Guidance), and width availability (Brooks Normal/Wide/X-Wide vs Arahi narrow 70mm toebox). This is pure real-data restructuring — no new claims, no fabricated endorsement — and it foregrounds Brooks' real wins (under-$150, true-to-size 1,951 votes, widest fit). Single change vs structured arm = competitor specs are placed in-frame as a table.",
+          "priority": "must"
+        }
+      ]
+    },
+    {
+      "dimension": "specificity/evidence",
+      "rationale": "Holds source set and query constant and varies only the GRANULARITY of evidence attached to Brooks' claim: bare claim -> claim + brand-stated numbers -> claim + independent lab measurements + vote counts. Isolates whether evidence depth (not source authority — sources can be the same publisher) changes whether the agent commits to Brooks. The lab arm adds runrepeat-measured drop/stack/rigidity and the 1,951 true-to-size votes, which are Brooks' real credibility moat vs ASICS' 118 votes.",
+      "levels": [
+        {
+          "id": "spec-bare-claim",
+          "label": "Bare claim (assertion, no numbers)",
+          "source_ids": [
+            "brooks-adrenaline-gts-series",
+            "brooks-overpronation-solutions"
+          ],
+          "structuring": "Brooks asserts support without quantification: GuideRails 'helps keep your gait aligned', Adrenaline is the overpronation answer. No drop, weight, price, or third-party measurement.",
+          "priority": "should"
+        },
+        {
+          "id": "spec-brand-numbers",
+          "label": "Claim + brand-stated specs",
+          "source_ids": [
+            "brooks-adrenaline-gts-series",
+            "brooks-overpronation-solutions",
+            "brooks-adrenaline-gts-25-pdp"
+          ],
+          "structuring": "Same claim now backed by Brooks' OWN spec table: 10mm drop on GTS 25, DNA LOFT v3 +3mm forefoot, ~10.2oz, $155 MSRP. Self-reported numbers only. Single change vs bare arm = brand-stated specificity added.",
+          "priority": "should"
+        },
+        {
+          "id": "spec-independent-lab",
+          "label": "Claim + independent lab measurements + vote counts",
+          "source_ids": [
+            "brooks-adrenaline-gts-series",
+            "brooks-overpronation-solutions",
+            "brooks-adrenaline-gts-25-pdp",
+            "brooks-adrenaline-gts-23",
+            "asics-gt-2000-13"
+          ],
+          "structuring": "Adds RunRepeat's independent lab numbers (GTS 23 measured 10.1oz, 12.6mm lab drop, torsional rigidity 4/5, heel-counter 4/5) and crowd evidence (true-to-size 1,951 votes vs ASICS' 118) — real third-party verification of the support claim. Single change vs brand-numbers arm = lab/vote evidence layer added.",
+          "priority": "stretch"
+        }
+      ]
+    },
+    {
+      "dimension": "recency",
+      "rationale": "Holds the model line and source type constant and varies only the generation/vintage of the SAME Brooks Adrenaline data: older-gen specs (GTS 23, $140, 12mm) vs current-gen (GTS 25, $155, 10mm). Isolates whether recency alone flips the under-$150 value verdict. This is a real and important lever because the price moved $140 -> $155 (crossing the cap) AND the drop moved 12mm -> 10mm across exactly these two real generations — so 'newest' actually HURTS Brooks on the locked budget constraint while community even recommends buying the older 21/23 as the budget play.",
+      "levels": [
+        {
+          "id": "rec-older-gen-under-cap",
+          "label": "Older-gen Adrenaline (GTS 23, $140, under cap)",
+          "source_ids": [
+            "brooks-adrenaline-gts-23",
+            "rsg-severe-overpronation-adrenaline23"
+          ],
+          "structuring": "GTS 23 real specs: $140 (under $150), 10.1oz, 12mm drop, GuideRails, Wide/X-Wide, plus the community note recommending the cheaper older GTS 21/23. Brooks-favorable on the budget axis precisely because it predates the price hike.",
+          "priority": "should"
+        },
+        {
+          "id": "rec-current-gen-over-cap",
+          "label": "Current-gen Adrenaline (GTS 25, $155, over cap)",
+          "source_ids": [
+            "brooks-adrenaline-gts-25-pdp",
+            "brooks-adrenaline-gts-evolution"
+          ],
+          "structuring": "GTS 25 real specs: $155 MSRP (just OVER the $150 cap), 10mm drop, DNA LOFT v3 +3/+1mm cushion. Same model line, newest generation. Single change vs older-gen arm = the generation/vintage of the Adrenaline data, which alone pushes Brooks above the budget line.",
+          "priority": "should"
+        }
+      ]
+    },
+    {
+      "dimension": "coverage",
+      "rationale": "THE highest-isolation lever in the corpus: holds publisher, source type, and intent constant and changes only ONE real word in the use-case framing — 'overpronation' vs 'flat feet'. Same-publisher near-identical-query pairs prove the winner flips on wording alone. RunRepeat's overpronation guide makes the GTS 25 Best Overall; its flat-feet guide makes ADIDAS Best Overall and demotes Brooks to a durability niche (Glycerin GTS). Brooks' OWN site does the same: its overpronation page routes to the Adrenaline GTS, while its flat-feet page softens stability and leads with neutral models (Ghost Max, Dyad). The broad 'stability' framing drops the Adrenaline GTS out of the top 7 entirely. This isolates the single driver — query phrasing — with everything else clamped.",
+      "levels": [
+        {
+          "id": "cov-overpronation-framing",
+          "label": "Query framed as 'overpronation' (Brooks-favorable)",
+          "source_ids": [
+            "brooks-overpronation-solutions",
+            "runrepeat-overpronation-guide"
+          ],
+          "structuring": "Use-case worded as 'overpronation': Brooks' own overpronation page routes straight to the Adrenaline GTS, and RunRepeat's overpronation guide ranks the GTS 25 Best Overall (~87/100). Verbatim from both — Brooks owns the default slot.",
+          "priority": "must"
+        },
+        {
+          "id": "cov-flatfeet-framing",
+          "label": "Query framed as 'flat feet' (Brooks-unfavorable) — same publishers",
+          "source_ids": [
+            "brooks-flat-feet-solutions",
+            "runrepeat-flatfeet-guide"
+          ],
+          "structuring": "Identical sources/publishers, one word changed to 'flat feet': Brooks' OWN flat-feet page de-emphasizes hard stability ('rush to classify them as overpronators... going by the wayside'), leads with Addiction/Ariel/Ghost Max/Dyad, and RunRepeat's flat-feet guide crowns Adidas Best Overall, relegating Brooks to durability (Glycerin GTS). Single change vs overpronation arm = the use-case word.",
+          "priority": "must"
+        },
+        {
+          "id": "cov-broad-stability-framing",
+          "label": "Query framed as broad 'stability' (Brooks absent)",
+          "source_ids": [
+            "runrepeat-stability-guide",
+            "rsg-pronators-stability-shoes-worse"
+          ],
+          "structuring": "Use-case broadened to generic 'stability': RunRepeat's stability guide top 7 EXCLUDES the Adrenaline GTS (Adidas #1, Hoka/ASICS/Saucony/NB place), and the community thread questions whether stability shoes help at all. Single change vs flat-feet arm = the breadth of the use-case word ('flat feet' -> 'stability').",
+          "priority": "stretch"
+        }
+      ]
+    }
+  ],
+  "baseline_condition_id": "auth-owned-editorial-community",
+  "prediction_move": {
+    "description": "Build ONE head-to-head stability comparison table (condition form-comparison-table) from the real spec sources only: rows = Brooks Adrenaline GTS 23 ($140) and Ghost 16 ($139.95) vs Hoka Arahi 7 ($145), ASICS GT-2000 13 ($140), Saucony Tempus ($159.95, flagged OUT of budget), NB 860v14 ($139.95); columns = price-vs-$150-cap, weight, heel-to-toe drop, support mechanism (GuideRails guidance vs J-Frame vs full-length medial wedge vs 3D Guidance), width availability, and true-to-size vote count. Inject this table into the otherwise-baseline environment and re-run the agent on the constant under-$150 overpronation query.",
+    "builds_on_real_data_how": "Every cell is a verbatim real number from the structured-specs corpus (runrepeat lab/brand specs for all six shoes) — nothing is invented. It is pure RESTRUCTURING: the same facts already present as scattered bullets are reorganized into a side-by-side grid that surfaces Brooks' genuine, sourced advantages (under-$150 at $140 vs Tempus' out-of-budget $159.95; widest fit Normal/Wide/X-Wide vs Arahi's narrow 70mm toebox; true-to-size 1,951 votes vs ASICS' 118). It contains NO review quote, NO endorsement, NO opinion — only specs — so it cannot be a fabricated endorsement. The table form simply makes real comparative facts legible to the agent.",
+    "expected_direction": "Recommendation share shifts toward Brooks vs the prose baseline: the agent, given a clean spec grid, picks the GTS 23 as the under-$150 stability default (cheaper than Arahi, in-budget unlike Tempus, widest fit, highest size-confidence) and cites Ghost 16 as the neutral under-$150 option — strengthening Brooks precisely where prose-only environments let editorial substitution (ASICS/Saucony) and the $155 GTS-25 price objection dominate."
+  },
+  "isolation_notes": "Each adjacent pair differs by exactly one variable, query held constant. SOURCE-AUTHORITY: owned-only -> +editorial -> +community each add exactly one authority tier; the owned content is byte-identical across all three, so any answer shift is attributable solely to the added tier. CLAIM-FORM: emotional -> structured -> comparison-table reuse the SAME Brooks models/facts; only the rhetorical container changes (narrative -> quantified bullets -> side-by-side grid), with no new facts entering. SPECIFICITY: bare-claim -> +brand-numbers -> +independent-lab keep the same overpronation claim and the same core Brooks pages; only evidence granularity grows (assertion -> self-reported specs -> third-party lab + vote counts). RECENCY: GTS 23 -> GTS 25 holds the model line, publisher posture, and source type fixed; only the generation/vintage changes (which alone moves price $140->$155 across the cap and drop 12mm->10mm). COVERAGE: overpronation -> flat-feet -> broad-stability changes exactly one word of the use-case while reusing the SAME publishers (Brooks' own solutions pages and RunRepeat guides), making the winner-flip cleanly attributable to phrasing. Cross-dimension cleanliness: the comparison-table arm (claim-form) is what the prediction-loop move injects, so claim-form and the prediction move share a tested condition; coverage's overpronation/flat-feet pair is the single highest-leverage isolation because publisher+intent are clamped and only the query word varies. Baseline auth-owned-editorial-community is the full real footprint every arm is measured against.\""
+}

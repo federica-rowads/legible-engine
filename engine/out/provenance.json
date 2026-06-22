@@ -1,0 +1,69 @@
+{
+  "overall": {
+    "responses": 102,
+    "citations": 305,
+    "mix": {
+      "owned": 0.5081967213114754,
+      "editorial": 0.22295081967213115,
+      "community": 0.07213114754098361,
+      "structured-specs": 0.19672131147540983,
+      "unknown": 0
+    }
+  },
+  "brooksWin": {
+    "responses": 84,
+    "citations": 270,
+    "mix": {
+      "owned": 0.5444444444444444,
+      "editorial": 0.18518518518518517,
+      "community": 0.04814814814814815,
+      "structured-specs": 0.2222222222222222,
+      "unknown": 0
+    }
+  },
+  "brooksLose": {
+    "responses": 18,
+    "citations": 35,
+    "mix": {
+      "owned": 0.22857142857142856,
+      "editorial": 0.5142857142857142,
+      "community": 0.2571428571428571,
+      "structured-specs": 0,
+      "unknown": 0
+    }
+  },
+  "topSources": [
+    [
+      "brooks-overpronation-solutions",
+      53
+    ],
+    [
+      "brooks-adrenaline-gts-25-pdp",
+      46
+    ],
+    [
+      "runrepeat-overpronation-guide",
+      27
+    ],
+    [
+      "brooks-adrenaline-gts-series",
+      26
+    ],
+    [
+      "brooks-adrenaline-gts-23",
+      24
+    ],
+    [
+      "brooks-ghost-17-pdp",
+      12
+    ],
+    [
+      "asics-gt-2000-13",
+      12
+    ],
+    [
+      "marathonhandbook-adrenaline-vs-kayano",
+      12
+    ]
+  ]
+}

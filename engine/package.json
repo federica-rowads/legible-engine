@@ -1,0 +1,15 @@
+{
+  "name": "legible-engine",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Experiment engine for Legible — does one third-party signal flip a real AI agent's brand recommendation? Cannes Lions / PMG hackathon.",
+  "scripts": {
+    "flip": "node src/run.js",
+    "dry": "node src/run.js --dry"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.105.0",
+    "dotenv": "^17.4.2"
+  }
+}

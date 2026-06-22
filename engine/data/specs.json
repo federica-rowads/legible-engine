@@ -1,0 +1,12 @@
+{
+  "cap": 150,
+  "note": "Every figure is a verbatim real spec from the structured-specs corpus (RunRepeat lab / brand-stated). No opinions, no endorsements — facts only.",
+  "shoes": [
+    { "brand": "Brooks", "model": "Adrenaline GTS 23", "sourceId": "brooks-adrenaline-gts-23", "price": 140, "weight": "10.1 oz", "drop": "12 mm", "support": "GuideRails (guidance)", "width": "Normal / Wide / X-Wide", "trueToSizeVotes": 1951 },
+    { "brand": "Brooks", "model": "Ghost 16", "sourceId": "brooks-ghost-16", "price": 139.95, "weight": "9.8 oz", "drop": "12 mm", "support": "Neutral (DNA Loft v3)", "width": "—", "trueToSizeVotes": null },
+    { "brand": "Hoka", "model": "Arahi 7", "sourceId": "hoka-arahi-7", "price": 145, "weight": "9.6 oz", "drop": "5 mm", "support": "J-Frame", "width": "Narrow (70 mm toebox)", "trueToSizeVotes": null },
+    { "brand": "ASICS", "model": "GT-2000 13", "sourceId": "asics-gt-2000-13", "price": 140, "weight": "9.3 oz", "drop": "9.4 mm", "support": "3D Guidance", "width": "Normal / Wide / X-Wide", "trueToSizeVotes": 118 },
+    { "brand": "Saucony", "model": "Tempus", "sourceId": "saucony-tempus-1", "price": 159.95, "weight": "8.9 oz", "drop": "8 mm", "support": "PWRRUN frame (full-length)", "width": "Tapered toebox", "trueToSizeVotes": null },
+    { "brand": "New Balance", "model": "860v14", "sourceId": "nb-860v14", "price": 139.95, "weight": "10.5 oz", "drop": "8 mm", "support": "Full-length medial wedge", "width": "—", "trueToSizeVotes": null }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "base": "cov-flatfeet-framing",
+  "query": "Best running shoes for flat feet under $150",
+  "n": 6,
+  "agent": "claude-sonnet-4-6",
+  "generatedAt": "2026-06-22T13:36:06.108Z",
+  "prediction": {
+    "direction": "up",
+    "bandLow": 0.11976744186046512,
+    "bandHigh": 0.31976744186046513
+  },
+  "baseline": {
+    "n": 6,
+    "asov": {
+      "Brooks": 0.06976744186046512,
+      "Hoka": 0.09302325581395347,
+      "ASICS": 0.046511627906976744,
+      "Saucony": 0.7906976744186046,
+      "New Balance": 0
+    },
+    "top1": {
+      "Brooks": 0,
+      "Hoka": 0,
+      "ASICS": 0,
+      "Saucony": 0.6666666666666666,
+      "New Balance": 0
+    },
+    "outOfSetTopRate": 0.3333333333333333,
+    "brooksTop1": 0,
+    "brooksASoV": 0.06976744186046512,
+    "brooksMentionRate": 1,
+    "brooksAvgRank": 4,
+    "modalTop": "Saucony",
+    "consistency": 0.6666666666666666,
+    "confSelf": 0.57,
+    "confConsistency": 0.6666666666666666,
+    "calibrationGap": -0.09666666666666668,
+    "decisiveRate": 1,
+    "priceCapHonored": 0.6666666666666666
+  },
+  "move": {
+    "n": 6,
+    "asov": {
+      "Brooks": 0.7667731629392971,
+      "Hoka": 0.04792332268370607,
+      "ASICS": 0.09584664536741214,
+      "Saucony": 0.025559105431309907,
+      "New Balance": 0.06389776357827476
+    },
+    "top1": {
+      "Brooks": 1,
+      "Hoka": 0,
+      "ASICS": 0,
+      "Saucony": 0,
+      "New Balance": 0
+    },
+    "outOfSetTopRate": 0,
+    "brooksTop1": 1,
+    "brooksASoV": 0.7667731629392971,
+    "brooksMentionRate": 1,
+    "brooksAvgRank": 1,
+    "modalTop": "Brooks",
+    "consistency": 1,
+    "confSelf": 0.72,
+    "confConsistency": 1,
+    "calibrationGap": -0.28,
+    "decisiveRate": 1,
+    "priceCapHonored": 1
+  },
+  "deltaBrooksASoV": 0.697005721078832,
+  "deltaBrooksTop1": 1,
+  "directionMatched": true,
+  "inBand": true
+}

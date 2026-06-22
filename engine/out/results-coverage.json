@@ -1,0 +1,238 @@
+{
+  "scenario": "Brooks-flat-feet",
+  "focalBrand": "Brooks",
+  "competitors": [
+    "Hoka",
+    "ASICS",
+    "Saucony",
+    "New Balance"
+  ],
+  "dimension": "coverage",
+  "n": 9,
+  "agentModel": "claude-sonnet-4-6",
+  "generatedAt": "2026-06-22T14:06:21.225Z",
+  "levels": [
+    {
+      "id": "cov-overpronation-framing",
+      "label": "Query framed as 'overpronation' (Brooks-favorable)",
+      "dim": "coverage",
+      "query": "Best stability running shoes for overpronation under $150",
+      "pooled": {
+        "n": 9,
+        "asov": {
+          "Brooks": 0.794701986754967,
+          "Hoka": 0.06622516556291391,
+          "ASICS": 0.039735099337748346,
+          "Saucony": 0.09933774834437087,
+          "New Balance": 0
+        },
+        "top1": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 1,
+        "brooksTop1CI": [
+          1,
+          1
+        ],
+        "brooksASoV": 0.794701986754967,
+        "brooksMentionRate": 1,
+        "brooksAvgRank": 1,
+        "modalTop": "Brooks",
+        "consistency": 1,
+        "confSelf": 0.84,
+        "confConsistency": 1,
+        "calibrationGap": -0.16000000000000003,
+        "decisiveRate": 1,
+        "priceCapHonored": 0.8888888888888888
+      },
+      "perAgent": {
+        "claude": {
+          "n": 9,
+          "asov": {
+            "Brooks": 0.794701986754967,
+            "Hoka": 0.06622516556291391,
+            "ASICS": 0.039735099337748346,
+            "Saucony": 0.09933774834437087,
+            "New Balance": 0
+          },
+          "top1": {
+            "Brooks": 1,
+            "Hoka": 0,
+            "ASICS": 0,
+            "Saucony": 0,
+            "New Balance": 0
+          },
+          "outOfSetTopRate": 0,
+          "brooksTop1": 1,
+          "brooksTop1CI": [
+            1,
+            1
+          ],
+          "brooksASoV": 0.794701986754967,
+          "brooksMentionRate": 1,
+          "brooksAvgRank": 1,
+          "modalTop": "Brooks",
+          "consistency": 1,
+          "confSelf": 0.84,
+          "confConsistency": 1,
+          "calibrationGap": -0.16000000000000003,
+          "decisiveRate": 1,
+          "priceCapHonored": 0.8888888888888888
+        }
+      }
+    },
+    {
+      "id": "cov-flatfeet-framing",
+      "label": "Query framed as 'flat feet' (Brooks-unfavorable) — same publishers",
+      "dim": "coverage",
+      "query": "Best running shoes for flat feet under $150",
+      "pooled": {
+        "n": 9,
+        "asov": {
+          "Brooks": 0.05325443786982249,
+          "Hoka": 0.07100591715976332,
+          "ASICS": 0.023668639053254437,
+          "Saucony": 0.8520710059171598,
+          "New Balance": 0
+        },
+        "top1": {
+          "Brooks": 0,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 1,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 0,
+        "brooksTop1CI": [
+          0,
+          0
+        ],
+        "brooksASoV": 0.05325443786982249,
+        "brooksMentionRate": 1,
+        "brooksAvgRank": 4,
+        "modalTop": "Saucony",
+        "consistency": 1,
+        "confSelf": 0.5533333333333333,
+        "confConsistency": 1,
+        "calibrationGap": -0.44666666666666666,
+        "decisiveRate": 1,
+        "priceCapHonored": 0.5555555555555556
+      },
+      "perAgent": {
+        "claude": {
+          "n": 9,
+          "asov": {
+            "Brooks": 0.05325443786982249,
+            "Hoka": 0.07100591715976332,
+            "ASICS": 0.023668639053254437,
+            "Saucony": 0.8520710059171598,
+            "New Balance": 0
+          },
+          "top1": {
+            "Brooks": 0,
+            "Hoka": 0,
+            "ASICS": 0,
+            "Saucony": 1,
+            "New Balance": 0
+          },
+          "outOfSetTopRate": 0,
+          "brooksTop1": 0,
+          "brooksTop1CI": [
+            0,
+            0
+          ],
+          "brooksASoV": 0.05325443786982249,
+          "brooksMentionRate": 1,
+          "brooksAvgRank": 4,
+          "modalTop": "Saucony",
+          "consistency": 1,
+          "confSelf": 0.5533333333333333,
+          "confConsistency": 1,
+          "calibrationGap": -0.44666666666666666,
+          "decisiveRate": 1,
+          "priceCapHonored": 0.5555555555555556
+        }
+      }
+    },
+    {
+      "id": "cov-broad-stability-framing",
+      "label": "Query framed as broad 'stability' (Brooks absent)",
+      "dim": "coverage",
+      "query": "Best stability running shoes under $150",
+      "pooled": {
+        "n": 9,
+        "asov": {
+          "Brooks": 0,
+          "Hoka": 0.5880092236740968,
+          "ASICS": 0.3389700230591852,
+          "Saucony": 0.0730207532667179,
+          "New Balance": 0
+        },
+        "top1": {
+          "Brooks": 0,
+          "Hoka": 0.6666666666666666,
+          "ASICS": 0.3333333333333333,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 0,
+        "brooksTop1CI": [
+          0,
+          0
+        ],
+        "brooksASoV": 0,
+        "brooksMentionRate": 0,
+        "brooksAvgRank": null,
+        "modalTop": "Hoka",
+        "consistency": 0.6666666666666666,
+        "confSelf": 0.5711111111111111,
+        "confConsistency": 0.6666666666666666,
+        "calibrationGap": -0.0955555555555555,
+        "decisiveRate": 1,
+        "priceCapHonored": 0.1111111111111111
+      },
+      "perAgent": {
+        "claude": {
+          "n": 9,
+          "asov": {
+            "Brooks": 0,
+            "Hoka": 0.5880092236740968,
+            "ASICS": 0.3389700230591852,
+            "Saucony": 0.0730207532667179,
+            "New Balance": 0
+          },
+          "top1": {
+            "Brooks": 0,
+            "Hoka": 0.6666666666666666,
+            "ASICS": 0.3333333333333333,
+            "Saucony": 0,
+            "New Balance": 0
+          },
+          "outOfSetTopRate": 0,
+          "brooksTop1": 0,
+          "brooksTop1CI": [
+            0,
+            0
+          ],
+          "brooksASoV": 0,
+          "brooksMentionRate": 0,
+          "brooksAvgRank": null,
+          "modalTop": "Hoka",
+          "consistency": 0.6666666666666666,
+          "confSelf": 0.5711111111111111,
+          "confConsistency": 0.6666666666666666,
+          "calibrationGap": -0.0955555555555555,
+          "decisiveRate": 1,
+          "priceCapHonored": 0.1111111111111111
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "query": "Best stability running shoes for overpronation under $150",
+  "n": 6,
+  "generatedAt": "2026-06-22T16:59:28.450Z",
+  "agents": [
+    {
+      "id": "claude",
+      "model": "claude-opus-4-8"
+    },
+    {
+      "id": "chatgpt",
+      "model": "gpt-5.5"
+    },
+    {
+      "id": "gemini",
+      "model": "gemini-pro-latest"
+    }
+  ],
+  "conditions": [
+    {
+      "id": "baseline",
+      "label": "Baseline (full real footprint)"
+    },
+    {
+      "id": "move",
+      "label": "+ head-to-head spec table (real specs only)"
+    }
+  ],
+  "data": {
+    "claude": {
+      "baseline": {
+        "n": 6,
+        "top1": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "second": {
+          "Brooks": 0,
+          "Hoka": 0,
+          "ASICS": 0.5,
+          "Saucony": 0.5,
+          "New Balance": 0
+        },
+        "mention": {
+          "Brooks": 1,
+          "Hoka": 0.8333333333333334,
+          "ASICS": 1,
+          "Saucony": 1,
+          "New Balance": 0.16666666666666666
+        }
+      },
+      "move": {
+        "n": 6,
+        "top1": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "second": {
+          "Brooks": 0,
+          "Hoka": 0,
+          "ASICS": 0.5,
+          "Saucony": 0,
+          "New Balance": 0.5
+        },
+        "mention": {
+          "Brooks": 1,
+          "Hoka": 1,
+          "ASICS": 1,
+          "Saucony": 0.3333333333333333,
+          "New Balance": 1
+        }
+      }
+    },
+    "chatgpt": {
+      "baseline": {
+        "n": 6,
+        "top1": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "second": {
+          "Brooks": 0,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 1,
+          "New Balance": 0
+        },
+        "mention": {
+          "Brooks": 1,
+          "Hoka": 1,
+          "ASICS": 1,
+          "Saucony": 1,
+          "New Balance": 0
+        }
+      },
+      "move": {
+        "n": 6,
+        "top1": {
+          "Brooks": 0.8333333333333334,
+          "Hoka": 0,
+          "ASICS": 0.16666666666666666,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "second": {
+          "Brooks": 0,
+          "Hoka": 0,
+          "ASICS": 0.8333333333333334,
+          "Saucony": 0,
+          "New Balance": 0.16666666666666666
+        },
+        "mention": {
+          "Brooks": 1,
+          "Hoka": 1,
+          "ASICS": 1,
+          "Saucony": 0.6666666666666666,
+          "New Balance": 1
+        }
+      }
+    },
+    "gemini": {
+      "baseline": {
+        "n": 6,
+        "top1": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "second": {
+          "Brooks": 0,
+          "Hoka": 0,
+          "ASICS": 0.3333333333333333,
+          "Saucony": 0.6666666666666666,
+          "New Balance": 0
+        },
+        "mention": {
+          "Brooks": 1,
+          "Hoka": 1,
+          "ASICS": 1,
+          "Saucony": 1,
+          "New Balance": 0
+        }
+      },
+      "move": {
+        "n": 6,
+        "top1": {
+          "Brooks": 0.6666666666666666,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0.3333333333333333
+        },
+        "second": {
+          "Brooks": 0.16666666666666666,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "mention": {
+          "Brooks": 0.8333333333333334,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0.3333333333333333
+        }
+      }
+    }
+  }
+}

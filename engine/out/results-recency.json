@@ -1,0 +1,148 @@
+{
+  "scenario": "Brooks-flat-feet",
+  "focalBrand": "Brooks",
+  "competitors": [
+    "Hoka",
+    "ASICS",
+    "Saucony",
+    "New Balance"
+  ],
+  "dimension": "recency",
+  "n": 6,
+  "agentModel": "claude-sonnet-4-6",
+  "generatedAt": "2026-06-22T12:56:34.020Z",
+  "levels": [
+    {
+      "id": "rec-older-gen-under-cap",
+      "label": "Older-gen Adrenaline (GTS 23, $140, under cap)",
+      "dim": "recency",
+      "query": "What are the best running shoes for flat feet / overpronation under $150?",
+      "pooled": {
+        "n": 6,
+        "asov": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "top1": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 1,
+        "brooksASoV": 1,
+        "brooksMentionRate": 1,
+        "brooksAvgRank": 1,
+        "modalTop": "Brooks",
+        "consistency": 1,
+        "confSelf": 0.6033333333333334,
+        "confConsistency": 1,
+        "calibrationGap": -0.3966666666666666,
+        "decisiveRate": 1,
+        "priceCapHonored": 1
+      },
+      "perAgent": {
+        "claude": {
+          "n": 6,
+          "asov": {
+            "Brooks": 1,
+            "Hoka": 0,
+            "ASICS": 0,
+            "Saucony": 0,
+            "New Balance": 0
+          },
+          "top1": {
+            "Brooks": 1,
+            "Hoka": 0,
+            "ASICS": 0,
+            "Saucony": 0,
+            "New Balance": 0
+          },
+          "outOfSetTopRate": 0,
+          "brooksTop1": 1,
+          "brooksASoV": 1,
+          "brooksMentionRate": 1,
+          "brooksAvgRank": 1,
+          "modalTop": "Brooks",
+          "consistency": 1,
+          "confSelf": 0.6033333333333334,
+          "confConsistency": 1,
+          "calibrationGap": -0.3966666666666666,
+          "decisiveRate": 1,
+          "priceCapHonored": 1
+        }
+      }
+    },
+    {
+      "id": "rec-current-gen-over-cap",
+      "label": "Current-gen Adrenaline (GTS 25, $155, over cap)",
+      "dim": "recency",
+      "query": "What are the best running shoes for flat feet / overpronation under $150?",
+      "pooled": {
+        "n": 6,
+        "asov": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "top1": {
+          "Brooks": 1,
+          "Hoka": 0,
+          "ASICS": 0,
+          "Saucony": 0,
+          "New Balance": 0
+        },
+        "outOfSetTopRate": 0,
+        "brooksTop1": 1,
+        "brooksASoV": 1,
+        "brooksMentionRate": 1,
+        "brooksAvgRank": 1,
+        "modalTop": "Brooks",
+        "consistency": 1,
+        "confSelf": 0.45833333333333337,
+        "confConsistency": 1,
+        "calibrationGap": -0.5416666666666666,
+        "decisiveRate": 1,
+        "priceCapHonored": 0.16666666666666666
+      },
+      "perAgent": {
+        "claude": {
+          "n": 6,
+          "asov": {
+            "Brooks": 1,
+            "Hoka": 0,
+            "ASICS": 0,
+            "Saucony": 0,
+            "New Balance": 0
+          },
+          "top1": {
+            "Brooks": 1,
+            "Hoka": 0,
+            "ASICS": 0,
+            "Saucony": 0,
+            "New Balance": 0
+          },
+          "outOfSetTopRate": 0,
+          "brooksTop1": 1,
+          "brooksASoV": 1,
+          "brooksMentionRate": 1,
+          "brooksAvgRank": 1,
+          "modalTop": "Brooks",
+          "consistency": 1,
+          "confSelf": 0.45833333333333337,
+          "confConsistency": 1,
+          "calibrationGap": -0.5416666666666666,
+          "decisiveRate": 1,
+          "priceCapHonored": 0.16666666666666666
+        }
+      }
+    }
+  ]
+}

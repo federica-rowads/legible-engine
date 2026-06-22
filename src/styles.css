@@ -77,6 +77,10 @@
   --border: oklch(0 0 0 / 10%);
   --secondary: oklch(0.94 0 0);
   --secondary-foreground: oklch(0.08 0 0);
+  /* On white, the bright acid green is unreadable — use a darker, high-contrast
+     green for any signal TEXT/thin element, and white text on solid fills. */
+  --signal: oklch(0.52 0.17 142);
+  --signal-foreground: oklch(0.985 0 0);
 }
 
 @layer base {

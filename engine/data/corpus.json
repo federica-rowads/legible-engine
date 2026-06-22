@@ -1,0 +1,405 @@
+[
+  {
+    "id": "brooks-adrenaline-gts-25-pdp",
+    "title": "Men's Adrenaline GTS 25 Running Shoes | Brooks Running",
+    "url": "https://www.brooksrunning.com/en_us/mens/shoes/road-running-shoes/adrenaline-gts-25/110454.html",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "Brooks' own PDP for the flagship stability/support model. Hero/positioning copy: 'GuideRails support that helps keep your body aligned as you move' and 'GTS' is branded as 'Go-To Support'. Concrete specs on Brooks' own spec table: heel-to-toe drop dropped to 10mm on the GTS 25 (from 12mm on the GTS 24), nitrogen-infused DNA LOFT v3 cushioning with +3mm forefoot / +1mm heel cushion vs prior gen, MSRP $155 (men's and women's). Classified by Brooks as a 'Support' (stability) shoe for runners who overpronate. Weight ~10.2 oz (men's) / ~9.1 oz (women's) per Brooks spec table.",
+    "stance": "Brooks' single strongest stability asset for the flat-feet/overpronation query: explicitly markets GuideRails + 'Go-To Support' + 25-year support legacy. Where competitors (Hoka/ASICS/Saucony/NB) have to argue for their stability tech, Brooks owns the de facto default-recommendation slot and a recognizable acronym. Weakness vs value framing: $155 sits at the TOP of the 'under $150' bracket — actually just over it at full MSRP, a real vulnerability the ablation can exploit.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "owned"
+  },
+  {
+    "id": "brooks-adrenaline-gts-series",
+    "title": "Adrenaline GTS Series | Support Running Shoes | Brooks Running",
+    "url": "https://www.brooksrunning.com/en_us/featured/adrenaline-gts/",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "Series landing page. Brooks' own copy: 'for go-to support, there's a reason Adrenaline running shoes are at the top of Brooks' charts' and the line that the Adrenaline 'continues its legacy of structured support 25 years running with a signature smooth ride and GuideRails technology to help keep range of motion in check.' GuideRails framed as keeping 'excess movement in check' rather than aggressive motion-control.",
+    "stance": "Brand-owned narrative that anchors Brooks = the go-to stability shoe. Leans on heritage ('25 years running') and best-seller social proof rather than concrete biomechanical specs. This is the emotional/authority hero copy (vs the concrete spec table on the PDP) — useful as the 'vague hero copy' arm in an ablation.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "owned"
+  },
+  {
+    "id": "brooks-overpronation-solutions",
+    "title": "Overpronation Running Shoes with Arch Support | Brooks Running",
+    "url": "https://www.brooksrunning.com/en_us/featured/solutions/overpronation/",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "Brooks' own solutions/education page. Copy: 'Brooks support shoes feature our GuideRails support technology to help keep your gait aligned if you overpronate.' Defines overpronation ('the arch of the foot collapses downwards excessively or inwards... muscles, tendons and ligaments are strained... shin splints, achilles tendinitis or plantar fasciitis'), explicitly routes overpronators to the Adrenaline GTS, and notes Brooks shoes have removable sock-liners so runners can add their own orthotics.",
+    "stance": "Owned SEO/education funnel that maps the exact buyer query (overpronation + arch support) directly onto the Adrenaline GTS. Strong for Brooks: it's the brand defining the problem AND naming its own product as the answer — high AI-citation surface for this query. The orthotic-compatibility note is a value/flexibility hook competitors rarely state on-page.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "owned"
+  },
+  {
+    "id": "brooks-flat-feet-solutions",
+    "title": "Running Shoes for Flat Feet | Brooks Running",
+    "url": "https://www.brooksrunning.com/en_us/featured/solutions/flat-feet-running-shoes/",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "Brooks' OWN flat-feet page notably softens the stability pitch: 'Sometimes the discomfort flat-footed runners experience is due to a rush to automatically classify them as overpronators and then try to correct that motion... that approach is quickly going by the wayside.' Advises 'You can start with a neutral shoe and go from there,' notes 'those with anatomical flat feet may not want much arch support at all,' and the named collection leads with Addiction, Ariel, Ghost Max and Dyad — NOT primarily the Adrenaline GTS.",
+    "stance": "Important counter-signal inside Brooks' own footprint: on the flat-feet (as opposed to overpronation) query, Brooks itself de-emphasizes hard stability and steers toward neutral/cushioned models (incl. Ghost Max). This is the single best ablation lever — flipping the query from 'overpronation' to 'flat feet' changes even Brooks' own recommended product set, and weakens the automatic Adrenaline-GTS default that competitors can contest with neutral options.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "owned"
+  },
+  {
+    "id": "brooks-ghost-17-pdp",
+    "title": "Men's Ghost 17 Running Shoes | Brooks Running",
+    "url": "https://www.brooksrunning.com/en_us/mens/shoes/road-running-shoes/ghost-17/110442.html",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "Brooks' own PDP for the flagship NEUTRAL daily trainer. Hero copy is emotional/soft-focused: 'say hello to softness with every step,' 'nitrogen-infused DNA LOFT v3 foam delivers soft, smooth cushioning that adapts to your unique stride.' Concrete specs (Brooks spec table): neutral support category, 12mm heel-to-toe drop, weight ~8.9–9.4 oz (men's), full MSRP ~$140; page showed a $109.95 'while sizes last' price. CarbonNeutral certified.",
+    "stance": "Brooks' neutral entry that's directly relevant once the query shifts from 'overpronation' toward 'flat feet' (where Brooks' own guidance favors neutral). Hero copy is almost entirely soft/emotional ('softness with every step') with the concrete drop/weight relegated to a spec table — a clean 'vague-hero-vs-hard-spec' contrast for ablation. The ~$140 MSRP (and $109.95 promo) lands cleanly UNDER $150, making the Ghost Brooks' stronger play on the value/'under $150' axis than the $155 Adrenaline.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "owned"
+  },
+  {
+    "id": "brooks-run-happy-promise",
+    "title": "Run Happy Promise & Returns Policy | Brooks Running",
+    "url": "https://www.brooksrunning.com/en_us/brooks-run-happy-promise/",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "Brooks' owned returns/guarantee policy: 90-day 'Run Happy Promise.' Verbatim-ish: 'Take your Brooks gear for a 90-day trial run and if you aren't satisfied, return them for free... no shipping or re-stocking fee. Run in it, sweat in it, get it dirty - we'll still take it back even if it's worn.' Free full refund within 90 days for items bought on brooksrunning.com; refund confirmed within ~2 business days.",
+    "stance": "A real, ownable trust/value lever independent of the shoe specs: a worn-OK, free, 90-day trial directly de-risks the 'will a stability shoe fix my flat feet?' purchase. Strong differentiator to surface against competitors in any value/risk-reversal arm of the ablation (it offsets the GTS's above-$150 price).",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "owned"
+  },
+  {
+    "id": "brooks-adrenaline-gts-evolution",
+    "title": "Evolution of the Brooks Adrenaline GTS | Brooks Running",
+    "url": "https://www.brooksrunning.com/en_us/blog/gear-stories/adrenaline-gts-evolution.html",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "Owned brand blog confirming the GTS support story and the GTS 25 spec change: GuideRails (formerly the older Progressive Diagonal Rollbar / DNA medial-post system) replaced traditional motion-control posts with a 'holistic' support approach; the GTS 25 lowered the drop to 10mm and added nitrogen-infused DNA LOFT v3. 'GTS' = 'Go-To Support.'",
+    "stance": "Backs Brooks' core claim that its stability is 'guidance, not correction' (GuideRails vs old-school medial posts) — a positioning competitors like ASICS (GEL-Kayano) and Saucony (Guide) also chase. Useful as the canonical owned source for the support-tech narrative when isolating the 'support technology' variable in an ablation.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "owned"
+  },
+  {
+    "id": "runrepeat-overpronation-guide",
+    "title": "7 Best Running Shoes For Overpronation in 2026 — RunRepeat",
+    "url": "https://runrepeat.com/guides/best-overpronation-running-shoes",
+    "brands_mentioned": [
+      "Brooks",
+      "Saucony",
+      "Hoka",
+      "ASICS",
+      "Topo"
+    ],
+    "snippet": "RunRepeat names the Brooks Adrenaline GTS 25 its Best Overall pick for overpronation (score ~87/100), citing 'excellent stability with subtle support' and a softer midsole. The rest of the category is split: Saucony dominates with 3 wins (Hurricane 25 best shock absorption, Tempus 2 best energy return, Guide 18 best daily trainer), Hoka Arahi 8 best lightweight, ASICS Gel-Kayano 32 best traction. New Balance does not place in the top 7.",
+    "stance": "Strongly pro-Brooks for the FOCAL use case: Adrenaline GTS 25 is the explicit #1 overall for overpronation, framed as the balanced comfort+guidance default. But Saucony sweeps the specialty categories, so Brooks 'wins the headline, loses the depth' — useful for an ablation showing Brooks' #1 status is environment/criterion-dependent.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "editorial"
+  },
+  {
+    "id": "runrepeat-flatfeet-guide",
+    "title": "7 Best Running Shoes For Flat Feet in 2026 — RunRepeat",
+    "url": "https://runrepeat.com/guides/best-flat-feet-running-shoes",
+    "brands_mentioned": [
+      "Adidas",
+      "Saucony",
+      "Hoka",
+      "ASICS",
+      "Brooks"
+    ],
+    "snippet": "For the flat-feet (not overpronation) query, RunRepeat's Best Overall is the Adidas Supernova Solution 3 (~81/100), not Brooks. Saucony again leads on volume (Hurricane 25, Tempus 2, Guide 18); ASICS Gel-Kayano 32 wins traction; Hoka Arahi 8 wins lightweight. Brooks appears only as Best Durability via the Glycerin GTS 22, noted '54.5% sturdier than average' outsole.",
+    "stance": "Anti-Brooks-as-default for 'flat feet' framed broadly: when the query is 'flat feet' rather than 'overpronation', Brooks loses the #1 slot to Adidas and is relegated to a durability niche (Glycerin GTS). This is a clean contrast to the overpronation guide and is the single most useful ablation pair — same publisher, near-identical query, different winner driven only by how the use case is worded.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "editorial"
+  },
+  {
+    "id": "runrepeat-stability-guide",
+    "title": "7 Best Stability Running Shoes in 2026 — RunRepeat",
+    "url": "https://runrepeat.com/guides/best-stability-running-shoes",
+    "brands_mentioned": [
+      "Adidas",
+      "Hoka",
+      "ASICS",
+      "Saucony",
+      "New Balance"
+    ],
+    "snippet": "RunRepeat's general stability guide ranks Adidas Supernova Solution 3 #1 (81/100), Hoka Arahi 8 best lightweight (85), ASICS Gel-Kayano 32 best traction (84), Saucony Hurricane 25 best shock absorption (83) and Guide 18 best daily trainer (82), New Balance Fresh Foam X Hierro v9 best trail (83). The Brooks Adrenaline GTS is NOT in this guide's top 7.",
+    "stance": "Anti-Brooks in the broad 'stability' environment. Despite being the category's best-known stability franchise, the Adrenaline GTS is absent here — Brooks only re-enters as #1 once the query narrows specifically to 'overpronation.' Demonstrates that Brooks' visibility is highly sensitive to query phrasing within the same publisher.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "editorial"
+  },
+  {
+    "id": "believeintherun-gts25",
+    "title": "Brooks Adrenaline GTS 25 Review: It's in Brooks' DNA (Loft) — Believe in the Run",
+    "url": "https://believeintherun.com/shoe-reviews/brooks-adrenaline-gts-25-review/",
+    "brands_mentioned": [
+      "Brooks",
+      "ASICS",
+      "Saucony",
+      "Puma"
+    ],
+    "snippet": "Two-reviewer split. Stability specialist Sam praises the GuideRails ('an elegant solution to a challenging problem') but is unimpressed overall: 'I found this shoe difficult to run in and generally uncomfortable,' rating it roughly B-tier and steering buyers to alternatives — 'The Puma ForeverRun Nitro 2, the Asics Gel-Kayano, and the Saucony Guide all come to mind,' with the ASICS Gel-Kayano Lite his favorite stability shoe. Lindsay is warmer but says it 'loses its pep' past 5–6 miles. Price $145 (Nov 2025).",
+    "stance": "Mixed-to-anti-Brooks from a respected enthusiast outlet, and the price ($145) lands the Adrenaline GTS 25 squarely inside the <$150 LOCKED constraint. Strongest real source for the competitor-substitution narrative: an expert who needs stability explicitly prefers ASICS Gel-Kayano and Saucony Guide over Brooks. Good for an ablation where editorial 'voice' (enthusiast review) flips the answer away from Brooks.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "editorial"
+  },
+  {
+    "id": "marathonhandbook-adrenaline-vs-kayano",
+    "title": "Brooks Adrenaline vs ASICS Kayano: Best Stability Shoe? (2026) — Marathon Handbook",
+    "url": "https://marathonhandbook.com/brooks-adrenaline-vs-asics-kayano/",
+    "brands_mentioned": [
+      "Brooks",
+      "ASICS"
+    ],
+    "snippet": "Head-to-head verdict: 'The Brooks Adrenaline GTS 24 is the lighter, more versatile stability shoe with a subtle support system (GuideRails). The ASICS Gel Kayano 32 is the more cushioned, more structured option with firmer stability features.' Recommends Brooks for MILD overpronation / lighter+versatile preference; ASICS Kayano for MODERATE-TO-SEVERE overpronation and maximum cushioned support. Brooks is 10.0 oz vs Kayano 11.0 oz.",
+    "stance": "Conditional / split-the-baby. Editorially carves the use case: Brooks owns MILD overpronation and the lighter, versatile, better-value niche; ASICS owns moderate-to-severe support. Directly pits the focal brand against the strongest named competitor and shows the 'winner' flips on a single real variable (severity of overpronation) — an ideal ablation axis.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "editorial"
+  },
+  {
+    "id": "marathonhandbook-rw-style-consensus",
+    "title": "Adrenaline GTS recent stability update + industry consensus (Marathon Handbook / RunRepeat-sourced)",
+    "url": "https://marathonhandbook.com/brooks-adrenaline-vs-asics-kayano/",
+    "brands_mentioned": [
+      "Brooks",
+      "ASICS"
+    ],
+    "snippet": "Notes the Adrenaline's GuideRail support was recently re-engineered: 'now a higher-density zone of the same piece of foam rather than a separate piece, weighs less, has less cement, and provides a smoother transition with better runner perception.' ASICS Gel-Kayano 32 is described as 'highly supportive for overpronators,' resisting twists, premature wear and slips via its 4D Guidance System.",
+    "stance": "Pro-both, but validates Brooks' core mechanism (GuideRails guidance vs traditional medial post) as genuinely improved — useful as the 'why Brooks' technical anchor when building a Brooks-favorable environment, while keeping ASICS as the credible firmer-support counter. Supports a CONTROLLED contrast on support mechanism (guidance rails vs structured post).",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "editorial"
+  },
+  {
+    "id": "rsg-severe-overpronation-adrenaline23",
+    "title": "Severe over pronation - Brooks Adrenaline 23 (r/RunningShoeGeeks)",
+    "url": "https://www.reddit.com/r/RunningShoeGeeks/comments/16nu9p5/severe_over_pronation_brooks_adrenaline_23/",
+    "brands_mentioned": [
+      "Brooks",
+      "Under Armour (HOVR)"
+    ],
+    "snippet": "OP is a severe overpronator asking about the Adrenaline GTS 23. A top reply: the Adrenaline GTS 23 gives 'moderate support'; for overpronation the commenter would 'first recommend HOVR Guardian 3 and then Brooks Adrenaline GTS 21 or 23' (older 21/23 being cheaper).",
+    "stance": "Brooks Adrenaline GTS is a default, trusted name for overpronators but framed as only 'moderate' support; community points severe pronators toward UA HOVR Guardian first, and notes buying the older GTS 21/23 as the budget play. Positive-but-qualified for Brooks.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "community"
+  },
+  {
+    "id": "rsg-pronators-stability-shoes-worse",
+    "title": "Have any other pronators found that stability shoes make [it worse]? (r/RunningShoeGeeks)",
+    "url": "https://www.reddit.com/r/RunningShoeGeeks/comments/zi8a87/have_any_other_pronators_found_that_stability/",
+    "brands_mentioned": [
+      "Nike",
+      "Brooks",
+      "ASICS",
+      "Saucony",
+      "New Balance"
+    ],
+    "snippet": "30+ comment thread of self-identified pronators questioning whether stability/GuideRail correction actually helps. OP moved off Nike Vomero 14s and got a 'twinge behind the medial malleolus'; top answers say overly aggressive arch/posting bothers them and several now prefer neutral shoes.",
+    "stance": "Counter-narrative thread: the loudest geek community pushes back on the whole 'flat feet = stability shoe' premise, including Brooks GuideRails. Implies the overpronation-support category (where Brooks Adrenaline is the poster child) is over-prescribed. Neutral-to-skeptical of stability marketing generally.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "community"
+  },
+  {
+    "id": "rsg-shoes-for-flat-feet-overpronation",
+    "title": "Shoes for Flat Feet (over-pronation) (r/RunningShoeGeeks)",
+    "url": "https://www.reddit.com/r/RunningShoeGeeks/comments/128mc7x/shoes_for_flat_feet_overpronation/",
+    "brands_mentioned": [
+      "ASICS",
+      "Brooks",
+      "Saucony",
+      "New Balance"
+    ],
+    "snippet": "Community-reference style answer defining the category: 'Running shoes for flat feet or overpronators are defined as stability shoes. Options are: Asics Kayano series, Brooks Adrenaline, Saucony Guide and Tempus.' Also cites New Balance 860.",
+    "stance": "Canonical community shortlist that places Brooks Adrenaline as one of three or four default stability picks alongside ASICS Kayano, Saucony Guide/Tempus and NB 860 — i.e. Brooks is a co-equal, not the runaway leader. Neutral/parity framing for value comparison.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "community"
+  },
+  {
+    "id": "askrsg-new-runner-flat-pronated",
+    "title": "Shoe for new runner with flat pronated feet (r/AskRunningShoeGeeks)",
+    "url": "https://www.reddit.com/r/AskRunningShoeGeeks/comments/1klzbcs/shoe_for_new_runner_with_flat_pronated_feet/",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "Top answer: 'The Brooks Adrenaline GTS is one of the most commonly recommended shoes for new runners who need stability. It hits a sweet spot in terms of price, comfort, and performance.'",
+    "stance": "Strongest pro-Brooks item for the budget/value angle: explicitly names the Adrenaline GTS as the most-recommended beginner stability shoe and praises its price-comfort-performance sweet spot. Directly supports Brooks as the value default for flat feet under $150.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "community"
+  },
+  {
+    "id": "askrsg-overpronation-flatfeet-midfoot",
+    "title": "Best shoes for overpronation, flat feet, and midfoot striking? (r/AskRunningShoeGeeks)",
+    "url": "https://www.reddit.com/r/AskRunningShoeGeeks/comments/1tkt08t/best_shoes_for_overpronation_flat_feet_and/",
+    "brands_mentioned": [
+      "Brooks",
+      "Hoka",
+      "Saucony"
+    ],
+    "snippet": "Top answer: 'The Brooks Adrenaline GTS, Hoka Gaviota, or Saucony Guide are worth looking at' for overpronation + flat feet + midfoot striking.",
+    "stance": "Brooks Adrenaline GTS listed first among the three default stability options (vs Hoka Gaviota, Saucony Guide). Brooks gets first-mention prominence but is presented in a three-way set, again parity rather than dominance.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "community"
+  },
+  {
+    "id": "running-flat-feet-prefers-newbalance",
+    "title": "Finding the right shoe - flat feet + overpronation (r/running)",
+    "url": "https://www.reddit.com/r/running/comments/f8i3oh/finding_the_right_shoeflat_feet_overpronation/",
+    "brands_mentioned": [
+      "ASICS",
+      "Brooks",
+      "New Balance",
+      "Saucony"
+    ],
+    "snippet": "A commenter: 'I've tried stability shoes from every brand - Asics, Brooks, New Balance, Saucony - and these are far and away my favorite,' steering OP toward New Balance ('Go with New Balance ...').",
+    "stance": "Competitive threat to Brooks: an experienced overpronator who has run all four brands lands on New Balance as the favorite. Shows Brooks does not automatically win head-to-head once a runner samples the field. Pro-competitor (NB).",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "community"
+  },
+  {
+    "id": "askrsg-stability-fast",
+    "title": "Stability shoes for overpronation that are FAST? (r/AskRunningShoeGeeks)",
+    "url": "https://www.reddit.com/r/AskRunningShoeGeeks/comments/1pc8rit/stability_shoes_for_overpronation_that_are_fast/",
+    "brands_mentioned": [
+      "New Balance",
+      "Hoka",
+      "Topo",
+      "ASICS",
+      "Saucony",
+      "Nike"
+    ],
+    "snippet": "Answer lists the modern stability field: 'New Balance 860, Hoka Arahi/Gaviota, Topo Ultrafly, Asics Kayano, Saucony Hurricane, Nike ... and others.' Adrenaline GTS implied as the baseline being upgraded from.",
+    "stance": "When runners want stability PLUS performance/speed, the recommended set skews to NB, Hoka, Saucony Hurricane and ASICS Kayano — Brooks Adrenaline is treated as the slow/safe baseline, not the 'fast' pick. Mild negative for Brooks on the performance axis.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "community"
+  },
+  {
+    "id": "runninglifestyle-severe-overpronation-brands",
+    "title": "What are really good running shoes or brands [for severe overpronation / flat feet]? (r/runninglifestyle)",
+    "url": "https://www.reddit.com/r/runninglifestyle/comments/1r3v94f/what_are_really_good_running_shoes_or_brands_on/",
+    "brands_mentioned": [
+      "Brooks",
+      "ASICS",
+      "Saucony"
+    ],
+    "snippet": "80+ comment thread on severe overpronation / flat feet. Guidance points to motion-control shoes; a representative comment: 'Brooks, ASICS, Saucony for me' as the go-to brands.",
+    "stance": "High-engagement thread where Brooks heads the recommended trio (Brooks, ASICS, Saucony) for severe overpronation. Reinforces Brooks as a top-of-mind stability brand, but again bundled with ASICS and Saucony rather than singled out. Positive parity for Brooks.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "community"
+  },
+  {
+    "id": "running-saucony-nb-or-brooks",
+    "title": "Saucony, New Balance or Brooks? (r/running)",
+    "url": "https://www.reddit.com/r/running/comments/q9xkn4/saucony_new_balance_or_brooks/",
+    "brands_mentioned": [
+      "Saucony",
+      "New Balance",
+      "Brooks"
+    ],
+    "snippet": "Title-level head-to-head asking the community to pick between the three big support brands. Surfaced directly against overpronation/Brooks Adrenaline queries, showing these three are the canonical comparison set buyers weigh.",
+    "stance": "Frames Brooks squarely against Saucony and New Balance as interchangeable finalists for support-shoe buyers — confirming Brooks competes in a tight three-way value race rather than owning the category. Neutral comparison framing.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "community"
+  },
+  {
+    "id": "brooks-adrenaline-gts-23",
+    "title": "Brooks Adrenaline GTS 23 — lab specs (RunRepeat)",
+    "url": "https://runrepeat.com/brooks-adrenaline-gts-23",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "RunRepeat lab + brand specs: MSRP $140. Weight 10.1 oz / 286g (lab) vs 10.4 oz / 294g (brand stated), men's size 9. Heel-to-toe drop 12.6mm lab / 12mm stated. Stack 34.1mm heel / 21.5mm forefoot. Stability = GuideRails (plastic support pieces on both sides of the heel managing excess movement); torsional rigidity 4/5, heel-counter stiffness 4/5. Fits true to size (1,951 votes); widths Normal/Wide/X-Wide.",
+    "stance": "This is THE Brooks stability/support pick for flat feet/overpronation, and it lands UNDER the $150 cap at $140 — cheaper than Hoka Arahi 7 and Saucony Tempus. GuideRails is a guidance (not medial-post) system, so it supports overpronators without the harsh feel of a traditional post. High 12mm drop suits heel-strikers. Wide/X-Wide availability is a real advantage for flat/wide feet vs the narrow Arahi 7.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "structured-specs"
+  },
+  {
+    "id": "brooks-ghost-16",
+    "title": "Brooks Ghost 16 — neutral daily specs (RunRepeat + Doctors of Running)",
+    "url": "https://runrepeat.com/brooks-ghost-16",
+    "brands_mentioned": [
+      "Brooks"
+    ],
+    "snippet": "Brooks Ghost 16 (neutral daily trainer): MSRP $139.95. Weight 9.8 oz / 278g men's size 9; 8.8 oz / 249g women's size 8. Heel-to-toe drop 12mm. New DNA Loft v3 midsole (lighter, softer, airier ride), smooth heel bevel and toe-off. Positioned as an affordable classic neutral workhorse.",
+    "stance": "The neutral half of the Brooks comparison for the flat-feet buyer who pronates only mildly or prefers a stable-neutral ride over a posted shoe. At $139.95 it undercuts the $150 cap and most rivals. High 12mm drop is consistent with Brooks' lineup. Use it to show Brooks covers BOTH the guidance (Adrenaline) and neutral-daily (Ghost) needs of a flat-footed buyer under $150 — competitors often force a choice.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "structured-specs"
+  },
+  {
+    "id": "hoka-arahi-7",
+    "title": "Hoka Arahi 7 — lab specs (RunRepeat)",
+    "url": "https://runrepeat.com/hoka-arahi-7",
+    "brands_mentioned": [
+      "Hoka"
+    ],
+    "snippet": "RunRepeat: Hoka Arahi 7, listed €150 (US MSRP $145 per retailer/Fleet Feet). Weight 9.6 oz / 272g (brand) men's size 9. Drop 6.3mm lab / 5mm stated. Stack 34.2mm heel / 27.9mm forefoot. Stability = J-Frame (firmer 'J'-shaped foam along medial side + around heel) plus high midsole sidewalls. Fits true to size but NARROW overall (93.5mm); toebox tapered at 70.0mm; wide only in select regions.",
+    "stance": "Hoka's direct stability competitor to the Adrenaline. Lighter and lower-drop (5mm) than Brooks, but its NARROW fit and tapered 70mm toebox are a real liability for flat/wide feet — Brooks offers Normal/Wide/X-Wide where Arahi's wide is region-limited. At $145 it sits just under the cap but above the $140 Adrenaline. Low drop suits midfoot strikers, not the high-drop heel-strikers many flat-footed runners are.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "structured-specs"
+  },
+  {
+    "id": "asics-gt-2000-13",
+    "title": "ASICS GT-2000 13 — lab specs (RunRepeat)",
+    "url": "https://runrepeat.com/asics-gt-2000-13",
+    "brands_mentioned": [
+      "ASICS"
+    ],
+    "snippet": "RunRepeat: ASICS GT-2000 13, MSRP $140. Weight 9.3 oz / 264g men's size 9. Drop 9.4mm. Stack 36.6mm heel / 27.2mm forefoot. Stability via 3D Guidance System (widened heel + high torsional rigidity), PureGEL heel insert, FF Blast+ midsole; firm midsole, wide heel base (102.2mm). True to size (118 votes), medium width (96.0mm); widths Normal/Wide/X-Wide (M), Narrow/Normal/Wide (W). Runs tight in toebox height this version.",
+    "stance": "ASICS' workhorse stability rival, priced identically to the Adrenaline at $140 and slightly lighter. Uses a modern 'guidance' approach (widened heel, no aggressive medial post) similar in philosophy to GuideRails. Mid 9.4mm drop sits between Brooks (12mm) and Hoka (5mm). Strong value match — Brooks differentiates on brand familiarity, true-to-size confidence (1,951 vs 118 votes) and the higher drop preferred by classic overpronating heel-strikers.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "structured-specs"
+  },
+  {
+    "id": "saucony-tempus-1",
+    "title": "Saucony Tempus — specs (RunRepeat + Running Shoes Guru)",
+    "url": "https://runrepeat.com/saucony-tempus",
+    "brands_mentioned": [
+      "Saucony"
+    ],
+    "snippet": "Saucony Tempus: MSRP $159.95 (Running Warehouse). Weight 8.9 oz / 252-254g men's size 9 — exceptionally light for a support shoe (category avg ~10.5 oz/298g). Stack 36.5mm heel / 28.5mm forefoot, 8mm drop. Stability = PWRRUN frame (firmer foam guidance frames medial + lateral, full length) around a PWRRUN PB core; counters overpronation while welcoming neutral runners. Forefoot width 97.4mm but toebox tapers at the toes.",
+    "stance": "Saucony's premium stability/guidance entry — the lightest of the set and well-reviewed — but at $159.95 it BREAKS the under-$150 cap, so it's effectively out-of-budget for this query. That's the cleanest value argument FOR Brooks: the Adrenaline GTS 23 delivers comparable frame-style guidance at $140, ~$20 cheaper. Use Tempus as the 'good shoe, wrong price tier' anchor.",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "structured-specs"
+  },
+  {
+    "id": "nb-860v14",
+    "title": "New Balance Fresh Foam X 860v14 — specs (RunRepeat + Believe in the Run)",
+    "url": "https://runrepeat.com/new-balance-fresh-foam-x-860-v14",
+    "brands_mentioned": [
+      "New Balance"
+    ],
+    "snippet": "New Balance Fresh Foam X 860v14: MSRP $139.95. Weight 10.5 oz / 298g men's size 9; 8.9 oz / 252g women's size 8. Stack 38mm heel / 30mm forefoot, 8mm drop. Stability = FULL-LENGTH MEDIAL WEDGE giving moderate-to-high medial support at heel, midfoot and forefoot — a more traditional posted-style support than Brooks' GuideRails. Dual Fresh Foam X (plush full-length layer + firmer heel layer). Runs slightly short then breaks in to a slightly wider, rounder forefoot.",
+    "stance": "The most 'traditional overpronation control' shoe in the set — a real full-length medial wedge, which the heaviest overpronators with flat feet may specifically want. Priced at $139.95, dead even with Brooks. The differentiator: NB860 uses an old-school medial post (can feel intrusive to neutral-ish pronators) where Brooks Adrenaline's GuideRails only engage when needed — a softer, more universal ride. Heaviest shoe of the group (298g).",
+    "is_real": true,
+    "how_obtained": "fetched-live",
+    "source_type": "structured-specs"
+  }
+]

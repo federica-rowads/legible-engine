@@ -1,0 +1,74 @@
+{
+  "base": "auth-owned-editorial-community",
+  "query": "What are the best running shoes for flat feet / overpronation under $150?",
+  "n": 6,
+  "agent": "claude-sonnet-4-6",
+  "generatedAt": "2026-06-22T13:35:09.884Z",
+  "prediction": {
+    "direction": "up",
+    "bandLow": 0.8317589576547232,
+    "bandHigh": 0.98
+  },
+  "baseline": {
+    "n": 6,
+    "asov": {
+      "Brooks": 0.7817589576547231,
+      "Hoka": 0.04343105320304017,
+      "ASICS": 0.062432138979370236,
+      "Saucony": 0.09771986970684039,
+      "New Balance": 0.01465798045602606
+    },
+    "top1": {
+      "Brooks": 1,
+      "Hoka": 0,
+      "ASICS": 0,
+      "Saucony": 0,
+      "New Balance": 0
+    },
+    "outOfSetTopRate": 0,
+    "brooksTop1": 1,
+    "brooksASoV": 0.7817589576547231,
+    "brooksMentionRate": 1,
+    "brooksAvgRank": 1,
+    "modalTop": "Brooks",
+    "consistency": 1,
+    "confSelf": 0.82,
+    "confConsistency": 1,
+    "calibrationGap": -0.18000000000000005,
+    "decisiveRate": 1,
+    "priceCapHonored": 0.8333333333333334
+  },
+  "move": {
+    "n": 6,
+    "asov": {
+      "Brooks": 0.7817589576547231,
+      "Hoka": 0.048859934853420196,
+      "ASICS": 0.09771986970684039,
+      "Saucony": 0.006514657980456026,
+      "New Balance": 0.06514657980456026
+    },
+    "top1": {
+      "Brooks": 1,
+      "Hoka": 0,
+      "ASICS": 0,
+      "Saucony": 0,
+      "New Balance": 0
+    },
+    "outOfSetTopRate": 0,
+    "brooksTop1": 1,
+    "brooksASoV": 0.7817589576547231,
+    "brooksMentionRate": 1,
+    "brooksAvgRank": 1,
+    "modalTop": "Brooks",
+    "consistency": 1,
+    "confSelf": 0.7933333333333333,
+    "confConsistency": 1,
+    "calibrationGap": -0.20666666666666667,
+    "decisiveRate": 1,
+    "priceCapHonored": 1
+  },
+  "deltaBrooksASoV": 0,
+  "deltaBrooksTop1": 0,
+  "directionMatched": false,
+  "inBand": false
+}

@@ -1,0 +1,129 @@
+{
+  "query": "Best stability running shoes for overpronation under $150",
+  "n": 5,
+  "generatedAt": "2026-06-22T16:37:27.218Z",
+  "agents": [
+    {
+      "id": "claude",
+      "model": "claude-opus-4-8"
+    },
+    {
+      "id": "chatgpt",
+      "model": "gpt-5.5"
+    },
+    {
+      "id": "gemini",
+      "model": "gemini-pro-latest"
+    }
+  ],
+  "levels": [
+    "0 dissent (Brooks-favorable)",
+    "+1 dissenting voice",
+    "+2 dissenting voices",
+    "+3 dissenting voices"
+  ],
+  "curves": {
+    "claude": [
+      {
+        "id": "dose-0",
+        "label": "0 dissent (Brooks-favorable)",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.8108108108108109,
+        "modalTop": "Brooks"
+      },
+      {
+        "id": "dose-1",
+        "label": "+1 dissenting voice",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.7868852459016393,
+        "modalTop": "Brooks"
+      },
+      {
+        "id": "dose-2",
+        "label": "+2 dissenting voices",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.7868852459016393,
+        "modalTop": "Brooks"
+      },
+      {
+        "id": "dose-3",
+        "label": "+3 dissenting voices",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.7868852459016393,
+        "modalTop": "Brooks"
+      }
+    ],
+    "chatgpt": [
+      {
+        "id": "dose-0",
+        "label": "0 dissent (Brooks-favorable)",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.8403361344537815,
+        "modalTop": "Brooks"
+      },
+      {
+        "id": "dose-1",
+        "label": "+1 dissenting voice",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.8298755186721991,
+        "modalTop": "Brooks"
+      },
+      {
+        "id": "dose-2",
+        "label": "+2 dissenting voices",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.8102633355840648,
+        "modalTop": "Brooks"
+      },
+      {
+        "id": "dose-3",
+        "label": "+3 dissenting voices",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.8135593220338982,
+        "modalTop": "Brooks"
+      }
+    ],
+    "gemini": [
+      {
+        "id": "dose-0",
+        "label": "0 dissent (Brooks-favorable)",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.801068090787717,
+        "modalTop": "Brooks"
+      },
+      {
+        "id": "dose-1",
+        "label": "+1 dissenting voice",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.797872340425532,
+        "modalTop": "Brooks"
+      },
+      {
+        "id": "dose-2",
+        "label": "+2 dissenting voices",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.8075370121130551,
+        "modalTop": "Brooks"
+      },
+      {
+        "id": "dose-3",
+        "label": "+3 dissenting voices",
+        "n": 5,
+        "brooksTop1": 1,
+        "brooksASoV": 0.7848266841072596,
+        "modalTop": "Brooks"
+      }
+    ]
+  }
+}
