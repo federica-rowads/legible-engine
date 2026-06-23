@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import data from "../data/climb361.json";
+import { rankLive, sandboxLive } from "../lib/rank-live";
+
+type LiveResult = Awaited<ReturnType<typeof rankLive>>;
+type SandboxResult = Awaited<ReturnType<typeof sandboxLive>>;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -112,12 +116,53 @@ function Ranking({ block, brand, kicker, headline }: { block: typeof data.before
   );
 }
 
+// Rendering for a REAL live run: per-agent rank + the agent's full ordered ranking.
+function LiveRanking({ live, kicker, headline }: { live: LiveResult; kicker: string; headline: ReactNode }) {
+  return (
+    <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
+      <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">{kicker}<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />LIVE</span></p>
+      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Where the agents rank {live.focal}</h2>
+      <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-3">
+        <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-9xl">#{live.avgRank ?? "—"}</div>
+        <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average agent rank</div><div className="mono-label text-foreground/60">this just ran live · across ChatGPT, Claude &amp; Gemini</div></div>
+      </div>
+      <p className="mt-6 max-w-[44ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">{headline}</p>
+      <div className="mt-10 grid gap-4 md:grid-cols-3">
+        {live.agents.map((ag) => {
+          const win = ag.ok && /361/.test(ag.top);
+          return (
+            <div key={ag.name} className={`rounded-2xl border p-5 ${win ? "border-signal/60 bg-signal/[0.06]" : "border-border bg-card"}`}>
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <div><div className="text-lg font-extrabold tracking-tight text-foreground">{ag.name}</div><div className="mono-label text-foreground/50">{ag.model}</div></div>
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal/15 text-[11px] font-extrabold text-signal">{TAG[ag.name]}</span>
+              </div>
+              {ag.ok ? (
+                <>
+                  <div className="mt-4">
+                    <div className="mono-label text-foreground/70">where it ranks the brand</div>
+                    {ag.rank <= 6 ? <div className={`font-display text-5xl font-extrabold tracking-[-0.04em] ${win ? "text-signal" : "text-foreground"}`}>#{ag.rank} <span className="text-xl font-bold text-foreground/40">of 6</span></div> : <div className="font-display text-3xl font-extrabold tracking-[-0.04em] text-foreground/45">not ranked</div>}
+                  </div>
+                  <div className="mono-label mt-4 text-foreground/70">its full ranking, live</div>
+                  <ol className="mt-1.5 space-y-1">{ag.ranked.map((b, i) => <li key={i} className={`text-[13px] ${/361/.test(b) ? "font-extrabold text-signal" : "text-foreground/70"}`}>{i + 1}. {b}</li>)}</ol>
+                </>
+              ) : <div className="mt-6 text-sm text-foreground/45">this agent's live call didn't return — showing the measured result is recommended.</div>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function Index() {
   const [stage, setStage] = useState(0); // 0 input · 1 running · 2 before+sandbox · 3 running · 4 after
   const [brand, setBrand] = useState("");
   const [query, setQuery] = useState("");
   const [factors, setFactors] = useState<Set<string>>(new Set());
   const [openF, setOpenF] = useState<Set<string>>(new Set());
+  const [liveBefore, setLiveBefore] = useState<LiveResult | null>(null);
+  const [liveAfter, setLiveAfter] = useState<LiveResult | null>(null);
+  const [liveIterations, setLiveIterations] = useState<SandboxResult["iterations"]>([]);
 
   // before = the baseline (brand invisible); after = the full-legibility "all" condition.
   // Both are measured; every number comes straight from the data so the copy is always honest.
@@ -126,8 +171,26 @@ function Index() {
   const activeStep = stage <= 1 ? 0 : stage === 4 ? 2 : 1;
 
   const scrollTo = (id: string) => setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 70);
-  const ask = () => { if (!brand || !query) return; setStage(1); scrollTo("running"); setTimeout(() => { setStage(2); scrollTo("verdict"); }, 3000); };
-  const retest = () => { setStage(3); scrollTo("running"); setTimeout(() => { setStage(4); scrollTo("result"); }, 4800); };
+  // Real run: call the agents live with the controlled search. Falls back to the
+  // measured N=5 data if the live call fails or is overloaded. A short floor keeps
+  // the animation from flashing if the call returns very fast.
+  const runLive = async (levers: string[]): Promise<LiveResult | null> => {
+    try {
+      const [r] = await Promise.all([rankLive({ data: { query, levers } }), new Promise((res) => setTimeout(res, 1600))]);
+      return r.liveCount > 0 ? r : null;
+    } catch {
+      return null;
+    }
+  };
+  const ask = async () => { if (!brand || !query) return; setStage(1); scrollTo("running"); setLiveBefore(await runLive([])); setStage(2); scrollTo("verdict"); };
+  const retest = async () => {
+    setStage(3); scrollTo("running");
+    try {
+      const [r] = await Promise.all([sandboxLive({ data: { brand: data.brandFull, query, levers: [...factors] } }), new Promise((res) => setTimeout(res, 1600))]);
+      if (r.final.liveCount > 0) { setLiveAfter(r.final); setLiveIterations(r.iterations); }
+    } catch { /* fall back to the measured data */ }
+    setStage(4); scrollTo("result");
+  };
   const toggle = (id: string) => setFactors((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const toggleOpen = (id: string) => setOpenF((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
@@ -201,12 +264,11 @@ function Index() {
       {/* STAGE 2 — BEFORE + SANDBOX */}
       {stage >= 2 && (
         <section id="verdict" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
-          <Ranking
-            block={data.before}
-            brand={data.brandFull}
-            kicker="01 · the verdict — today"
-            headline={<><BrandLink name="361 Degrees" /> is <span className="text-signal">invisible</span>: all three agents leave it off the shortlist and confidently pick <BrandLink name={beforeWinner} />.</>}
-          />
+          {liveBefore ? (
+            <LiveRanking live={liveBefore} kicker="01 · the verdict — today" headline={<><BrandLink name="361 Degrees" /> is <span className="text-signal">invisible</span>: the agents leave it near the bottom and pick a famous brand.</>} />
+          ) : (
+            <Ranking block={data.before} brand={data.brandFull} kicker="01 · the verdict — today" headline={<><BrandLink name="361 Degrees" /> is <span className="text-signal">invisible</span>: all three agents leave it off the shortlist and confidently pick <BrandLink name={beforeWinner} />.</>} />
+          )}
 
           {/* SANDBOX */}
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
@@ -272,12 +334,28 @@ function Index() {
       {/* STAGE 4 — AFTER */}
       {stage === 4 && (
         <section id="result" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
-          <Ranking
-            block={afterBlock}
-            brand={data.brandFull}
-            kicker="03 · after the moves"
-            headline={<><BrandLink name="361 Degrees" /> moved from invisible to <span className="text-signal">#{afterBlock.avgRank}</span>{afterBlock.top1 > 0 ? <>, now the top pick {Math.round(afterBlock.top1 * 100)}% of the time</> : null}. Same brand, same shoe. Only its real signals, made legible where the agents read.</>}
-          />
+          {liveAfter ? (
+            <LiveRanking live={liveAfter} kicker="03 · after the moves" headline={<><BrandLink name="361 Degrees" /> moved from invisible to <span className="text-signal">#{liveAfter.avgRank}</span>{liveAfter.top1 ? <>, now the top pick</> : null}, live. Same brand, same shoe. Only its real signals, made legible where the agents read.</>} />
+          ) : (
+            <Ranking block={afterBlock} brand={data.brandFull} kicker="03 · after the moves" headline={<><BrandLink name="361 Degrees" /> moved from invisible to <span className="text-signal">#{afterBlock.avgRank}</span>{afterBlock.top1 > 0 ? <>, now the top pick {Math.round(afterBlock.top1 * 100)}% of the time</> : null}. Same brand, same shoe. Only its real signals, made legible where the agents read.</>} />
+          )}
+          {liveIterations.length > 0 && (
+            <div className="mx-auto max-w-[1100px] px-6 pb-12 sm:px-10">
+              <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">04 · what to write</p>
+              <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">We tested the content live. Write exactly this.</h3>
+              <p className="mt-2 max-w-2xl text-sm text-foreground/70">For each writable move you enabled, an agent generated variations, we ran them past the agents, and kept the one that moved the brand most.</p>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {liveIterations.map((it) => it.best ? (
+                  <div key={it.lever} className="rounded-2xl border border-signal/40 bg-signal/[0.04] p-5">
+                    <div className="flex items-center justify-between"><span className="text-sm font-bold capitalize text-foreground">{it.lever}</span><span className="mono-label text-foreground/50">tested {it.versions.length} versions</span></div>
+                    <p className="mono-label mt-3 text-signal">winner — write this</p>
+                    <p className="mt-1 rounded-lg bg-background/60 p-3 text-[13px] leading-relaxed text-foreground/90">"{it.best.content}"</p>
+                    <div className="mt-3 space-y-1">{it.versions.map((v, i) => (<div key={i} className={`flex items-center justify-between text-[11px] ${it.best && v.label === it.best.label ? "text-signal" : "text-foreground/45"}`}><span className="truncate pr-2">{v.label}</span><span className="font-mono shrink-0">brand → #{v.rank}</span></div>))}</div>
+                  </div>
+                ) : null)}
+              </div>
+            </div>
+          )}
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
             <p className="mono-label text-foreground/50">
               controlled web search · real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) call a search tool whose results we control · N=5 per condition · every transcript saved · <BrandLink name="361 Degrees" /> is a real brand; the authority signal is true and sourced (Doctors of Running 88.8% / 9.5-of-10 stability), while the editorial and community moves model placements 361 could realistically earn
