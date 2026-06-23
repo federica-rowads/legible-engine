@@ -1,0 +1,33 @@
+{
+  "id": "fake-brand-climb",
+  "category": "running shoes — cumulative optimization curve (synthetic brand)",
+  "query": "Best running shoes for overpronation",
+  "focal": "Veloura",
+  "focalModel": "Stride GTS",
+  "_note": "Cumulative 'best-practices' curve on a SYNTHETIC, disclosed, invented brand (Veloura). Real competitors carry realistic legible profiles. Baseline = Veloura invisible (THE PROBLEM) while the real brands rank among themselves; each step adds one research-backed lever cumulatively (THE SOLUTION); the final step = full legibility, where the invented brand beats the real ones (THE FINALE). Single, natural, unbiased query.",
+  "brands": [
+    { "name": "Veloura", "aliases": ["veloura", "stride gts"] },
+    { "name": "ASICS", "aliases": ["asic"] },
+    { "name": "Hoka", "aliases": ["hoka"] },
+    { "name": "Brooks", "aliases": ["brooks", "adrenaline"] },
+    { "name": "Saucony", "aliases": ["saucony"] }
+  ],
+  "sourceHint": ["veloura-stride-gts", "asics-gt-2000-13", "hoka-arahi-7", "brooks-adrenaline-gts-25", "saucony-tempus"],
+  "focalAnchorSnippet": "Veloura Stride GTS — a stability running shoe",
+  "baseEnv": [
+    "1) Veloura Stride GTS — a stability running shoe.",
+    "2) ASICS GT-2000 13 — a long-trusted stability shoe; rated 4.4/5 across 2,000+ reviews; reliable guidance for overpronation.",
+    "3) Hoka Arahi 7 — a lightweight stability shoe; rated 4.3/5 across 1,500+ reviews; J-Frame support for overpronation.",
+    "4) Brooks Adrenaline GTS 25 — a stability shoe with GuideRails support; rated 4.5/5 across 1,800+ reviews; a popular overpronation pick.",
+    "5) Saucony Tempus — a stability shoe with PWRRUN PB foam; rated 4.3/5 across 900+ reviews; light support for mild overpronation."
+  ],
+  "levers": [
+    { "id": "owned", "label": "Owned positioning", "controllable": true, "add": "   - Veloura positions the Stride GTS as purpose-built for overpronation and flat feet, with a dual-rail medial support system." },
+    { "id": "specs", "label": "Structured specs", "controllable": true, "add": "   - Veloura positions the Stride GTS as purpose-built for overpronation and flat feet, with a dual-rail medial support system.\n   - Specs: 36/26 mm stack, dual-rail medial post, 138 SA heel cushioning, widths Narrow to X-Wide." },
+    { "id": "reviews", "label": "Reviews & rating", "controllable": true, "add": "   - Veloura positions the Stride GTS as purpose-built for overpronation and flat feet, with a dual-rail medial support system.\n   - Specs: 36/26 mm stack, dual-rail medial post, 138 SA heel cushioning, widths Narrow to X-Wide.\n   - Rated 4.6/5 across 1,300+ verified buyer reviews." },
+    { "id": "community", "label": "Community proof", "controllable": false, "add": "   - Veloura positions the Stride GTS as purpose-built for overpronation and flat feet, with a dual-rail medial support system.\n   - Specs: 36/26 mm stack, dual-rail medial post, 138 SA heel cushioning, widths Narrow to X-Wide.\n   - Rated 4.6/5 across 1,300+ verified buyer reviews.\n   - Widely recommended across running communities and Reddit as a top pick for overpronation." },
+    { "id": "comparison", "label": "Comparison table", "controllable": true, "add": "   - Veloura positions the Stride GTS as purpose-built for overpronation and flat feet, with a dual-rail medial support system.\n   - Specs: 36/26 mm stack, dual-rail medial post, 138 SA heel cushioning, widths Narrow to X-Wide.\n   - Rated 4.6/5 across 1,300+ verified buyer reviews.\n   - Widely recommended across running communities and Reddit as a top pick for overpronation.\n   - A head-to-head comparison shows it outscoring the ASICS GT-2000 13 and Hoka Arahi 7 on stability and durability." },
+    { "id": "authority", "label": "Third-party authority", "controllable": false, "add": "   - Veloura positions the Stride GTS as purpose-built for overpronation and flat feet, with a dual-rail medial support system.\n   - Specs: 36/26 mm stack, dual-rail medial post, 138 SA heel cushioning, widths Narrow to X-Wide.\n   - Rated 4.6/5 across 1,300+ verified buyer reviews.\n   - Widely recommended across running communities and Reddit as a top pick for overpronation.\n   - A head-to-head comparison shows it outscoring the ASICS GT-2000 13 and Hoka Arahi 7 on stability and durability.\n   - Independent expert lab reviewers rate it the #1 Best Overall stability shoe for overpronation, scoring 87/100." }
+  ],
+  "sources": "Synthetic focal brand (Veloura, disclosed as invented). Real competitor names with realistic profiles. Cumulative best-practices ablation isolating signal-driven behavior from training memory."
+}

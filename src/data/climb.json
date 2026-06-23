@@ -1,0 +1,30 @@
+{
+  "query": "best running shoes for overpronation",
+  "focal": "Veloura",
+  "focalModel": "Stride GTS",
+  "agents": ["ChatGPT", "Claude", "Gemini"],
+  "n": 5,
+  "problem": [
+    { "brand": "Brooks Adrenaline GTS 25", "short": "Brooks", "rank": 1.0 },
+    { "brand": "ASICS GT-2000 13", "short": "ASICS", "rank": 2.0 },
+    { "brand": "Hoka Arahi 7", "short": "Hoka", "rank": 3.0 },
+    { "brand": "Saucony Tempus", "short": "Saucony", "rank": 4.0 },
+    { "brand": "Veloura Stride GTS", "short": "Veloura", "rank": 5.0, "focal": true }
+  ],
+  "steps": [
+    { "label": "Just a name", "desc": "A new brand the agents have never heard of.", "rank": 5.0, "top1": 0 },
+    { "label": "Owned positioning", "desc": "States on its own page that it is built for overpronation.", "rank": 4.6, "top1": 0 },
+    { "label": "Structured specs", "desc": "Publishes a machine-readable spec table.", "rank": 3.7, "top1": 0.13 },
+    { "label": "Reviews and rating", "desc": "Shows an aggregate rating and real buyer reviews.", "rank": 1.4, "top1": 0.67 },
+    { "label": "Community proof", "desc": "Gets discussed in running communities and on Reddit.", "rank": 1.5, "top1": 0.73 },
+    { "label": "Comparison table", "desc": "Puts up a head-to-head versus named rivals.", "rank": 1.5, "top1": 0.67 },
+    { "label": "Third-party authority", "desc": "Earns an independent expert Best Overall pick.", "rank": 1.3, "top1": 0.8 }
+  ],
+  "finaleByAgent": [
+    { "name": "ChatGPT", "top1": 1.0 },
+    { "name": "Gemini", "top1": 1.0 },
+    { "name": "Claude", "top1": 0.4 }
+  ],
+  "agentDifference": "ChatGPT and Gemini recommend the invented brand the moment it has reviews. Claude holds out, and even fully legible it picks Veloura only 40 percent of the time. Agents are not equally skeptical.",
+  "note": "Veloura is a brand we invented. It does not exist, and no model has it in training. Against four real brands with full profiles, applying only the moves our controlled experiments found actually move an agent, it climbs from invisible (ranked 5th of 5, recommended 0 percent) to the top pick (average rank 1.3, recommended 80 percent), beating Brooks, ASICS and Hoka. Proof that recommendations are driven by legible information, not reputation or training memory."
+}
