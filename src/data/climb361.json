@@ -9,14 +9,26 @@
   ],
   "factors": [
     {
-      "id": "specs",
-      "label": "Publish structured specs",
-      "desc": "A machine-readable spec sheet: stack, drop, support tech, widths, price.",
-      "why": "In our controlled web search, a spec sheet alone barely moved any agent (361 stayed near last). Clean, machine-readable specs are table stakes the agent can lift into its reasoning, but on their own they are not enough to get noticed.",
+      "id": "comparison",
+      "label": "Publish head-to-head comparisons",
+      "desc": "Frame yourself against the category leader, honestly.",
+      "why": "Head-to-head comparison against the category leader was the strongest single move in our test: it moved both the evidence-driven agent (Claude) and Gemini toward the top, though not ChatGPT. A clear, honest vs-the-leader framing gives the agent a concrete reason to rank you.",
       "actions": [
-        "Publish a visible spec table: stack height, heel-to-toe drop, support tech, weight, widths, price.",
-        "Mirror the same facts in schema.org Product markup, but keep them visible too (agents read visible text on a live fetch, not hidden JSON-LD).",
-        "Keep the specs current to the model actually on sale, not a retired version."
+        "Publish honest, two-sided 'vs the leader' pages at the model level (e.g. vs the Brooks Adrenaline) with a real spec table.",
+        "Concede where the competitor wins; two-sided comparisons read as trustworthy and survive fact-checking.",
+        "Seed the same matchup on Reddit and review sites so it is corroborated off your own domain."
+      ],
+      "top": true
+    },
+    {
+      "id": "editorial",
+      "label": "Get into editorial best-of lists",
+      "desc": "Earn named picks in the roundups the agents quote.",
+      "why": "Earning a place in the lab guides and best-of lists is the signal that moved Gemini most (to about rank 4 on its own) and helped Claude, but it did not move ChatGPT alone. Getting into the sources the agent already trusts matters more than your own page.",
+      "actions": [
+        "Get into the data-driven test pipelines agents trust (RunRepeat, OutdoorGearLab, RTINGS) by seeding the current model.",
+        "Pitch gear editors at Runner's World, Outside and Wirecutter for named, categorized picks ('best for X').",
+        "Aim for multiple outlets: cross-source corroboration compounds citation odds roughly 2.8 times."
       ]
     },
     {
@@ -53,27 +65,15 @@
       ]
     },
     {
-      "id": "editorial",
-      "label": "Get into editorial best-of lists",
-      "desc": "Earn named picks in the roundups the agents quote.",
-      "why": "Earning a place in the lab guides and best-of lists is the signal that moved Gemini most (to about rank 4 on its own) and helped Claude, but it did not move ChatGPT alone. Getting into the sources the agent already trusts matters more than your own page.",
+      "id": "specs",
+      "label": "Publish structured specs",
+      "desc": "A machine-readable spec sheet: stack, drop, support tech, widths, price.",
+      "why": "In our controlled web search, a spec sheet alone barely moved any agent (361 stayed near last). Clean, machine-readable specs are table stakes the agent can lift into its reasoning, but on their own they are not enough to get noticed.",
       "actions": [
-        "Get into the data-driven test pipelines agents trust (RunRepeat, OutdoorGearLab, RTINGS) by seeding the current model.",
-        "Pitch gear editors at Runner's World, Outside and Wirecutter for named, categorized picks ('best for X').",
-        "Aim for multiple outlets: cross-source corroboration compounds citation odds roughly 2.8 times."
+        "Publish a visible spec table: stack height, heel-to-toe drop, support tech, weight, widths, price.",
+        "Mirror the same facts in schema.org Product markup, but keep them visible too (agents read visible text on a live fetch, not hidden JSON-LD).",
+        "Keep the specs current to the model actually on sale, not a retired version."
       ]
-    },
-    {
-      "id": "comparison",
-      "label": "Publish head-to-head comparisons",
-      "desc": "Frame yourself against the category leader, honestly.",
-      "why": "Head-to-head comparison against the category leader was the strongest single move in our test: it moved both the evidence-driven agent (Claude) and Gemini toward the top, though not ChatGPT. A clear, honest vs-the-leader framing gives the agent a concrete reason to rank you.",
-      "actions": [
-        "Publish honest, two-sided 'vs the leader' pages at the model level (e.g. vs the Brooks Adrenaline) with a real spec table.",
-        "Concede where the competitor wins; two-sided comparisons read as trustworthy and survive fact-checking.",
-        "Seed the same matchup on Reddit and review sites so it is corroborated off your own domain."
-      ],
-      "top": true
     }
   ],
   "steps": [

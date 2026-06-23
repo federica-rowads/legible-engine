@@ -71,7 +71,7 @@ function Ranking({ block, brand, kicker, headline }: { block: typeof data.before
         <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-9xl">#{block.avgRank}</div>
         <div className="pb-2">
           <div className="text-xl font-extrabold text-foreground">average agent rank</div>
-          <div className="mono-label text-foreground/60">across ChatGPT, Claude &amp; Gemini · out of 6 brands</div>
+          <div className="mono-label text-foreground/60">across ChatGPT, Claude &amp; Gemini · lower is better; 7 = left off the shortlist</div>
         </div>
       </div>
       <p className="mt-6 max-w-[44ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">{headline}</p>
@@ -88,15 +88,13 @@ function Ranking({ block, brand, kicker, headline }: { block: typeof data.before
                 </div>
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal/15 text-[11px] font-extrabold text-signal">{TAG[ag.name]}</span>
               </div>
-              <div className="mt-4 flex items-end justify-between">
-                <div>
-                  <div className="mono-label text-foreground/70">rank</div>
-                  <div className={`font-display text-5xl font-extrabold tracking-[-0.04em] ${win ? "text-signal" : "text-foreground"}`}>#{ag.rank}</div>
-                </div>
-                <div className="text-right">
-                  <div className="mono-label text-foreground/70">confidence</div>
-                  <div className="font-mono text-xl font-bold text-foreground">{ag.confidence ?? "—"}%</div>
-                </div>
+              <div className="mt-4">
+                <div className="mono-label text-foreground/70">where it ranks the brand</div>
+                {ag.rank <= 6 ? (
+                  <div className={`font-display text-5xl font-extrabold tracking-[-0.04em] ${win ? "text-signal" : "text-foreground"}`}>#{ag.rank} <span className="text-xl font-bold text-foreground/40">of 6</span></div>
+                ) : (
+                  <div className="font-display text-3xl font-extrabold tracking-[-0.04em] text-foreground/45">not ranked <span className="text-sm font-semibold">(left off the list)</span></div>
+                )}
               </div>
               <p className="mt-4 border-l-2 border-signal/40 pl-3 text-[13px] leading-relaxed text-foreground/85">"{stripMd(ag.quote)}"</p>
               {ag.sources.length > 0 && (

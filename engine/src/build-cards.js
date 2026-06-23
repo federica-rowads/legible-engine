@@ -54,6 +54,14 @@ const data = {
   before: block("baseline"),
   after: block("all"),
 };
+// Order the levers strongest-first by measured pooled lift (data-coherent), and
+// flag the single strongest move as the biggest leverage so it shows up first.
+const lift = Object.fromEntries(data.steps.map((s) => [s.cond, s.avgRank]));
+data.factors.sort((a, b) => (lift[a.id] ?? 9) - (lift[b.id] ?? 9));
+data.factors.forEach((f) => delete f.top);
+if (data.factors[0]) data.factors[0].top = true;
+
 fs.writeFileSync(OUT, JSON.stringify(data, null, 2));
 console.log("wrote", OUT);
+console.log("lever order (strongest first):", data.factors.map((f) => `${f.id}:${lift[f.id]}`).join(", "));
 console.log(JSON.stringify({ before: data.before.avgRank, after: data.after.avgRank, steps: data.steps.map((s) => `${s.cond}:${s.avgRank}`) }, null, 2));
