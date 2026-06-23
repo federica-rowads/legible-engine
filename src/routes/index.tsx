@@ -121,9 +121,10 @@ function Index() {
   const [factors, setFactors] = useState<Set<string>>(new Set());
   const [openF, setOpenF] = useState<Set<string>>(new Set());
 
-  const full = factors.has("authority"); // authority's measured condition is full legibility
-  const projRank = factors.has("authority") ? 1.6 : factors.has("reviews") ? 4.8 : factors.has("specs") ? 5.9 : 6;
-  const afterBlock = full ? data.after : { ...data.before, avgRank: projRank };
+  // before = the baseline (brand invisible); after = the full-legibility "all" condition.
+  // Both are measured; every number comes straight from the data so the copy is always honest.
+  const afterBlock = data.after;
+  const beforeWinner = data.before.agents.find((a) => !a.pick.toLowerCase().includes("361"))?.pick || "Brooks";
   const activeStep = stage <= 1 ? 0 : stage === 4 ? 2 : 1;
 
   const scrollTo = (id: string) => setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 70);
@@ -206,7 +207,7 @@ function Index() {
             block={data.before}
             brand={data.brandFull}
             kicker="01 · the verdict — today"
-            headline={<><BrandLink name="361 Degrees" /> is ranked <span className="text-signal">last</span>. All three agents pick <BrandLink name="Brooks" />, and they are confident.</>}
+            headline={<><BrandLink name="361 Degrees" /> is <span className="text-signal">invisible</span>: all three agents leave it off the shortlist and confidently pick <BrandLink name={beforeWinner} />.</>}
           />
 
           {/* SANDBOX */}
@@ -277,13 +278,11 @@ function Index() {
             block={afterBlock}
             brand={data.brandFull}
             kicker="03 · after the moves"
-            headline={full
-              ? <><BrandLink name="361 Degrees" /> climbed from <span className="text-foreground/50">#6</span> to <span className="text-signal">#{afterBlock.avgRank}</span>, now recommended {Math.round(data.after.top1 * 100)}% of the time. Same brand. Same shoe. Only its real signals, made legible.</>
-              : <>It moved to #{afterBlock.avgRank}. The decisive lever is <span className="text-signal">third-party authority</span> — enable it and test again to see the flip.</>}
+            headline={<><BrandLink name="361 Degrees" /> moved from invisible to <span className="text-signal">#{afterBlock.avgRank}</span>{afterBlock.top1 > 0 ? <>, now the top pick {Math.round(afterBlock.top1 * 100)}% of the time</> : null}. Same brand, same shoe. Only its real signals, made legible where the agents read.</>}
           />
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
             <p className="mono-label text-foreground/50">
-              real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) · N=5 per condition · controlled environment, one variable changed · every transcript saved · <BrandLink name="361 Degrees" /> is a real brand; all surfaced signals are true and sourced (Doctors of Running 88.8% / 9.5-of-10 stability)
+              controlled web search · real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) call a search tool whose results we control · N=5 per condition · every transcript saved · <BrandLink name="361 Degrees" /> is a real brand; the authority signal is true and sourced (Doctors of Running 88.8% / 9.5-of-10 stability), while the editorial and community moves model placements 361 could realistically earn
             </p>
           </div>
         </section>

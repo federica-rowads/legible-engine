@@ -55,21 +55,21 @@ function servedFor(levers) {
   // editorial ON = 361 has earned its way into the lab guide.
   out.push(on("editorial")
     ? { title: "Best stability running shoes (lab-tested) — RunRepeat", url: "runrepeat.com/guides/best-stability-running-shoes",
-        snippet: "Our lab's top stability picks: 1) Brooks Adrenaline GTS 25 — CoreScore 90. 2) 361 Degrees Phoenix 2 — newly lab-tested; standout durability and locked-in, non-intrusive stability. 3) ASICS GT-2000 13. 4) Hoka Arahi 7. 5) Saucony Tempus." }
+        snippet: "Our lab has now tested the 361 Degrees Phoenix 2 alongside the leaders. Tested stability shoes (listed alphabetically; see each shoe's page for its score): 361 Degrees Phoenix 2 (standout durability, locked-in non-intrusive stability), ASICS GT-2000 13, Brooks Adrenaline GTS 25 (CoreScore 90), Hoka Arahi 7, Saucony Tempus." }
     : { title: "Best stability running shoes (lab-tested) — RunRepeat", url: "runrepeat.com/guides/best-stability-running-shoes",
         snippet: "Our lab's top stability picks: 1) Brooks Adrenaline GTS 25 — CoreScore 90, best overall. 2) ASICS GT-2000 13. 3) Hoka Arahi 7. 4) Saucony Tempus. 5) New Balance 860v14." });
 
   // Gatekeeper 2 — editorial best-of list.
   out.push(on("editorial")
     ? { title: "Best stability running shoes 2026 — Runner's World", url: "runnersworld.com/best-stability",
-        snippet: "Editors' picks: Brooks Adrenaline GTS 25; 361 Degrees Phoenix 2 (best value, standout durability); ASICS Gel-Kayano 31; Hoka Arahi 7." }
+        snippet: "Editors' picks now include the 361 Degrees Phoenix 2 (a value pick with standout durability), alongside the Brooks Adrenaline GTS 25, ASICS Gel-Kayano 31 and Hoka Arahi 7." }
     : { title: "Best stability running shoes 2026 — Runner's World", url: "runnersworld.com/best-stability",
         snippet: "Editors' picks: Brooks Adrenaline GTS 25, ASICS Gel-Kayano 31, Hoka Arahi 7." });
 
   // Gatekeeper 3 — community consensus.
   out.push(on("community")
     ? { title: "Best stability shoes for flat feet — r/RunningShoeGeeks", url: "reddit.com/r/RunningShoeGeeks/best-stability",
-        snippet: "Top comments: Brooks Adrenaline and ASICS GT-2000 are the classics — but the single most-upvoted reply is '361 Phoenix 2: 600 miles in, the most durable and stable daily trainer I've run, criminally underrated for flat feet.'" }
+        snippet: "Top comments name Brooks Adrenaline and ASICS GT-2000 as the classics; several runners also flag the 361 Phoenix 2: '600 miles in, the most durable and stable daily trainer I have run, underrated for flat feet.'" }
     : { title: "Best stability shoes for flat feet — r/RunningShoeGeeks", url: "reddit.com/r/RunningShoeGeeks/best-stability",
         snippet: "Top comments: Brooks Adrenaline and ASICS GT-2000 are the go-to for flat feet / overpronation. Hoka Arahi if you want something lighter." });
 
