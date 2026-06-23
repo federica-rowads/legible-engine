@@ -11,7 +11,10 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
-    // SPA mode → emits a static client shell (dist/client) deployable to ANY static host.
-    spa: { enabled: true },
   },
+  // Force the nitro deploy plugin ON and hard-pin the Vercel target. Produces the
+  // Vercel Build Output API v3 in .vercel/output (real SSR + serverless functions,
+  // ready for `vercel deploy --prebuilt`). We are outside a Lovable sandbox, so the
+  // preset override applies instead of the forced-Cloudflare sandbox default.
+  nitro: { preset: "vercel" },
 });
