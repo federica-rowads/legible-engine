@@ -215,7 +215,7 @@ function Index() {
             <div className="rounded-3xl border border-signal/30 bg-signal/[0.05] p-6 sm:p-8">
               <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">02 · the sandbox</p>
               <h3 className="mt-3 max-w-[30ch] text-2xl font-extrabold tracking-tight sm:text-3xl">Apply the moves, then test again.</h3>
-              <p className="mt-3 max-w-2xl text-sm text-foreground/70">Each move is a brand-safe action that makes a true signal legible. Tap any one to expand what it means and how to do it. <span className="font-semibold text-foreground">Measured</span> = we tested its lift on real agents; <span className="font-semibold text-foreground">research-backed</span> = strong evidence, test pending.</p>
+              <p className="mt-3 max-w-2xl text-sm text-foreground/70">Each move makes a signal legible where the agents read. We measured every one's lift on real agents (N=5). <span className="font-semibold text-foreground">Real signal</span> = a true fact 361 already owns, under-surfaced; <span className="font-semibold text-foreground">earnable</span> = a placement or page 361 could realistically earn. Tap any move to see what it means and how to apply it.</p>
 
               <div className="mt-6 grid gap-4 lg:grid-cols-[1.6fr_auto] lg:items-start">
                 <div className="space-y-3">
@@ -234,7 +234,7 @@ function Index() {
                             <div className="flex flex-wrap items-center gap-2">
                               <span className={`font-bold text-foreground ${top ? "text-base sm:text-lg" : "text-sm"}`}>{f.label}</span>
                               {top && <span className="rounded-full bg-signal px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-signal-foreground">★ biggest leverage</span>}
-                              <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide ${tested ? "bg-signal/20 text-signal" : "bg-muted text-foreground/55"}`}>{tested ? "measured" : "research-backed"}</span>
+                              <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide ${tested ? "bg-signal/20 text-signal" : "bg-muted text-foreground/70"}`}>{tested ? "real signal" : "earnable"}</span>
                             </div>
                             <span className="mt-0.5 block font-mono text-[0.72rem] text-foreground/60">{f.desc}</span>
                           </button>
