@@ -11,17 +11,69 @@
     {
       "id": "specs",
       "label": "Publish structured specs",
-      "desc": "A machine-readable spec sheet: stack, drop, support tech, widths, price."
+      "desc": "A machine-readable spec sheet: stack, drop, support tech, widths, price.",
+      "why": "AI agents lift clean, structured facts straight into their reasoning. When a shoe's specs live only in marketing prose, or hidden in code an agent does not parse, there is little concrete for it to compare against rivals. A clear, legible spec sheet gives the agent something to quote.",
+      "actions": [
+        "Publish a visible spec table: stack height, heel-to-toe drop, support tech, weight, widths, price.",
+        "Mirror the same facts in schema.org Product markup, but keep them visible too (agents read visible text on a live fetch, not hidden JSON-LD).",
+        "Keep the specs current to the model actually on sale, not a retired version."
+      ]
     },
     {
       "id": "reviews",
       "label": "Surface reviews & durability",
-      "desc": "Real owner reviews and the standout, lab-tested durability record."
+      "desc": "Real owner reviews and the standout, lab-tested durability record.",
+      "why": "Social proof moves agents measurably: a controlled study found review-volume cues lift Claude's recommendation rate 15 to 22 percent, and agents favor recent reviews and a high rating. 361's real durability record (reviewers call it built like a tank) and owner ratings are strong, but barely surfaced where the agents read.",
+      "actions": [
+        "Run sustained, verified post-purchase review collection across 3+ platforms (Amazon, Zappos, REI), never fabricated.",
+        "Seed each new model with a disclosed wear-tester program so it is not review-less at launch.",
+        "Surface the real, lab-tested durability result as a concrete, quotable stat."
+      ]
     },
     {
       "id": "authority",
+      "top": true,
       "label": "Earn third-party expert authority",
-      "desc": "An independent lab score (Doctors of Running: 88.8%, 9.5/10 stability)."
+      "desc": "An independent lab score (Doctors of Running: 88.8%, 9.5/10 stability).",
+      "why": "This is the single biggest lever we measured. A credible independent lab score flips a brand from \"its own marketing claim\" to \"a fact the model repeats.\" In our experiment, surfacing Doctors of Running's real score (88.8%, 9.5 of 10 for stability) is what carried 361 from rank 6, invisible, to rank 1.6, recommended 60 percent of the time, on real agents. Specs and reviews barely moved it alone.",
+      "actions": [
+        "Earn independent reviews from the labs agents trust (RunRepeat, Doctors of Running, Road Trail Run) by seeding samples of the current model.",
+        "Get a published lab score on the shoe that is actually on sale, not a retired one.",
+        "Pursue 2 to 3 corroborating lab scores so the result reads as consensus, not a one-off."
+      ]
+    },
+    {
+      "id": "community",
+      "label": "Build community proof (Reddit)",
+      "desc": "Be recommended in the running communities the agents read most.",
+      "why": "Reddit is both baked into the agents' training data (OpenAI and Google licensed it) and the single most-cited live source, appearing in roughly 40 percent of AI answers. Fitness and footwear are among the most Reddit-anchored topics, so a brand real runners discuss for a clear use case gets pulled into recommendations.",
+      "actions": [
+        "Run a disclosed brand presence and AMAs in r/RunningShoeGeeks and r/running, answering fit and sizing honestly.",
+        "Seed an honest, FTC-disclosed wear-tester program so real runners post genuine experiences (never sockpuppets).",
+        "Earn placement in community 'best of' wikis by being genuinely best for a niche, such as wide or flat feet."
+      ]
+    },
+    {
+      "id": "editorial",
+      "label": "Get into editorial best-of lists",
+      "desc": "Earn named picks in the roundups the agents quote.",
+      "why": "When an agent answers 'best stability shoe', the best-of roundup is often the literal document it ranks from. The Princeton GEO study found citing reliable third-party sources is the single largest visibility lever (about +40 percent), and third-party content is cited around three times more than a brand's own pages.",
+      "actions": [
+        "Get into the data-driven test pipelines agents trust (RunRepeat, OutdoorGearLab, RTINGS) by seeding the current model.",
+        "Pitch gear editors at Runner's World, Outside and Wirecutter for named, categorized picks ('best for X').",
+        "Aim for multiple outlets: cross-source corroboration compounds citation odds roughly 2.8 times."
+      ]
+    },
+    {
+      "id": "comparison",
+      "label": "Publish head-to-head comparisons",
+      "desc": "Frame yourself against the category leader, honestly.",
+      "why": "Comparison content is the most-cited format (32 to 41 percent of citations), and a controlled study (CORE) showed comparison-reasoning framing promotes a product to the top pick in 77 to 85 percent of cases. ChatGPT and Claude respond most strongly to it.",
+      "actions": [
+        "Publish honest, two-sided 'vs the leader' pages at the model level (e.g. vs the Brooks Adrenaline) with a real spec table.",
+        "Concede where the competitor wins; two-sided comparisons read as trustworthy and survive fact-checking.",
+        "Seed the same matchup on Reddit and review sites so it is corroborated off your own domain."
+      ]
     }
   ],
   "steps": [
