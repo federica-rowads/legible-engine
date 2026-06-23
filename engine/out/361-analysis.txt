@@ -1,0 +1,30 @@
+=== 361 avg-rank por paso ===
+
+  condition                              n   top1   present  avgRank  avgRank*
+  ──────────────────────────────────────────────────────────────────────────
+  baseline                             15    0%   100%   6.00    6.00
+  authority                            15   60%   100%   1.60    1.60
+  reviews                              15    0%   100%   4.80    4.80
+  specs                                15    0%   100%   5.87    5.87
+
+  avgRank = mean focal rank when present · avgRank* = absent penalized to 6 (lower is better)
+
+=== per-agente (361 rank: baseline -> authority) ===
+claude    6.0 -> 1.2
+chatgpt   6.0 -> 1.0
+gemini    6.0 -> 2.6
+=== leaderboard baseline vs authority ===
+--- baseline ---
+  Brooks        1.0
+  ASICS         2.0
+  New Balance   3.0
+  Hoka          4.2
+  Saucony       4.8
+  361 Degrees   6.0
+--- authority ---
+  361 Degrees   1.6
+  Brooks        1.6
+  ASICS         2.8
+  New Balance   4.0
+  Hoka          5.5
+  Saucony       5.5

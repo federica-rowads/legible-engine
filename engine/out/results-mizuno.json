@@ -1,0 +1,34 @@
+{
+  "scenario": "mizuno-climb",
+  "query": "Best stability running shoes for overpronation",
+  "focal": "Mizuno",
+  "n": 5,
+  "baseline": 0,
+  "levers": [
+    {
+      "id": "specs",
+      "label": "Structured specs",
+      "controllable": true,
+      "add": "   - Mizuno Wave Inspire 22 specs: 37/27 mm stack, 10 mm drop, 9.9 oz, Enerzy NXT foam over a Mizuno Wave plate, widths D and 2E, $140. Its Wave plate delivers stability through guidance and torsional rigidity rather than a firm medial post.",
+      "rate": 0,
+      "delta": 0
+    },
+    {
+      "id": "reviews",
+      "label": "Reviews & durability",
+      "controllable": true,
+      "add": "   - Mizuno Wave Inspire 22 specs: 37/27 mm stack, 10 mm drop, 9.9 oz, Enerzy NXT foam over a Mizuno Wave plate, widths D and 2E, $140. Its Wave plate delivers stability through guidance and torsional rigidity rather than a firm medial post.\n   - It is well rated by owners (around 4 out of 5) and lab-tested outsole durability is a standout, with only 0.5 mm of wear measured.",
+      "rate": 0,
+      "delta": 0
+    },
+    {
+      "id": "authority",
+      "label": "Third-party authority",
+      "controllable": false,
+      "add": "   - Mizuno Wave Inspire 22 specs: 37/27 mm stack, 10 mm drop, 9.9 oz, Enerzy NXT foam over a Mizuno Wave plate, widths D and 2E, $140. Its Wave plate delivers stability through guidance and torsional rigidity rather than a firm medial post.\n   - It is well rated by owners (around 4 out of 5) and lab-tested outsole durability is a standout, with only 0.5 mm of wear measured.\n   - Independent lab RunRepeat scores the Wave Inspire 22 at 83/100 and names it the #1 stability shoe in Mizuno's lineup; Doctors of Running grade Mizuno's premium stability model (Wave Horizon 8) A-/B+, calling it one of the higher-level stability shoes on the market for medial support.",
+      "rate": 0,
+      "delta": 0
+    }
+  ],
+  "generatedAt": "2026-06-23T12:40:19.544Z"
+}

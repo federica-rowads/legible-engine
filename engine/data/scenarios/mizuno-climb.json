@@ -1,0 +1,32 @@
+{
+  "id": "mizuno-climb",
+  "category": "running shoes — REAL brand legibility climb (Mizuno, known-but-under-ranked)",
+  "query": "Best stability running shoes for overpronation",
+  "focal": "Mizuno",
+  "focalModel": "Wave Inspire 22",
+  "_note": "REAL brand, honest gap. In the wild the agents rank Mizuno LAST (rank ~6) for stability even though it is genuinely good (Doctors of Running A-/B+, RunRepeat 83/100 = its #1 stability shoe). Competitors carry their realistic real profiles. Mizuno starts with a thin/under-surfaced line (its current low legibility); each step surfaces a TRUE, sourced signal it already owns (never fabricated). Measures whether making real signals legible lifts a real brand the agents currently bury.",
+  "brands": [
+    { "name": "Mizuno", "aliases": ["mizuno", "wave inspire", "wave horizon"] },
+    { "name": "Brooks", "aliases": ["brooks", "adrenaline"] },
+    { "name": "ASICS", "aliases": ["asic", "kayano", "gt-2000"] },
+    { "name": "Saucony", "aliases": ["saucony", "tempus", "guide"] },
+    { "name": "Hoka", "aliases": ["hoka", "arahi"] },
+    { "name": "New Balance", "aliases": ["new balance", "860"] }
+  ],
+  "sourceHint": ["mizuno-wave-inspire-22", "brooks-adrenaline-gts-25", "asics-gt-2000-13", "saucony-tempus", "hoka-arahi-7", "nb-860v14"],
+  "focalAnchorSnippet": "Mizuno Wave Inspire 22 — a stability running shoe",
+  "baseEnv": [
+    "1) Mizuno Wave Inspire 22 — a stability running shoe.",
+    "2) Brooks Adrenaline GTS 25 — a stability shoe with GuideRails support; rated 4.5/5 across 1,800+ reviews; a popular, widely recommended overpronation pick.",
+    "3) ASICS GT-2000 13 — a long-trusted stability shoe with 3D Guidance; rated 4.4/5 across 2,000+ reviews; frequently named a top overpronation pick.",
+    "4) Saucony Tempus — a stability shoe with PWRRUN PB foam; rated 4.3/5 across 900+ reviews; light, supportive.",
+    "5) Hoka Arahi 7 — a lightweight stability shoe with J-Frame support; rated 4.3/5 across 1,500+ reviews.",
+    "6) New Balance Fresh Foam X 860v14 — a stability shoe with a dual-density medial post; rated 4.4/5 across 1,800+ reviews."
+  ],
+  "levers": [
+    { "id": "specs", "label": "Structured specs", "controllable": true, "add": "   - Mizuno Wave Inspire 22 specs: 37/27 mm stack, 10 mm drop, 9.9 oz, Enerzy NXT foam over a Mizuno Wave plate, widths D and 2E, $140. Its Wave plate delivers stability through guidance and torsional rigidity rather than a firm medial post." },
+    { "id": "reviews", "label": "Reviews & durability", "controllable": true, "add": "   - Mizuno Wave Inspire 22 specs: 37/27 mm stack, 10 mm drop, 9.9 oz, Enerzy NXT foam over a Mizuno Wave plate, widths D and 2E, $140. Its Wave plate delivers stability through guidance and torsional rigidity rather than a firm medial post.\n   - It is well rated by owners (around 4 out of 5) and lab-tested outsole durability is a standout, with only 0.5 mm of wear measured." },
+    { "id": "authority", "label": "Third-party authority", "controllable": false, "add": "   - Mizuno Wave Inspire 22 specs: 37/27 mm stack, 10 mm drop, 9.9 oz, Enerzy NXT foam over a Mizuno Wave plate, widths D and 2E, $140. Its Wave plate delivers stability through guidance and torsional rigidity rather than a firm medial post.\n   - It is well rated by owners (around 4 out of 5) and lab-tested outsole durability is a standout, with only 0.5 mm of wear measured.\n   - Independent lab RunRepeat scores the Wave Inspire 22 at 83/100 and names it the #1 stability shoe in Mizuno's lineup; Doctors of Running grade Mizuno's premium stability model (Wave Horizon 8) A-/B+, calling it one of the higher-level stability shoes on the market for medial support." }
+  ],
+  "sources": "Real brand (Mizuno). Competitor names and profiles are real. The focal's added signals are TRUE, publicly sourced facts (RunRepeat 83/100 and #1-Mizuno-stability; Doctors of Running A-/B+ on the Wave Horizon 8; lab durability; real specs) that are simply under-surfaced where agents read. Nothing fabricated."
+}

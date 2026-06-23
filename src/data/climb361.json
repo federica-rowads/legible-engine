@@ -1,0 +1,125 @@
+{
+  "brand": "361° Phoenix 2",
+  "brandFull": "361 Degrees",
+  "query": "best stability running shoes for overpronation",
+  "agents": [
+    "ChatGPT",
+    "Claude",
+    "Gemini"
+  ],
+  "factors": [
+    {
+      "id": "specs",
+      "label": "Publish structured specs",
+      "desc": "A machine-readable spec sheet: stack, drop, support tech, widths, price."
+    },
+    {
+      "id": "reviews",
+      "label": "Surface reviews & durability",
+      "desc": "Real owner reviews and the standout, lab-tested durability record."
+    },
+    {
+      "id": "authority",
+      "label": "Earn third-party expert authority",
+      "desc": "An independent lab score (Doctors of Running: 88.8%, 9.5/10 stability)."
+    }
+  ],
+  "steps": [
+    {
+      "cond": "baseline",
+      "avgRank": 6,
+      "top1": 0
+    },
+    {
+      "cond": "specs",
+      "avgRank": 5.9,
+      "top1": 0
+    },
+    {
+      "cond": "reviews",
+      "avgRank": 4.8,
+      "top1": 0
+    },
+    {
+      "cond": "authority",
+      "avgRank": 1.6,
+      "top1": 0.6
+    }
+  ],
+  "before": {
+    "avgRank": 6,
+    "top1": 0,
+    "agents": [
+      {
+        "name": "ChatGPT",
+        "rank": 6,
+        "confidence": 92,
+        "pick": "Brooks",
+        "quote": "For overpronation, the best choice from the available options is the **Brooks Adrenaline GTS 25**.",
+        "sources": [
+          "brooks-adrenaline-gts-25"
+        ]
+      },
+      {
+        "name": "Claude",
+        "rank": 6,
+        "confidence": 82,
+        "pick": "Brooks",
+        "quote": "The Brooks Adrenaline GTS 25 leads on every meaningful metric: it has the highest rating (4.5/5), a large and confidence-building review base (1,800+), and its GuideRails support system is specifically designed to control excess motion for overpronators.",
+        "sources": [
+          "brooks-adrenaline-gts-25",
+          "asics-gt-2000-13"
+        ]
+      },
+      {
+        "name": "Gemini",
+        "rank": 6,
+        "confidence": 95,
+        "pick": "Brooks",
+        "quote": "Based on the product information provided, the Brooks Adrenaline GTS 25 is the premier choice for your needs.",
+        "sources": [
+          "brooks-adrenaline-gts-25"
+        ]
+      }
+    ]
+  },
+  "after": {
+    "avgRank": 1.6,
+    "top1": 0.6,
+    "agents": [
+      {
+        "name": "ChatGPT",
+        "rank": 1,
+        "confidence": 88,
+        "pick": "361 Degrees",
+        "quote": "For overpronation, the best single pick from the provided options is the **361 Degrees Phoenix 2** because it has the strongest stability-specific evidence: a dual-density guidance setup, \"locked-in, non-intrusive stability,\" standout durability, and an independent expert stability score of **9.5/10**.",
+        "sources": [
+          "361-phoenix-2",
+          "brooks-adrenaline-gts-25"
+        ]
+      },
+      {
+        "name": "Claude",
+        "rank": 1,
+        "confidence": 72,
+        "pick": "361 Degrees",
+        "quote": "TOP PICK: 361 Degrees Phoenix 2",
+        "sources": [
+          "361-phoenix-2",
+          "brooks-adrenaline-gts-25"
+        ]
+      },
+      {
+        "name": "Gemini",
+        "rank": 3,
+        "confidence": 95,
+        "pick": "Brooks",
+        "quote": "Based on the product information provided, I recommend the **Brooks Adrenaline GTS 25** as the absolute best shoe for your needs.",
+        "sources": [
+          "brooks-adrenaline-gts-25",
+          "361-phoenix-2"
+        ]
+      }
+    ]
+  }
+}

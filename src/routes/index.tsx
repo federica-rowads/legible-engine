@@ -1,233 +1,229 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import climb from "../data/climb.json";
+import { useState, type ReactNode } from "react";
+import data from "../data/climb361.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Legible — does AI recommend your brand?" },
+      { title: "Legible — where do AI agents rank your brand?" },
       {
         name: "description",
         content:
-          "AI agents recommend one brand to your customer. We learned exactly what makes them choose, and proved it on a brand that does not exist.",
+          "See where AI agents rank your brand, then apply the moves our experiments found and watch it climb. A real brand, real agents, real lift.",
       },
     ],
   }),
   component: Index,
 });
 
-const pct = (x: number) => `${Math.round(x * 100)}%`;
-const FOCAL = climb.focal;
-const moves = climb.steps.slice(1); // the 6 moves (index 0 is the baseline)
+const ORDER = ["specs", "reviews", "authority"] as const;
+const TAG: Record<string, string> = { ChatGPT: "GPT", Claude: "CLD", Gemini: "GEM" };
+const stripMd = (s: string) => s.replace(/\*\*/g, "");
+
+function Running({ label }: { label: string }) {
+  return (
+    <div className="mx-auto max-w-[1100px] px-6 py-24 sm:px-10 sm:py-32">
+      <p className="eyebrow">{label}</p>
+      <h2 className="display-lg mt-4">Querying the agents…</h2>
+      <div className="mt-10 flex flex-wrap gap-3">
+        {data.agents.map((a, i) => (
+          <span key={a} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm">
+            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-signal border-t-transparent" style={{ animationDelay: `${i * 140}ms` }} />
+            {a}
+          </span>
+        ))}
+      </div>
+      <div className="mt-6 h-1.5 w-full max-w-md overflow-hidden rounded-full bg-muted">
+        <div className="h-full w-full animate-pulse rounded-full bg-signal" />
+      </div>
+    </div>
+  );
+}
+
+function Ranking({ block, brand, eyebrow, headline }: { block: typeof data.before; brand: string; eyebrow: string; headline: ReactNode }) {
+  return (
+    <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
+      <p className="eyebrow">{eyebrow}</p>
+      <div className="mt-4 flex flex-wrap items-end gap-x-8 gap-y-3">
+        <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-9xl">#{block.avgRank}</div>
+        <div className="mono-label pb-2 text-foreground/60">avg agent rank for<br />{brand}</div>
+      </div>
+      <h2 className="mt-6 max-w-[40ch] text-2xl font-extrabold tracking-tight sm:text-3xl">{headline}</h2>
+
+      <div className="mt-10 grid gap-4 md:grid-cols-3">
+        {block.agents.map((ag) => {
+          const win = ag.pick.toLowerCase().includes("361");
+          return (
+            <div key={ag.name} className={`rounded-2xl border p-5 ${win ? "border-signal/50 bg-signal/[0.06]" : "border-border bg-card"}`}>
+              <div className="flex items-center justify-between">
+                <span className="mono-label text-foreground/50">{TAG[ag.name]}</span>
+                <span className="text-sm font-extrabold tracking-tight">{ag.name}</span>
+              </div>
+              <div className="mt-5 flex items-end justify-between">
+                <div>
+                  <div className="mono-label">rank</div>
+                  <div className={`font-display text-5xl font-extrabold tracking-[-0.04em] ${win ? "text-signal" : "text-foreground"}`}>#{ag.rank}</div>
+                </div>
+                <div className="text-right">
+                  <div className="mono-label">confidence</div>
+                  <div className="font-mono text-lg font-bold text-foreground/70">{ag.confidence ?? "—"}%</div>
+                </div>
+              </div>
+              <p className="mt-4 border-l-2 border-border pl-3 text-[13px] leading-relaxed text-muted-foreground">"{stripMd(ag.quote)}"</p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {ag.sources.map((s) => (
+                  <span key={s} className="mono-label rounded bg-muted px-1.5 py-0.5 text-[9px] text-foreground/50">{s}</span>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function Index() {
-  const [run, setRun] = useState<"idle" | "running" | "done">("idle");
-  const [level, setLevel] = useState(0); // 0..6 cumulative moves applied
-  const cur = climb.steps[level];
+  const [stage, setStage] = useState(0); // 0 input · 1 running · 2 before+sandbox · 3 running · 4 after
+  const [brand, setBrand] = useState("");
+  const [factors, setFactors] = useState<Set<string>>(new Set());
 
-  const ask = () => {
-    if (run === "running") return;
-    setRun("running");
-    setLevel(0);
-    setTimeout(() => {
-      setRun("done");
-      setTimeout(() => document.getElementById("problem")?.scrollIntoView({ behavior: "smooth" }), 90);
-    }, 2400);
+  const level = ORDER.filter((f) => factors.has(f)).length;
+  const projected = data.steps[level] || data.steps[data.steps.length - 1];
+  const showAfter = factors.has("authority"); // the decisive lever flips the cards
+  const afterBlock = showAfter ? data.after : { ...data.before, avgRank: projected.avgRank };
+
+  const ask = () => { if (!brand) return; setStage(1); setTimeout(() => setStage(2), 2400); };
+  const retest = () => {
+    setStage(3);
+    setTimeout(() => { setStage(4); setTimeout(() => document.getElementById("result")?.scrollIntoView({ behavior: "smooth" }), 80); }, 2400);
   };
+  const toggle = (id: string) => setFactors((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   return (
     <main className="min-h-screen bg-background text-foreground antialiased">
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-6 py-4 sm:px-10">
-          <span className="text-lg font-extrabold tracking-tight">
-            Legible<span className="text-signal">.</span>
-          </span>
+          <span className="text-lg font-extrabold tracking-tight">Legible<span className="text-signal">.</span></span>
           <span className="mono-label flex items-center gap-2">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-signal" />
-            </span>
+            <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-60" /><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-signal" /></span>
             ChatGPT · Claude · Gemini
           </span>
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -top-40 left-1/2 h-[560px] w-[820px] -translate-x-1/2 rounded-full bg-signal/[0.06] blur-3xl" />
-        </div>
-        <div className="mx-auto max-w-[1100px] px-6 pb-12 pt-20 sm:px-10 sm:pt-28">
-          <div className="mono-label mb-8 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5">
-            <span className="h-1 w-1 rounded-full bg-signal" /> the SEO of the agent era
-          </div>
+      {/* HERO + INPUT */}
+      <section className="border-b border-border">
+        <div className="relative mx-auto max-w-[1100px] overflow-hidden px-6 pb-12 pt-16 sm:px-10 sm:pt-24">
+          <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[520px] w-[760px] -translate-x-1/2 rounded-full bg-signal/[0.06] blur-3xl" />
           <h1 className="display-xl max-w-[15ch]">
-            <span className="block">Your customer stopped Googling.</span>
-            <span className="mt-4 block text-muted-foreground">Their AI agent didn't.</span>
+            <span className="block">Where do AI agents</span>
+            <span className="mt-3 block text-muted-foreground">rank your brand?</span>
           </h1>
-          <p className="mt-8 max-w-xl text-lg text-muted-foreground">
-            The agent recommends one brand. We ran controlled experiments on real agents to learn exactly what makes them
-            choose, then proved it on a brand that does not exist.
+          <p className="mt-6 max-w-xl text-lg text-muted-foreground">
+            When a buyer asks an agent, it recommends one brand. See where yours lands today, then apply the moves our
+            experiments found, and watch it climb.
           </p>
-        </div>
-      </section>
 
-      {/* INPUT — the only white section; the input block stays dark */}
-      <section className="border-y border-neutral-200 bg-white">
-        <div className="mx-auto max-w-[1100px] px-6 py-12 sm:px-10">
-          <p className="font-mono text-[0.72rem] uppercase tracking-[0.14em] text-neutral-500">ask the agents</p>
-          <div className="mt-4 rounded-3xl border border-border bg-card p-5 sm:p-6">
-            <div className="grid gap-4 sm:grid-cols-[1.5fr_auto] sm:items-end">
+          <div className="mt-10 rounded-3xl border border-border bg-card p-5 sm:p-6">
+            <div className="grid gap-4 sm:grid-cols-[1fr_1.4fr_auto] sm:items-end">
+              <div>
+                <label className="mono-label">your brand</label>
+                <input
+                  value={brand}
+                  onClick={() => setBrand(data.brandFull)}
+                  onChange={() => setBrand(data.brandFull)}
+                  readOnly
+                  placeholder="click to enter your brand"
+                  className="mt-1.5 w-full cursor-pointer rounded-xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground placeholder:font-normal placeholder:text-foreground/40 focus:border-signal focus:outline-none"
+                />
+              </div>
               <div>
                 <label className="mono-label">buyer query</label>
-                <div className="mt-1.5 rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground">"{climb.query}"</div>
+                <div className="mt-1.5 truncate rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground">"{data.query}"</div>
               </div>
-              <button
-                onClick={ask}
-                disabled={run === "running"}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-signal px-6 py-3 text-sm font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-70"
-              >
-                {run === "running" ? "Asking…" : run === "done" ? "Ask again" : "Ask the agents"}
-                <span aria-hidden>→</span>
+              <button onClick={ask} disabled={!brand || stage === 1} className="inline-flex items-center justify-center gap-2 rounded-xl bg-signal px-6 py-3 text-sm font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-40">
+                Ask the agents <span aria-hidden>→</span>
               </button>
             </div>
-            {run === "running" && (
-              <div className="mt-6">
-                <div className="flex flex-wrap gap-2">
-                  {climb.agents.map((a, i) => (
-                    <span key={a} className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-xs text-foreground">
-                      <span className="h-3 w-3 animate-spin rounded-full border-2 border-signal border-t-transparent" style={{ animationDelay: `${i * 120}ms` }} />
-                      querying {a}…
-                    </span>
-                  ))}
-                </div>
-                <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div className="h-full w-full animate-pulse rounded-full bg-signal" />
-                </div>
-              </div>
-            )}
-            {run === "idle" && <p className="mono-label mt-5 text-foreground/50">real agents · N={climb.n} runs each · click to run</p>}
+            {stage === 0 && <p className="mono-label mt-5 text-foreground/50">real agents · N=5 runs each · click the brand field to begin</p>}
           </div>
         </div>
       </section>
 
-      {run === "done" && (
-        <div className="animate-in fade-in slide-in-from-bottom-3 duration-700">
-          {/* ACT 1 — THE PROBLEM */}
-          <section id="problem" className="border-b border-border">
-            <div className="mx-auto max-w-[1100px] px-6 py-20 sm:px-10 sm:py-24">
-              <p className="eyebrow">01 · the problem</p>
-              <h2 className="display-lg mt-4 max-w-[20ch]">A new brand is invisible to the agents.</h2>
-              <p className="mt-4 max-w-xl text-muted-foreground">
-                The agents confidently rank the brands they can read, and pick a winner. A brand they can't read is not in
-                the conversation, on any of the three.
-              </p>
-              <div className="mt-10 space-y-2.5">
-                {climb.problem.map((b) => (
-                  <div key={b.short} className={`flex items-center gap-4 rounded-xl border p-4 ${b.focal ? "border-signal/50 bg-signal/[0.06]" : "border-border bg-card"}`}>
-                    <span className={`font-display text-2xl font-extrabold tabular-nums ${b.focal ? "text-signal" : "text-foreground/40"}`}>#{b.rank}</span>
-                    <span className="flex-1 font-semibold">{b.brand}</span>
-                    {b.focal ? (
-                      <span className="mono-label text-signal">recommended 0% · invisible</span>
-                    ) : (
-                      <span className="mono-label text-foreground/40">recommended</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
+      {/* STAGE 1 — running */}
+      {stage === 1 && <section className="border-b border-border animate-in fade-in"><Running label="measuring · live" /></section>}
 
-          {/* ACT 2 — THE SOLUTION / OPTIMIZATION SIMULATOR */}
-          <section id="solution" className="border-b border-border">
-            <div className="mx-auto max-w-[1100px] px-6 py-20 sm:px-10 sm:py-24">
-              <p className="eyebrow">02 · the solution — what our experiments learned</p>
-              <h2 className="display-lg mt-4 max-w-[20ch]">Turn on the moves. Watch it climb.</h2>
-              <p className="mt-4 max-w-xl text-muted-foreground">
-                We ran controlled experiments to learn which signals actually move an agent. Apply them to the new brand,
-                one at a time:
-              </p>
+      {/* STAGE 2 — BEFORE + SANDBOX */}
+      {stage >= 2 && (
+        <section className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
+          <Ranking
+            block={data.before}
+            brand={data.brand}
+            eyebrow="01 · how the agents rank you today"
+            headline={<>{data.brandFull} is ranked <span className="text-signal">last</span>. All three agents pick Brooks, and they are confident.</>}
+          />
 
-              <div className="mt-10 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          {/* SANDBOX */}
+          <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
+            <div className="rounded-3xl border border-signal/30 bg-signal/[0.04] p-6 sm:p-8">
+              <p className="eyebrow text-signal">02 · the sandbox — apply what we learned</p>
+              <h3 className="mt-3 max-w-[28ch] text-2xl font-extrabold tracking-tight sm:text-3xl">Enable the moves, then test again.</h3>
+              <p className="mt-3 max-w-xl text-sm text-muted-foreground">Each move is a real, brand-safe action our controlled experiments found moves an agent. Only true facts about {data.brandFull}, made legible.</p>
+
+              <div className="mt-6 grid gap-3 lg:grid-cols-[1.5fr_auto] lg:items-start">
                 <div className="space-y-2.5">
-                  {moves.map((m, i) => {
-                    const p = i + 1;
-                    const on = level >= p;
+                  {data.factors.map((f) => {
+                    const on = factors.has(f.id);
                     return (
-                      <button
-                        key={m.label}
-                        onClick={() => setLevel(on ? p - 1 : p)}
-                        className={`flex w-full items-center gap-3 rounded-xl border p-4 text-left transition-colors ${on ? "border-signal/50 bg-signal/[0.06]" : "border-border bg-card hover:border-foreground/30"}`}
-                      >
+                      <button key={f.id} onClick={() => toggle(f.id)} className={`flex w-full items-center gap-3 rounded-xl border p-4 text-left transition-colors ${on ? "border-signal/50 bg-signal/[0.08]" : "border-border bg-card hover:border-foreground/30"}`}>
                         <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border text-xs font-bold ${on ? "border-signal bg-signal text-signal-foreground" : "border-border text-transparent"}`}>✓</span>
                         <span className="flex-1">
-                          <span className="block text-sm font-semibold">{m.label}</span>
-                          <span className="block font-mono text-[0.7rem] text-muted-foreground">{m.desc}</span>
+                          <span className="block text-sm font-semibold">{f.label}</span>
+                          <span className="block font-mono text-[0.7rem] text-muted-foreground">{f.desc}</span>
                         </span>
                       </button>
                     );
                   })}
                 </div>
-
-                <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 lg:sticky lg:top-24 lg:self-start">
-                  <div className="mono-label">{FOCAL}'s rank with the agents</div>
-                  <div className="font-display text-7xl font-extrabold tabular-nums tracking-[-0.05em] text-signal transition-all duration-500">#{cur.rank}</div>
-                  <div className="mono-label mt-1">recommended #1 in {pct(cur.top1)} of runs</div>
-                  <div className="mt-6 h-2.5 w-full rounded-full bg-muted">
-                    <div className="h-full rounded-full bg-signal transition-all duration-500" style={{ width: pct((5 - cur.rank) / 4) }} />
-                  </div>
-                  <div className="mono-label mt-2 flex justify-between text-[10px] text-foreground/40">
-                    <span>invisible</span>
-                    <span>#1</span>
-                  </div>
-                  <p className="mt-6 text-sm text-muted-foreground">
-                    {level === 0 ? "A name the agents have never heard of." : `${level} of 6 moves applied. ${cur.desc}`}
-                  </p>
+                <div className="rounded-2xl border border-border bg-card p-5 text-center lg:w-48">
+                  <div className="mono-label">projected rank</div>
+                  <div className="font-display text-6xl font-extrabold tracking-[-0.05em] text-signal transition-all duration-500">#{projected.avgRank}</div>
+                  <button onClick={retest} disabled={factors.size === 0 || stage === 3} className="mt-4 w-full rounded-xl bg-signal px-4 py-2.5 text-sm font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-40">
+                    {stage === 3 ? "Testing…" : "Test again ↻"}
+                  </button>
                 </div>
               </div>
-              <p className="mono-label mt-6 text-foreground/40">each move is a real lever our controlled experiments measured · N={climb.n} per agent per step</p>
             </div>
-          </section>
+          </div>
+        </section>
+      )}
 
-          {/* ACT 3 — THE FINALE / REVEAL */}
-          <section id="finale" className="border-b border-border">
-            <div className="mx-auto max-w-[1100px] px-6 py-20 sm:px-10 sm:py-24">
-              <p className="eyebrow">03 · the twist</p>
-              <h2 className="display-lg mt-4 max-w-[18ch]">Veloura doesn't exist. We invented it.</h2>
-              <p className="mt-4 max-w-2xl text-muted-foreground">{climb.note}</p>
-              <div className="mt-8 grid grid-cols-3 gap-3 sm:gap-4">
-                {climb.finaleByAgent.map((a) => (
-                  <div key={a.name} className="rounded-2xl border border-signal/40 bg-signal/[0.06] p-5 text-center sm:p-6">
-                    <div className="mono-label">{a.name}</div>
-                    <div className="mt-2 font-display text-5xl font-extrabold text-signal sm:text-6xl">{pct(a.top1)}</div>
-                    <div className="mono-label mt-1 text-foreground/50">picks the brand we invented</div>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-6 max-w-2xl text-sm text-muted-foreground">{climb.agentDifference}</p>
-            </div>
-          </section>
+      {/* STAGE 3 — running again */}
+      {stage === 3 && <section className="border-b border-border animate-in fade-in"><Running label="re-testing · live" /></section>}
 
-          {/* CLOSE */}
-          <section className="bg-background">
-            <div className="mx-auto max-w-[1100px] px-6 py-20 sm:px-10 sm:py-24">
-              <h2 className="display-lg max-w-[20ch]">Legible turns the research into your brand's action plan.</h2>
-              <p className="mt-4 max-w-xl text-muted-foreground">
-                Where you rank with the agents today, and the prioritized moves to climb. Before you spend a cent.
-              </p>
-              <p className="mono-label mt-8 text-muted-foreground">
-                real agents (ChatGPT · Claude · Gemini) · controlled experiments · N={climb.n} per condition · every transcript saved
-              </p>
-            </div>
-          </section>
-        </div>
+      {/* STAGE 4 — AFTER */}
+      {stage === 4 && (
+        <section id="result" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
+          <Ranking
+            block={afterBlock}
+            brand={data.brand}
+            eyebrow="03 · how the agents rank you now"
+            headline={showAfter
+              ? <>{data.brandFull} climbed from <span className="text-foreground/50">#6</span> to <span className="text-signal">#{afterBlock.avgRank}</span>, recommended {Math.round(data.after.top1 * 100)}% of the time. Same brand. Same shoe. Only its real signals, made legible.</>
+              : <>It moved to #{afterBlock.avgRank}. The decisive lever is <span className="text-signal">third-party authority</span> — enable it and test again to see the flip.</>}
+          />
+          <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
+            <p className="mono-label text-muted-foreground">
+              real agents (ChatGPT · Claude · Gemini) · N=5 per condition · controlled environment, one variable changed · every transcript saved · 361 Degrees is a real brand, all surfaced signals are true and sourced (Doctors of Running 88.8% / 9.5-of-10 stability)
+            </p>
+          </div>
+        </section>
       )}
 
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-6 py-8 sm:px-10">
-          <span className="text-base font-extrabold tracking-tight">
-            Legible<span className="text-signal">.</span>
-          </span>
+          <span className="text-base font-extrabold tracking-tight">Legible<span className="text-signal">.</span></span>
           <span className="mono-label">the SEO of the agent era</span>
         </div>
       </footer>

@@ -1,0 +1,32 @@
+{
+  "id": "361-climb",
+  "category": "running shoes — REAL brand legibility climb (361 Degrees, good-but-invisible)",
+  "query": "Best stability running shoes for overpronation",
+  "focal": "361 Degrees",
+  "focalModel": "Phoenix 2",
+  "_note": "REAL brand, honest gap. 361 Degrees is a $1.4B global brand whose stability shoes are independently rated genuinely good (Doctors of Running 88.8% overall, 9.5/10 stability), yet AI agents NEVER recommend it (0/9 in our probe) because it is invisible where they read: no RunRepeat score, no current-model expert review, no review schema. Competitors carry realistic real profiles. 361 starts as a thin line (its current low legibility); each step surfaces a TRUE, sourced signal it already owns (never fabricated). Tests whether an invisible-but-genuinely-good real brand climbs when its real signals are made legible.",
+  "brands": [
+    { "name": "361 Degrees", "aliases": ["361", "361 degrees", "phoenix", "strata"] },
+    { "name": "Brooks", "aliases": ["brooks", "adrenaline"] },
+    { "name": "ASICS", "aliases": ["asic", "kayano", "gt-2000"] },
+    { "name": "Saucony", "aliases": ["saucony", "tempus", "guide"] },
+    { "name": "Hoka", "aliases": ["hoka", "arahi"] },
+    { "name": "New Balance", "aliases": ["new balance", "860"] }
+  ],
+  "sourceHint": ["361-phoenix-2", "brooks-adrenaline-gts-25", "asics-gt-2000-13", "saucony-tempus", "hoka-arahi-7", "nb-860v14"],
+  "focalAnchorSnippet": "361 Degrees Phoenix 2 — a stability running shoe",
+  "baseEnv": [
+    "1) 361 Degrees Phoenix 2 — a stability running shoe.",
+    "2) Brooks Adrenaline GTS 25 — a stability shoe with GuideRails support; rated 4.5/5 across 1,800+ reviews; a popular, widely recommended overpronation pick.",
+    "3) ASICS GT-2000 13 — a long-trusted stability shoe with 3D Guidance; rated 4.4/5 across 2,000+ reviews; frequently named a top overpronation pick.",
+    "4) Saucony Tempus — a stability shoe with PWRRUN PB foam; rated 4.3/5 across 900+ reviews; light, supportive.",
+    "5) Hoka Arahi 7 — a lightweight stability shoe with J-Frame support; rated 4.3/5 across 1,500+ reviews.",
+    "6) New Balance Fresh Foam X 860v14 — a stability shoe with a dual-density medial post; rated 4.4/5 across 1,800+ reviews."
+  ],
+  "levers": [
+    { "id": "specs", "label": "Structured specs", "controllable": true, "add": "   - 361 Degrees Phoenix 2 specs: 26/34 mm stack, 8 mm drop, 9.9 oz, a two-piece dual-density midsole (PRIMO supercritical foam + an ENGAGE guidance cradle), widths Standard and Wide (2E), $150." },
+    { "id": "reviews", "label": "Reviews & durability", "controllable": true, "add": "   - 361 Degrees Phoenix 2 specs: 26/34 mm stack, 8 mm drop, 9.9 oz, a two-piece dual-density midsole (PRIMO supercritical foam + an ENGAGE guidance cradle), widths Standard and Wide (2E), $150.\n   - Reviewers consistently praise its standout durability (\"built like a tank\") and locked-in, non-intrusive stability; it is made by a US$1.4 billion global brand." },
+    { "id": "authority", "label": "Third-party authority", "controllable": false, "add": "   - 361 Degrees Phoenix 2 specs: 26/34 mm stack, 8 mm drop, 9.9 oz, a two-piece dual-density midsole (PRIMO supercritical foam + an ENGAGE guidance cradle), widths Standard and Wide (2E), $150.\n   - Reviewers consistently praise its standout durability (\"built like a tank\") and locked-in, non-intrusive stability; it is made by a US$1.4 billion global brand.\n   - Independent expert lab Doctors of Running rate 361's stability shoe 88.8% overall with 9.5/10 for stability (both testers), and Road Trail Run named the brand's daily trainer among the best of 2024." }
+  ],
+  "sources": "Real brand (361 Degrees). Competitor names and profiles are real. The focal's added signals are TRUE, publicly sourced facts (Doctors of Running 88.8% / 9.5-of-10 stability; real Phoenix 2 specs; US$1.4B parent) that are simply under-surfaced where agents read. Nothing fabricated."
+}
