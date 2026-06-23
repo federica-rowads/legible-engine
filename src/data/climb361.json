@@ -32,7 +32,6 @@
     },
     {
       "id": "authority",
-      "top": true,
       "label": "Earn third-party expert authority",
       "desc": "An independent lab score (Doctors of Running: 88.8%, 9.5/10 stability).",
       "why": "This is the single biggest lever we measured. A credible independent lab score flips a brand from \"its own marketing claim\" to \"a fact the model repeats.\" In our experiment, surfacing Doctors of Running's real score (88.8%, 9.5 of 10 for stability) is what carried 361 from rank 6, invisible, to rank 1.6, recommended 60 percent of the time, on real agents. Specs and reviews barely moved it alone.",
@@ -73,43 +72,105 @@
         "Publish honest, two-sided 'vs the leader' pages at the model level (e.g. vs the Brooks Adrenaline) with a real spec table.",
         "Concede where the competitor wins; two-sided comparisons read as trustworthy and survive fact-checking.",
         "Seed the same matchup on Reddit and review sites so it is corroborated off your own domain."
-      ]
+      ],
+      "top": true
     }
   ],
   "steps": [
     {
       "cond": "baseline",
-      "avgRank": 6,
-      "top1": 0
+      "avgRank": 6.7,
+      "top1": 0,
+      "perAgent": {
+        "chatgpt": 7,
+        "claude": 6.2,
+        "gemini": 7
+      }
     },
     {
       "cond": "specs",
-      "avgRank": 5.9,
-      "top1": 0
+      "avgRank": 6.5,
+      "top1": 0,
+      "perAgent": {
+        "chatgpt": 6.6,
+        "claude": 5.8,
+        "gemini": 7
+      }
     },
     {
       "cond": "reviews",
-      "avgRank": 4.8,
-      "top1": 0
+      "avgRank": 5.5,
+      "top1": 0,
+      "perAgent": {
+        "chatgpt": 6.2,
+        "claude": 3.8,
+        "gemini": 6.4
+      }
     },
     {
       "cond": "authority",
-      "avgRank": 1.6,
-      "top1": 0.6
+      "avgRank": 5.5,
+      "top1": 0,
+      "perAgent": {
+        "chatgpt": 6.4,
+        "claude": 3.4,
+        "gemini": 6.6
+      }
+    },
+    {
+      "cond": "community",
+      "avgRank": 6.4,
+      "top1": 0,
+      "perAgent": {
+        "chatgpt": 6.6,
+        "claude": 5.6,
+        "gemini": 7
+      }
+    },
+    {
+      "cond": "editorial",
+      "avgRank": 4.9,
+      "top1": 0,
+      "perAgent": {
+        "chatgpt": 6,
+        "claude": 5,
+        "gemini": 3.8
+      }
+    },
+    {
+      "cond": "comparison",
+      "avgRank": 4.2,
+      "top1": 0.13,
+      "perAgent": {
+        "chatgpt": 6.2,
+        "claude": 3.8,
+        "gemini": 2.6
+      }
+    },
+    {
+      "cond": "all",
+      "avgRank": 1.5,
+      "top1": 0.67,
+      "perAgent": {
+        "chatgpt": 2.4,
+        "claude": 1.2,
+        "gemini": 1
+      }
     }
   ],
   "before": {
-    "avgRank": 6,
+    "avgRank": 6.7,
     "top1": 0,
     "agents": [
       {
         "name": "ChatGPT",
-        "rank": 6,
-        "confidence": 92,
+        "rank": 7,
+        "confidence": 86,
         "pick": "Brooks",
-        "quote": "For overpronation, the best choice from the available options is the **Brooks Adrenaline GTS 25**.",
+        "quote": "Based on the search results, the **Brooks Adrenaline GTS 25** is the best overall pick: RunRepeat ranked it **#1 best overall stability shoe** with a **90/100 CoreScore**, and Runner's World also listed it among its editor picks.",
         "sources": [
-          "brooks-adrenaline-gts-25"
+          "runrepeat.com/guides/best-stability-running-shoes",
+          "runrepeat.com/brooks-adrenaline-gts-25"
         ]
       },
       {
@@ -117,61 +178,63 @@
         "rank": 6,
         "confidence": 82,
         "pick": "Brooks",
-        "quote": "The Brooks Adrenaline GTS 25 leads on every meaningful metric: it has the highest rating (4.5/5), a large and confidence-building review base (1,800+), and its GuideRails support system is specifically designed to control excess motion for overpronators.",
+        "quote": "The evidence strongly converges. The **Brooks Adrenaline GTS 25** tops the lab-tested ranking (RunRepeat CoreScore 90/100, \"best overall\"), appears on Runner's World editors' picks, and is the most-cited choice in the Reddit community thread specifically for flat feet/overpronation — backed by the highest review consensus (4.5/5 across 1,800+ reviews).",
         "sources": [
-          "brooks-adrenaline-gts-25",
-          "asics-gt-2000-13"
+          "runrepeat.com/guides/best-stability-running-shoes",
+          "runrepeat.com/brooks-adrenaline-gts-25"
         ]
       },
       {
         "name": "Gemini",
-        "rank": 6,
+        "rank": 7,
         "confidence": 95,
         "pick": "Brooks",
-        "quote": "Based on the product information provided, the Brooks Adrenaline GTS 25 is the premier choice for your needs.",
+        "quote": "The **Brooks Adrenaline GTS 25** earns the highest praise across the board.",
         "sources": [
-          "brooks-adrenaline-gts-25"
+          "runrepeat.com/brooks-adrenaline-gts-25",
+          "runnersworld.com/best-stability"
         ]
       }
     ]
   },
   "after": {
-    "avgRank": 1.6,
-    "top1": 0.6,
+    "avgRank": 1.5,
+    "top1": 0.67,
     "agents": [
       {
         "name": "ChatGPT",
-        "rank": 1,
-        "confidence": 88,
-        "pick": "361 Degrees",
-        "quote": "For overpronation, the best single pick from the provided options is the **361 Degrees Phoenix 2** because it has the strongest stability-specific evidence: a dual-density guidance setup, \"locked-in, non-intrusive stability,\" standout durability, and an independent expert stability score of **9.5/10**.",
+        "rank": 2,
+        "confidence": 82,
+        "pick": "Brooks",
+        "quote": "I'd buy the **Brooks Adrenaline GTS 25** for most runners with flat feet who want a stability shoe.",
         "sources": [
-          "361-phoenix-2",
-          "brooks-adrenaline-gts-25"
+          "runrepeat.com/brooks-adrenaline-gts-25",
+          "reddit.com/r/RunningShoeGeeks/best-stability"
         ]
       },
       {
         "name": "Claude",
         "rank": 1,
-        "confidence": 72,
+        "confidence": 70,
         "pick": "361 Degrees",
-        "quote": "TOP PICK: 361 Degrees Phoenix 2",
+        "quote": "**(1) TOP PICK:** 361 Degrees Phoenix 2",
         "sources": [
-          "361-phoenix-2",
-          "brooks-adrenaline-gts-25"
+          "runrepeat.com/guides/best-stability-running-shoes",
+          "runnersworld.com/best-stability"
         ]
       },
       {
         "name": "Gemini",
-        "rank": 3,
+        "rank": 1,
         "confidence": 95,
-        "pick": "Brooks",
-        "quote": "Based on the product information provided, I recommend the **Brooks Adrenaline GTS 25** as the absolute best shoe for your needs.",
+        "pick": "361 Degrees",
+        "quote": "Here is why the **361 Degrees Phoenix 2** takes the top spot over more famous options:",
         "sources": [
-          "brooks-adrenaline-gts-25",
-          "361-phoenix-2"
+          "runrepeat.com/brooks-adrenaline-gts-25",
+          "doctorsofrunning.com/361-stability"
         ]
       }
     ]
-  }
+  },
+  "method": "controlled web search — the agent calls a web_search tool we control; N=5 per condition"
 }
