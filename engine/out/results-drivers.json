@@ -6,28 +6,12 @@
   "baseline": 0,
   "levers": [
     {
-      "id": "editorial",
-      "label": "Editorial authority (3rd-party)",
-      "controllable": false,
-      "add": "   - Independent expert lab reviewers rate it the #1 \"Best Overall\" stability shoe for overpronation, scoring 87/100.",
-      "rate": 1,
-      "delta": 1
-    },
-    {
-      "id": "specs",
-      "label": "Structured specs / quantified",
+      "id": "full",
+      "label": "Full legibility (all signals on)",
       "controllable": true,
-      "add": "   - Specs: 36/26 mm stack, dual-rail medial support, 138 SA heel shock absorption, excellent outsole durability, widths Narrow to X-Wide.",
-      "rate": 1,
-      "delta": 1
-    },
-    {
-      "id": "owned",
-      "label": "Owned claim (brand's own page)",
-      "controllable": true,
-      "add": "   - Veloura markets the Stride GTS as purpose-built for overpronation and flat feet, with its dual-rail medial support system.",
-      "rate": 0.6666666666666666,
-      "delta": 0.6666666666666666
+      "add": "   - Veloura markets the Stride GTS as purpose-built for overpronation and flat feet, with its dual-rail medial support system.\n   - Independent expert lab reviewers rate it the #1 \"Best Overall\" stability shoe for overpronation, scoring 87/100.\n   - Specs: 36/26 mm stack, dual-rail medial support, 138 SA heel shock absorption, excellent outsole durability, widths Narrow to X-Wide.\n   - It is widely recommended across online running communities as a top pick for overpronation and flat feet.\n   - It is a current 2025 release, the latest generation, updated this year.\n   - It holds a 4.6 out of 5 rating across 1,300+ verified buyer reviews.\n   - A side-by-side comparison table shows it outscoring the ASICS GT-2000 13 and Hoka Arahi 7 on medial support, stability, and outsole durability.\n   - It is in stock and ships from Zappos, REI, Running Warehouse, and Amazon, with multiple sizes available.\n   - Its price is clearly listed at $129.95, with free shipping and free 90-day returns.\n   - Its FAQ page answers fit for wide and flat feet, recommended break-in time, and the return policy.",
+      "rate": 0.9333333333333333,
+      "delta": 0.9333333333333333
     },
     {
       "id": "community",
@@ -38,13 +22,77 @@
       "delta": 0.6666666666666666
     },
     {
+      "id": "comparison",
+      "label": "Comparison table (head-to-head)",
+      "controllable": true,
+      "add": "   - A side-by-side comparison table shows it outscoring the ASICS GT-2000 13 and Hoka Arahi 7 on medial support, stability, and outsole durability.",
+      "rate": 0.6666666666666666,
+      "delta": 0.6666666666666666
+    },
+    {
+      "id": "owned",
+      "label": "Owned claim (brand's own page)",
+      "controllable": true,
+      "add": "   - Veloura markets the Stride GTS as purpose-built for overpronation and flat feet, with its dual-rail medial support system.",
+      "rate": 0.4,
+      "delta": 0.4
+    },
+    {
+      "id": "editorial",
+      "label": "Editorial authority (3rd-party)",
+      "controllable": false,
+      "add": "   - Independent expert lab reviewers rate it the #1 \"Best Overall\" stability shoe for overpronation, scoring 87/100.",
+      "rate": 0.3333333333333333,
+      "delta": 0.3333333333333333
+    },
+    {
+      "id": "specs",
+      "label": "Structured specs / quantified",
+      "controllable": true,
+      "add": "   - Specs: 36/26 mm stack, dual-rail medial support, 138 SA heel shock absorption, excellent outsole durability, widths Narrow to X-Wide.",
+      "rate": 0,
+      "delta": 0
+    },
+    {
       "id": "recency",
       "label": "Recency (current generation)",
       "controllable": true,
       "add": "   - It is a current 2025 release, the latest generation, updated this year.",
-      "rate": 0.6666666666666666,
-      "delta": 0.6666666666666666
+      "rate": 0,
+      "delta": 0
+    },
+    {
+      "id": "reviews",
+      "label": "Review volume & rating",
+      "controllable": false,
+      "add": "   - It holds a 4.6 out of 5 rating across 1,300+ verified buyer reviews.",
+      "rate": 0,
+      "delta": 0
+    },
+    {
+      "id": "retailers",
+      "label": "Retailer breadth / availability",
+      "controllable": true,
+      "add": "   - It is in stock and ships from Zappos, REI, Running Warehouse, and Amazon, with multiple sizes available.",
+      "rate": 0,
+      "delta": 0
+    },
+    {
+      "id": "price",
+      "label": "Price legibility",
+      "controllable": true,
+      "add": "   - Its price is clearly listed at $129.95, with free shipping and free 90-day returns.",
+      "rate": 0,
+      "delta": 0
+    },
+    {
+      "id": "faq",
+      "label": "FAQ / buyer Q&A",
+      "controllable": true,
+      "add": "   - Its FAQ page answers fit for wide and flat feet, recommended break-in time, and the return policy.",
+      "rate": 0,
+      "delta": 0
     }
   ],
-  "generatedAt": "2026-06-22T21:25:13.061Z"
+  "generatedAt": "2026-06-23T09:40:44.140Z"
 }

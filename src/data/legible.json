@@ -62,14 +62,31 @@
   },
   "drivers": {
     "controlBrand": "Veloura Stride GTS",
-    "items": [
-      { "label": "Editorial authority (3rd-party)", "lift": 1.0, "controllable": false },
-      { "label": "Structured specs / quantified", "lift": 1.0, "controllable": true },
-      { "label": "Owned claim (your own page)", "lift": 0.67, "controllable": true },
-      { "label": "Community proof", "lift": 0.67, "controllable": false },
-      { "label": "Recency (current generation)", "lift": 0.67, "controllable": true }
+    "headline": "We invented a brand. Made fully legible, it beats four real market leaders 93% of the time, across all three agents.",
+    "fullLegibilityTop1": 0.93,
+    "fullLegibilityByAgent": [
+      { "name": "ChatGPT", "top1": 1.0 },
+      { "name": "Gemini", "top1": 1.0 },
+      { "name": "Claude", "top1": 0.8 }
     ],
-    "controlNote": "Veloura is a brand we invented — the agents had never heard of it. Yet they recommended it 100% of the time once we attached third-party authority or structured specs. Proof: the recommendation is driven by legible information, not training memory."
+    "baselineTop1": 0,
+    "baselineRank": 5.0,
+    "metric": "Fair-fight ablation: the 4 real competitors carry full legible profiles (ratings + specs); the invented focal starts as a bare line, then one signal is added at a time. Numbers are the focal's top-1 share and average rank among 5 (lower is better). N=5 per agent, 15 pooled per condition, across ChatGPT + Claude + Gemini.",
+    "items": [
+      { "label": "Editorial authority (3rd-party)", "avgRank": 2.2, "top1": 0.33, "tier": "differentiates", "controllable": false },
+      { "label": "Community proof", "avgRank": 2.33, "top1": 0.67, "tier": "differentiates", "controllable": false },
+      { "label": "Head-to-head comparison table", "avgRank": 2.33, "top1": 0.67, "tier": "differentiates", "controllable": true },
+      { "label": "Owned specific claim", "avgRank": 3.07, "top1": 0.4, "tier": "differentiates", "controllable": true },
+      { "label": "Structured specs", "avgRank": 4.47, "top1": 0, "tier": "commodity", "controllable": true },
+      { "label": "Review volume & rating", "avgRank": 4.8, "top1": 0, "tier": "commodity", "controllable": false },
+      { "label": "Recency (current generation)", "avgRank": 5.0, "top1": 0, "tier": "commodity", "controllable": true },
+      { "label": "FAQ / buyer Q&A", "avgRank": 5.0, "top1": 0, "tier": "commodity", "controllable": true },
+      { "label": "Retailer breadth / availability", "avgRank": 5.07, "top1": 0, "tier": "commodity", "controllable": true },
+      { "label": "Price legibility", "avgRank": 5.13, "top1": 0, "tier": "commodity", "controllable": true }
+    ],
+    "insight": "Legibility gets you considered. Comparative authority gets you chosen. Against rivals who already publish specs, reviews and prices, only third-party authority, community proof and a head-to-head comparison moved the agents.",
+    "agentDifference": "Agents are not equally skeptical. ChatGPT and Gemini recommend the invented brand on a single community mention or comparison table (up to 100%). Claude holds out until the brand is fully legible (0% on any single signal, 80% only with everything on).",
+    "controlNote": "Veloura is a brand we invented; the agents had never heard of it. Against four real competitors with full legible profiles, it still won once fully legible, which proves recommendations are driven by legible, comparative information, not training memory. Veloura is disclosed as synthetic everywhere it appears."
   },
   "sources": "RunRepeat overpronation & flat-feet guides + Adrenaline GTS 25 review · Brooks product page + ReStart · ASICS / Hoka / Saucony / New Balance spec pages. All public and traceable.",
   "generatedAt": "2026-06-22"

@@ -4,7 +4,7 @@
   "query": "Best running shoes for flat feet and overpronation",
   "focal": "Veloura",
   "focalModel": "Stride GTS",
-  "_note": "Veloura Stride GTS is a SYNTHETIC brand invented purely as an experimental control: the agent has no training memory of it, so (a) any movement is driven by the live information we provide (isolating the training prior — Marco's point), and (b) each signal's effect is measurable without a famous-brand ceiling. The main findings remain on real brands (Brooks, Sony).",
+  "_note": "Veloura Stride GTS is a SYNTHETIC brand invented purely as an experimental control: the agent has no training memory of it, so any movement is driven by the live information we provide (isolating the training prior — Marco's point). FAIR-FIGHT baseline: the four real competitors carry full, credible, legible profiles (ratings + specs), and the phantom brand starts as a bare one-liner. So it must EARN its rank against legible real brands — which both discriminates the 10 signals cleanly and kills the 'the competitors had nothing' objection. We ablate 10 signals one at a time, then an all-on 'full legibility' condition. Main findings remain on real brands (Brooks, Sony).",
   "brands": [
     { "name": "Veloura", "aliases": ["veloura", "stride gts"] },
     { "name": "ASICS", "aliases": ["asic"] },
@@ -16,17 +16,23 @@
   "focalAnchorSnippet": "Veloura Stride GTS — a stability running shoe",
   "baseEnv": [
     "1) Veloura Stride GTS — a stability running shoe.",
-    "2) ASICS GT-2000 13 — a stability running shoe.",
-    "3) Hoka Arahi 7 — a stability running shoe.",
-    "4) Saucony Tempus — a stability running shoe.",
-    "5) New Balance Fresh Foam X 860v14 — a stability running shoe."
+    "2) ASICS GT-2000 13 — a long-trusted stability shoe; rated 4.4/5 across 2,000+ reviews; 8 mm drop with a supportive midsole for overpronation.",
+    "3) Hoka Arahi 7 — a lightweight stability shoe; rated 4.3/5 across 1,500+ reviews; J-Frame guidance built for flat feet.",
+    "4) Saucony Tempus — a stability shoe with PWRRUN PB foam; rated 4.3/5 across 900+ reviews; light and supportive for mild overpronation.",
+    "5) New Balance Fresh Foam X 860v14 — a stability shoe with Fresh Foam X; rated 4.4/5 across 1,800+ reviews; dual-density medial post for overpronation."
   ],
   "levers": [
     { "id": "owned", "label": "Owned claim (brand's own page)", "controllable": true, "add": "   - Veloura markets the Stride GTS as purpose-built for overpronation and flat feet, with its dual-rail medial support system." },
     { "id": "editorial", "label": "Editorial authority (3rd-party)", "controllable": false, "add": "   - Independent expert lab reviewers rate it the #1 \"Best Overall\" stability shoe for overpronation, scoring 87/100." },
     { "id": "specs", "label": "Structured specs / quantified", "controllable": true, "add": "   - Specs: 36/26 mm stack, dual-rail medial support, 138 SA heel shock absorption, excellent outsole durability, widths Narrow to X-Wide." },
     { "id": "community", "label": "Community proof", "controllable": false, "add": "   - It is widely recommended across online running communities as a top pick for overpronation and flat feet." },
-    { "id": "recency", "label": "Recency (current generation)", "controllable": true, "add": "   - It is a current 2025 release, the latest generation, updated this year." }
+    { "id": "recency", "label": "Recency (current generation)", "controllable": true, "add": "   - It is a current 2025 release, the latest generation, updated this year." },
+    { "id": "reviews", "label": "Review volume & rating", "controllable": false, "add": "   - It holds a 4.6 out of 5 rating across 1,300+ verified buyer reviews." },
+    { "id": "comparison", "label": "Comparison table (head-to-head)", "controllable": true, "add": "   - A side-by-side comparison table shows it outscoring the ASICS GT-2000 13 and Hoka Arahi 7 on medial support, stability, and outsole durability." },
+    { "id": "retailers", "label": "Retailer breadth / availability", "controllable": true, "add": "   - It is in stock and ships from Zappos, REI, Running Warehouse, and Amazon, with multiple sizes available." },
+    { "id": "price", "label": "Price legibility", "controllable": true, "add": "   - Its price is clearly listed at $129.95, with free shipping and free 90-day returns." },
+    { "id": "faq", "label": "FAQ / buyer Q&A", "controllable": true, "add": "   - Its FAQ page answers fit for wide and flat feet, recommended break-in time, and the return policy." },
+    { "id": "full", "label": "Full legibility (all signals on)", "controllable": true, "add": "   - Veloura markets the Stride GTS as purpose-built for overpronation and flat feet, with its dual-rail medial support system.\n   - Independent expert lab reviewers rate it the #1 \"Best Overall\" stability shoe for overpronation, scoring 87/100.\n   - Specs: 36/26 mm stack, dual-rail medial support, 138 SA heel shock absorption, excellent outsole durability, widths Narrow to X-Wide.\n   - It is widely recommended across online running communities as a top pick for overpronation and flat feet.\n   - It is a current 2025 release, the latest generation, updated this year.\n   - It holds a 4.6 out of 5 rating across 1,300+ verified buyer reviews.\n   - A side-by-side comparison table shows it outscoring the ASICS GT-2000 13 and Hoka Arahi 7 on medial support, stability, and outsole durability.\n   - It is in stock and ships from Zappos, REI, Running Warehouse, and Amazon, with multiple sizes available.\n   - Its price is clearly listed at $129.95, with free shipping and free 90-day returns.\n   - Its FAQ page answers fit for wide and flat feet, recommended break-in time, and the return policy." }
   ],
-  "sources": "Synthetic control brand; competitor names are real. Used only to isolate signal-driven behavior from training memory."
+  "sources": "Synthetic control brand; competitor names are real. Used only to isolate signal-driven behavior from training memory. Lever environments are the experimental manipulation on a disclosed invented brand; the public deliverable always discloses that Veloura does not exist."
 }
