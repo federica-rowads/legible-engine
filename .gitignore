@@ -36,3 +36,6 @@ dist-ssr
 .env.*
 !.env.example
 .vercel
+
+# Engine research artifacts (large transcripts; regenerated)
+engine/out/
