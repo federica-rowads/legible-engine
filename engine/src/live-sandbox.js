@@ -189,7 +189,18 @@ async function withRetry(fn, label, tries = 7) {
 
 // Full per-lever sweep: baseline + each lever alone + all, per agent, N runs.
 // Saves every verdict to raw JSONL and prints an agent x condition avgRank matrix.
+const LOCK = "out/.sweep.lock";
 async function runSweep(query, agents, n) {
+  // Concurrency guard: never run two sweeps at once (they'd corrupt the raw file).
+  if (fs.existsSync(LOCK) && Date.now() - fs.statSync(LOCK).mtimeMs < 15 * 60 * 1000) { console.error("ABORT: another sweep holds the lock (out/.sweep.lock)"); return; }
+  // Health guard: don't grind through an opus overload — abort cleanly instead.
+  const probe = new Anthropic({ maxRetries: 0 });
+  let ok = 0;
+  for (let i = 0; i < 3; i++) { try { await probe.messages.create({ model: MODEL, max_tokens: 5, messages: [{ role: "user", content: "hi" }] }); ok++; } catch { /* overloaded */ } await sleep(1200); }
+  if (ok === 0) { console.error("ABORT: opus tier overloaded (0/3 health checks) — not running now; re-run when recovered"); return; }
+  console.log(`opus health ${ok}/3 — proceeding`);
+  fs.writeFileSync(LOCK, String(process.pid));
+  try {
   const CONDITIONS = [{ key: "baseline", levers: [] }, ...ALL_LEVERS.map((l) => ({ key: l, levers: [l] })), { key: "all", levers: ALL_LEVERS }];
   const rawPath = "out/raw-sandbox.jsonl";
   fs.writeFileSync(rawPath, "");
@@ -223,6 +234,7 @@ async function runSweep(query, agents, n) {
   console.log(table);
   fs.writeFileSync("out/sandbox-sweep.txt", table);
   console.log("raw -> out/raw-sandbox.jsonl · table -> out/sandbox-sweep.txt");
+  } finally { try { fs.unlinkSync(LOCK); } catch { /* ignore */ } }
 }
 
 async function main() {
