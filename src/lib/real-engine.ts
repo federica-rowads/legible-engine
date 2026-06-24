@@ -12,6 +12,8 @@
 
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 const jsonExtract = (t: string) => t.match(/\{[\s\S]*\}/)?.[0] || "{}";
+// Force a ranked top-10 so position is a clean, intuitive metric ("#7 of 10" / "unranked").
+const topAsk = (q: string) => `Give me a numbered TOP 10 — the ten best — for this shopper: "${q}". Reply with the ranked list of brand or store names, best first, numbered 1 to 10.`;
 
 // One plain Claude JSON call (no tools) — used to extract the brand list from a natural answer.
 async function claudeJSON(system: string, user: string, maxTokens = 800): Promise<string> {
@@ -100,7 +102,7 @@ const matchesFocal = (b: string, token: string) => { const nb = norm(b); return 
 const posOf = (brands: string[], token: string): number | null => { const i = brands.findIndex((b) => matchesFocal(b, token)); return i >= 0 ? i + 1 : null; };
 
 export type RealRun = { agent: string; model: string; ranked: string[]; pos: number | null; ok: boolean; answer?: string };
-export type AgentBaseline = { name: string; model: string; runs: RealRun[]; mentionRate: number; avgPos: number | null; posStdev: number | null };
+export type AgentBaseline = { name: string; model: string; runs: RealRun[]; mentionRate: number; avgPos: number | null; posStdev: number | null; topList: string[] };
 export type RealBaseline = {
   focal: string; focalToken: string; query: string; N: number;
   agents: AgentBaseline[];
@@ -111,7 +113,7 @@ export type RealBaseline = {
 // One real run: native search → extract ordered brands → locate the focal brand.
 async function oneRealRun(agent: typeof AGENTS[number], query: string, token: string): Promise<RealRun> {
   try {
-    const answer = await agent.run(query);
+    const answer = await agent.run(topAsk(query));
     const ranked = await extractBrands(answer);
     return { agent: agent.name, model: agent.model, ranked, pos: posOf(ranked, token), ok: ranked.length > 0, answer: answer.slice(0, 600) };
   } catch {
@@ -133,7 +135,11 @@ export async function runRealBaseline(focal: string, query: string, N = 5): Prom
     const runs = all.filter((r) => r.agent === a.name);
     const ok = runs.filter((r) => r.ok);
     const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);
-    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present) };
+    const okP = ok.filter((r) => r.pos != null);
+    const ap = mean(present) ?? 0;
+    const repr = okP.length ? okP.reduce((b, r) => (Math.abs((r.pos as number) - ap) < Math.abs((b.pos as number) - ap) ? r : b)) : (ok[0] ?? null);
+    const topList = repr ? repr.ranked : [];
+    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present), topList };
   });
 
   const okAll = all.filter((r) => r.ok);
@@ -297,7 +303,7 @@ export type Condition = { label: string; agents: AgentBaseline[]; mentionRate: n
 
 async function oneCtrlRun(agent: typeof CTRL_AGENTS[number], query: string, served: Result[], token: string): Promise<RealRun> {
   try {
-    const answer = await agent.run(query, served);
+    const answer = await agent.run(topAsk(query), served);
     const ranked = await extractBrands(answer);
     return { agent: agent.name, model: agent.model, ranked, pos: posOf(ranked, token), ok: ranked.length > 0, answer: answer.slice(0, 600) };
   } catch {
@@ -313,7 +319,11 @@ async function runCondition(label: string, c: ControlledCorpus, query: string, l
     const runs = all.filter((r) => r.agent === a.name);
     const ok = runs.filter((r) => r.ok);
     const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);
-    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present) };
+    const okP = ok.filter((r) => r.pos != null);
+    const ap = mean(present) ?? 0;
+    const repr = okP.length ? okP.reduce((b, r) => (Math.abs((r.pos as number) - ap) < Math.abs((b.pos as number) - ap) ? r : b)) : (ok[0] ?? null);
+    const topList = repr ? repr.ranked : [];
+    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present), topList };
   });
   const ok = all.filter((r) => r.ok);
   const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);

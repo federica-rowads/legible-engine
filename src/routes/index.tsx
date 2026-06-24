@@ -19,6 +19,8 @@ const STEPS = ["Where you stand", "Apply the moves", "Measure the lift"];
 const TAG: Record<string, string> = { ChatGPT: "GPT", Claude: "CLD", Gemini: "GEM" };
 const AGENT_NAMES = ["ChatGPT", "Claude", "Gemini"];
 const pct = (x: number | null | undefined) => (x == null ? "—" : `${Math.round(x * 100)}%`);
+const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+const isFocalName = (b: string, focal: string) => { const t = norm(focal).split(/\s+/)[0] || norm(focal); const nb = norm(b); return nb.length >= 2 && (nb.includes(t) || t.includes(nb)); };
 
 // The six moves. Writable = the brand publishes the content (we generate & test it);
 // earnable = the brand earns the placement.
@@ -50,78 +52,74 @@ function Running({ label, sub }: { label: string; sub: string }) {
   );
 }
 
-// One agent's result: mention-rate + per-run dots + average position.
-function AgentCard({ name, model, mentionRate, avgPos, posStdev, runs }: { name: string; model: string; mentionRate: number; avgPos: number | null; posStdev?: number | null; runs: { pos: number | null; ok: boolean }[] }) {
-  const win = mentionRate > 0;
+// One agent's result: where it ranks the brand (or "not in its top 10") + its REAL top 10.
+function AgentCard({ a, focal }: { a: Baseline["agents"][number]; focal: string }) {
+  const ranked = a.mentionRate > 0;
   return (
-    <div className={`rounded-2xl border p-5 ${win ? "border-signal/60 bg-signal/[0.06]" : "border-border bg-card"}`}>
+    <div className={`rounded-2xl border p-5 ${ranked ? "border-signal/60 bg-signal/[0.06]" : "border-border bg-card"}`}>
       <div className="flex items-center justify-between border-b border-border/60 pb-3">
-        <div><div className="text-lg font-extrabold tracking-tight text-foreground">{name}</div><div className="mono-label text-foreground/50">{model}</div></div>
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal/15 text-[11px] font-extrabold text-signal">{TAG[name]}</span>
+        <div><div className="text-lg font-extrabold tracking-tight text-foreground">{a.name}</div><div className="mono-label text-foreground/50">{a.model}</div></div>
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal/15 text-[11px] font-extrabold text-signal">{TAG[a.name]}</span>
       </div>
       <div className="mt-4">
-        <div className="mono-label text-foreground/70">recommends the brand</div>
-        <div className={`font-display text-5xl font-extrabold tracking-[-0.04em] ${win ? "text-signal" : "text-foreground/45"}`}>{pct(mentionRate)} <span className="text-base font-bold text-foreground/40">of runs</span></div>
+        <div className="mono-label text-foreground/70">ranks {focal}</div>
+        {ranked
+          ? <div className="font-display text-5xl font-extrabold tracking-[-0.04em] text-signal">#{a.avgPos}<span className="text-base font-bold text-foreground/40"> of 10</span></div>
+          : <div className="font-display text-3xl font-extrabold tracking-[-0.04em] text-foreground/45">not in its top 10</div>}
+        <div className="mono-label mt-1 text-foreground/50">{ranked && a.posStdev ? `±${a.posStdev} · ` : ""}runs: {a.runs.map((r) => (r.pos != null ? `#${r.pos}` : (r.ok ? "–" : "x"))).join(" ")}</div>
       </div>
-      <div className="mt-3 mono-label text-foreground/70">{avgPos != null ? <>avg position <span className="font-bold text-foreground">#{avgPos}</span>{posStdev ? <span className="text-foreground/45"> ±{posStdev}</span> : null} when shown</> : <span className="text-foreground/45">not in its shortlist</span>}</div>
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {runs.map((r, i) => (
-          <span key={i} title={`run ${i + 1}`} className={`flex h-6 min-w-6 items-center justify-center rounded px-1 text-[11px] font-bold ${r.pos != null ? "bg-signal/20 text-signal" : "bg-muted text-foreground/40"}`}>{r.pos != null ? `#${r.pos}` : (r.ok ? "–" : "x")}</span>
-        ))}
+      <div className="mt-4">
+        <div className="mono-label text-foreground/70">its top 10, live</div>
+        <ol className="mt-1.5 space-y-0.5">
+          {a.topList.slice(0, 10).map((b, i) => <li key={i} className={`text-[13px] ${isFocalName(b, focal) ? "font-extrabold text-signal" : "text-foreground/70"}`}>{i + 1}. {b}{isFocalName(b, focal) ? " ← you" : ""}</li>)}
+          {a.topList.length === 0 && <li className="text-[13px] text-foreground/40">(no ranking returned)</li>}
+        </ol>
       </div>
     </div>
   );
 }
 
 function BaselineView({ b }: { b: Baseline }) {
-  const winner = b.competitors[0]?.name;
+  const nRanked = b.agents.filter((a) => a.mentionRate > 0).length;
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">01 · the verdict — today<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH</span></p>
-      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Do the agents recommend {b.focal}?</h2>
+      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Where do the agents rank {b.focal}?</h2>
       <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-3">
-        <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-9xl">{pct(b.mentionRate)}</div>
-        <div className="pb-2"><div className="text-xl font-extrabold text-foreground">of the time, across {b.N} real runs each</div><div className="mono-label text-foreground/60">they searched the web for your buyer's question — we never named the brand</div></div>
+        <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-9xl">{b.avgPos != null ? `#${b.avgPos}` : "—"}</div>
+        <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average rank, when an agent ranks it at all</div><div className="mono-label text-foreground/60">ranked by {nRanked} of 3 agents · {b.N} real runs each · we never named the brand</div></div>
       </div>
-      <p className="mt-6 max-w-[52ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
-        {b.mentionRate === 0
-          ? <><span className="text-signal">{b.focal} is invisible.</span> Not once did an agent recommend it{winner ? <> — they reach for {winner} and the other names below</> : null}.</>
-          : <>{b.focal} shows up <span className="text-signal">{pct(b.mentionRate)}</span> of the time{b.avgPos != null ? <>, around position #{b.avgPos}</> : null}. There is room to climb.</>}
+      <p className="mt-6 max-w-[54ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
+        {nRanked === 0
+          ? <><span className="text-signal">{b.focal} is invisible</span> — not one agent puts it in its top 10. See what they rank instead, below.</>
+          : <>{nRanked} of 3 agents rank {b.focal}{b.avgPos != null ? <>, around <span className="text-signal">#{b.avgPos}</span> of 10</> : null}{nRanked < 3 ? <> — the other {3 - nRanked} leave it off entirely</> : null}.</>}
       </p>
 
       <div className="mt-10 grid gap-4 md:grid-cols-3">
-        {b.agents.map((a) => <AgentCard key={a.name} {...a} />)}
+        {b.agents.map((a) => <AgentCard key={a.name} a={a} focal={b.focal} />)}
       </div>
-
-      {b.competitors.length > 0 && (
-        <div className="mt-8 rounded-2xl border border-border bg-card p-5">
-          <div className="mono-label text-foreground/70">who the agents actually recommend (real, by frequency)</div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {b.competitors.map((c) => <span key={c.name} className="rounded-full border border-border bg-background px-3 py-1 text-sm font-semibold text-foreground/85">{c.name} <span className="text-foreground/40">·{c.mentions}</span></span>)}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
 function LiftView({ l, brand }: { l: Lift; brand: string }) {
-  const c = l.control.mentionRate, t = l.treatment.mentionRate;
+  const cAvg = l.control.avgPos, tAvg = l.treatment.avgPos;
+  const tRanked = l.treatment.agents.filter((a) => a.mentionRate > 0).length;
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">03 · the lift<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />CONTROLLED</span></p>
       <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Apply the moves, and {brand} climbs</h2>
       <div className="mt-8 flex flex-wrap items-end gap-x-6 gap-y-3">
-        <div className="font-display text-6xl font-extrabold leading-none tracking-[-0.05em] text-foreground/40 sm:text-7xl">{pct(c)}</div>
+        <div className="font-display text-5xl font-extrabold leading-none tracking-[-0.05em] text-foreground/40 sm:text-6xl">{cAvg != null ? `#${cAvg}` : "unranked"}</div>
         <div className="pb-3 text-3xl font-extrabold text-signal">→</div>
-        <div className="font-display text-7xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-8xl">{pct(t)}</div>
-        <div className="pb-2"><div className="text-xl font-extrabold text-foreground">of runs now recommend {brand}</div><div className="mono-label text-foreground/60">control = real competitors, brand absent (reproduces reality) · treatment = + your signals</div></div>
+        <div className="font-display text-7xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-8xl">{tAvg != null ? `#${tAvg}` : "—"}</div>
+        <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average rank now · {tRanked} of 3 agents</div><div className="mono-label text-foreground/60">control = real competitors, brand absent (reproduces reality) · treatment = + your signals</div></div>
       </div>
-      <p className="mt-6 max-w-[52ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
-        With its signals made legible, {brand} goes from <span className="text-foreground/55">{pct(c)}</span> to <span className="text-signal">{pct(t)}</span>{l.treatment.avgPos != null ? <>, landing around position #{l.treatment.avgPos}</> : null}.
+      <p className="mt-6 max-w-[54ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
+        With its signals made legible, {brand} goes from <span className="text-foreground/55">{cAvg != null ? `#${cAvg}` : "unranked"}</span> to <span className="text-signal">{tAvg != null ? `#${tAvg}` : "—"}</span>{tRanked ? <> — now ranked by {tRanked} of 3 agents</> : null}.
       </p>
       <div className="mt-10 grid gap-4 md:grid-cols-3">
-        {l.treatment.agents.map((a) => <AgentCard key={a.name} {...a} />)}
+        {l.treatment.agents.map((a) => <AgentCard key={a.name} a={a} focal={brand} />)}
       </div>
     </div>
   );
