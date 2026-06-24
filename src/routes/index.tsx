@@ -93,13 +93,23 @@ const ACTIVITY = [
   "finalizing the shortlist…",
 ];
 
+// Sandbox-run activity: conveys that we draft and test several real wordings, not just one.
+const SANDBOX_ACTIVITY = [
+  "drafting candidate content for each change…",
+  "writing a few different wordings…",
+  "testing each version on the real agents…",
+  "scoring which wording moves you most…",
+  "keeping the strongest version…",
+  "re-running the live search with your proof…",
+];
+
 // One agent's rolling "thinking feed": a window of the last up-to-3 phrases that
 // advances one line at a time. Newest line sits at the bottom (full opacity + spinner);
 // older lines above it fade out. Self-timed: each step schedules the next on a fresh
 // random delay (~1700-3000ms) so the three feeds tick at their own organic rhythm rather
 // than in lockstep, and each starts on a different phrase (offset per column). The card
 // unmounts when the agent's result arrives, so the feed stops naturally via cleanup.
-function ThinkingFeed({ offset }: { offset: number }) {
+function ThinkingFeed({ offset, phrases = ACTIVITY }: { offset: number; phrases?: string[] }) {
   const [tick, setTick] = useState(0);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -110,7 +120,7 @@ function ThinkingFeed({ offset }: { offset: number }) {
     schedule();
     return () => clearTimeout(timer);
   }, []);
-  const phrase = (k: number) => ACTIVITY[((k + offset) % ACTIVITY.length + ACTIVITY.length) % ACTIVITY.length];
+  const phrase = (k: number) => phrases[((k + offset) % phrases.length + phrases.length) % phrases.length];
   const start = Math.max(0, tick - 2);
   const lines: { key: number; text: string }[] = [];
   for (let k = start; k <= tick; k++) lines.push({ key: k, text: phrase(k) });
@@ -155,7 +165,7 @@ function AgentCard({ a, focal }: { a: AgentB; focal: string }) {
           : ranked
             ? <div className="font-display text-5xl font-extrabold tracking-[-0.04em] text-signal">#{a.avgPos}<span className="text-base font-bold text-foreground/40"> of 10</span></div>
             : <div className="font-display text-3xl font-extrabold tracking-[-0.04em] text-foreground/45">not in its top 10</div>}
-        <div className="mono-label mt-1 text-foreground/50">{failed ? "the live call errored, re-test" : `${ranked && a.posStdev ? `±${a.posStdev} · ` : ""}runs: ${a.runs.map((r) => (r.pos != null ? `#${r.pos}` : (r.ok ? "–" : "x"))).join(" ")}`}</div>
+        <div className="mono-label mt-1 text-foreground/50">{failed ? "the live call errored, re-test" : `${a.runs.length} live run${a.runs.length === 1 ? "" : "s"}${ranked ? ` · ${a.runs.filter((r) => r.pos != null).map((r) => `#${r.pos}`).join(", ")}${a.posStdev ? ` (±${a.posStdev})` : ""}` : ""}`}</div>
       </div>
       <div className="mt-4">
         <div className="mono-label text-[0.62rem] text-foreground/40">agent answer</div>
@@ -233,7 +243,10 @@ function LiftView({ bSlots, tSlots, brand, optimizing }: { bSlots: (AgentB | nul
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">03 · after the changes<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH + YOUR CONTENT</span></p>
       <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground duration-700 animate-in fade-in slide-in-from-bottom-3 sm:text-4xl">Apply the changes, and the brand: <span className="italic">{brand}</span> climbs</h2>
       {optimizing ? (
-        <div className="mt-8 flex items-center gap-3"><span className="h-5 w-5 animate-spin rounded-full border-2 border-signal border-t-transparent" /><div className="text-xl font-extrabold text-foreground">Optimizing your content<span className="text-foreground/50"> · generating and scoring the best version</span></div></div>
+        <div className="mt-8">
+          <div className="flex items-center gap-3"><span className="h-5 w-5 animate-spin rounded-full border-2 border-signal border-t-transparent" /><div className="text-xl font-extrabold text-foreground">Simulating your changes<span className="text-foreground/50"> · testing different wordings on the real agents</span></div></div>
+          <div className="mt-4 max-w-md"><ThinkingFeed offset={0} phrases={SANDBOX_ACTIVITY} /></div>
+        </div>
       ) : !allDone ? (
         <RunningHead label="Re-testing live" n={tLoaded.length} />
       ) : (
@@ -379,7 +392,7 @@ function Index() {
             <div className="rounded-3xl border border-signal/30 bg-signal/[0.05] p-6 sm:p-8">
               <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">02 · the sandbox</p>
               <h3 className="mt-3 max-w-[34ch] text-2xl font-extrabold tracking-tight sm:text-3xl">Apply the changes, then test again.</h3>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">Each change is a brand-safe action that improves the results.<br />Tap any one to expand what it means and how to do it.<br /><span className="text-signal">Measured</span> = we tested its lift on real agents; <span className="text-signal">research-backed</span> = strong evidence, test pending.</p>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">Each change is a brand-safe action that improves the results. Tap any one to expand what it means and how to do it.</p>
 
               <div className="mt-6 grid gap-4 lg:grid-cols-[1.6fr_auto] lg:items-start">
                 <div className="space-y-3">
@@ -412,8 +425,8 @@ function Index() {
                   })}
                 </div>
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-6 text-center lg:sticky lg:top-24 lg:w-52">
-                  <button onClick={retest} disabled={factors.size === 0 || !bDone || tPending} className="w-full rounded-xl bg-signal px-4 py-3 text-sm font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-40">{tPending ? "Re-testing…" : !bDone ? "Measuring…" : "Test again ↻"}</button>
-                  <p className="mono-label mt-3 text-foreground/40">re-runs the agents live</p>
+                  <button onClick={retest} disabled={factors.size === 0 || !bDone || tPending} className="w-full rounded-xl bg-signal px-4 py-3 text-sm font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-40">{tPending ? "Simulating…" : "Simulate the changes ↻"}</button>
+                  <p className="mono-label mt-3 text-foreground/40">simulates your changes, live</p>
                 </div>
               </div>
             </div>
@@ -426,7 +439,7 @@ function Index() {
       {stage === 4 && (
         <section id="result" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
           <LiftView bSlots={bSlots} tSlots={tSlots} brand={brand} optimizing={optimizing} />
-          <WriteThis iterations={iterations} />
+          {!tPending && <WriteThis iterations={iterations} />}
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
             <p className="mono-label text-foreground/50">
 two layers, both honest · LAYER 1 (today): real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) really web-search your prompt, brand never named, 2 runs each. This is where you rank right now · LAYER 2 (the lift): the SAME real search, with your optimized content added to what the agents read, so the "after" is anchored to today's reality (no clean room) · the lift assumes your content reaches the agents' search; the generated "write this" is illustrative, verify the facts before publishing
