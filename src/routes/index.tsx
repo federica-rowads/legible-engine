@@ -8,7 +8,7 @@ type Lift = Awaited<ReturnType<typeof liftLive>>;
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Legible — where do AI agents rank your brand?" },
+      { title: "Legible: How do AI agents rank your brand?" },
       { name: "description", content: "See whether AI agents recommend your brand today (real web search), then apply the moves and measure the lift. Real agents, real data, honest." },
     ],
   }),
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 const STEPS = ["Where you stand", "Apply the moves", "Measure the lift"];
 const TAG: Record<string, string> = { ChatGPT: "GPT", Claude: "CLD", Gemini: "GEM" };
 const AGENT_NAMES = ["ChatGPT", "Claude", "Gemini"];
-const pct = (x: number | null | undefined) => (x == null ? "—" : `${Math.round(x * 100)}%`);
+const pct = (x: number | null | undefined) => (x == null ? "n/a" : `${Math.round(x * 100)}%`);
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 const isFocalName = (b: string, focal: string) => { const t = norm(focal).split(/\s+/)[0] || norm(focal); const nb = norm(b); return nb.length >= 2 && (nb.includes(t) || t.includes(nb)); };
 
@@ -33,21 +33,64 @@ const FACTORS = [
   { id: "authority", label: "Independent expert review", desc: "an independent test or expert assessment", writable: false },
 ];
 
-const ACTIVITY = ["searching the web…", "collecting the brand's signals…", "reading the results…", "cross-referencing sources…", "weighing the evidence…", "ranking the options…", "double-checking…", "finalizing…"];
+// Placebo thinking-feed phrases (not wired to real agent state). Agent-reasoning style.
+const ACTIVITY = [
+  "searching the web…",
+  "collecting the brand's signals…",
+  "reading the top results…",
+  "cross-referencing sources…",
+  "checking owner reviews…",
+  "comparing the alternatives…",
+  "weighing the evidence…",
+  "ranking the options…",
+  "double-checking the order…",
+  "finalizing the shortlist…",
+];
+
+// One agent's rolling "thinking feed": a window of the last up-to-3 phrases that
+// advances one line at a time. Newest line sits at the bottom (full opacity + spinner);
+// older lines above it fade out. The phrase stream is offset per column so the three
+// feeds look independent rather than moving in lockstep.
+function ThinkingFeed({ tick, offset }: { tick: number; offset: number }) {
+  const phrase = (k: number) => ACTIVITY[((k + offset) % ACTIVITY.length + ACTIVITY.length) % ACTIVITY.length];
+  // Virtual stream s[0..tick]; show the last 3 entries, newest last.
+  const start = Math.max(0, tick - 2);
+  const lines: { key: number; text: string }[] = [];
+  for (let k = start; k <= tick; k++) lines.push({ key: k, text: phrase(k) });
+  const dim = ["text-foreground/30", "text-foreground/55", "text-foreground"];
+  return (
+    <div className="mt-4 min-h-[4.75rem] space-y-1.5">
+      {lines.map((ln, idx) => {
+        const newest = idx === lines.length - 1;
+        const tone = dim[Math.min(idx + (3 - lines.length), 2)];
+        return (
+          <div key={ln.key} className={`flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.06em] transition-all duration-500 ${tone}`}>
+            {newest && <span className="h-3 w-3 shrink-0 animate-spin rounded-full border-2 border-signal border-t-transparent" />}
+            <span className={newest ? "" : "pl-5"}>{ln.text}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function Running({ label, sub }: { label: string; sub: string }) {
   const [tick, setTick] = useState(0);
-  useEffect(() => { const t = setInterval(() => setTick((x) => x + 1), 1700); return () => clearInterval(t); }, []);
+  // Slow, readable cadence: advance one line about every 2300ms.
+  useEffect(() => { const t = setInterval(() => setTick((x) => x + 1), 2300); return () => clearInterval(t); }, []);
   return (
     <div id="running" className="mx-auto max-w-[1100px] px-6 py-24 sm:px-10 sm:py-28">
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">{label}</p>
       <h2 className="display-lg mt-4">Asking the real agents…</h2>
-      <div className="mt-10 flex flex-col gap-3">
+      <div className="mt-10 grid gap-4 md:grid-cols-3">
         {AGENT_NAMES.map((a, i) => (
-          <span key={a} className="inline-flex items-center gap-3 rounded-full border border-border bg-card px-5 py-3 text-base font-semibold sm:w-[26rem]">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-signal border-t-transparent" style={{ animationDelay: `${i * 200}ms` }} />
-            <span className="w-20">{a}</span>
-            <span className="mono-label text-foreground/45 transition-all">{ACTIVITY[(tick + i) % ACTIVITY.length]}</span>
-          </span>
+          <div key={a} className="rounded-2xl border border-border bg-card p-5">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <div className="text-lg font-extrabold tracking-tight text-foreground">{a}</div>
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal/15 text-[11px] font-extrabold text-signal">{TAG[a]}</span>
+            </div>
+            <ThinkingFeed tick={tick} offset={i * 3} />
+          </div>
         ))}
       </div>
       <div className="mt-8 h-1.5 w-full max-w-lg overflow-hidden rounded-full bg-muted"><div className="h-full w-full animate-pulse rounded-full bg-signal" /></div>
@@ -58,7 +101,7 @@ function Running({ label, sub }: { label: string; sub: string }) {
 
 // One agent's result: where it ranks the brand (or "not in its top 10") + its REAL top 10.
 function AgentCard({ a, focal }: { a: Baseline["agents"][number]; focal: string }) {
-  const failed = a.runs.length > 0 && a.runs.every((r) => !r.ok); // every call errored — NOT the same as "didn't rank you"
+  const failed = a.runs.length > 0 && a.runs.every((r) => !r.ok); // every call errored, NOT the same as "didn't rank you"
   const ranked = a.mentionRate > 0;
   return (
     <div className={`rounded-2xl border p-5 ${ranked ? "border-signal/60 bg-signal/[0.06]" : "border-border bg-card"}`}>
@@ -73,7 +116,7 @@ function AgentCard({ a, focal }: { a: Baseline["agents"][number]; focal: string 
           : ranked
             ? <div className="font-display text-5xl font-extrabold tracking-[-0.04em] text-signal">#{a.avgPos}<span className="text-base font-bold text-foreground/40"> of 10</span></div>
             : <div className="font-display text-3xl font-extrabold tracking-[-0.04em] text-foreground/45">not in its top 10</div>}
-        <div className="mono-label mt-1 text-foreground/50">{failed ? "the live call errored — re-test" : `${ranked && a.posStdev ? `±${a.posStdev} · ` : ""}runs: ${a.runs.map((r) => (r.pos != null ? `#${r.pos}` : (r.ok ? "–" : "x"))).join(" ")}`}</div>
+        <div className="mono-label mt-1 text-foreground/50">{failed ? "the live call errored, re-test" : `${ranked && a.posStdev ? `±${a.posStdev} · ` : ""}runs: ${a.runs.map((r) => (r.pos != null ? `#${r.pos}` : (r.ok ? "–" : "x"))).join(" ")}`}</div>
       </div>
       <div className="mt-4">
         <div className="mono-label text-foreground/70">its top 10, live</div>
@@ -90,16 +133,16 @@ function BaselineView({ b }: { b: Baseline }) {
   const nRanked = b.agents.filter((a) => a.mentionRate > 0).length;
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
-      <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">01 · the verdict — today<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH</span></p>
-      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Where do the agents rank {b.focal}?</h2>
+      <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">01 · the verdict, today<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH</span></p>
+      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">How do the agents rank {b.focal}?</h2>
       <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-3">
-        <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-9xl">{b.avgPos != null ? `#${b.avgPos}` : "—"}</div>
+        <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-9xl">{b.avgPos != null ? `#${b.avgPos}` : "Unranked"}</div>
         <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average rank, when an agent ranks it at all</div><div className="mono-label text-foreground/60">ranked by {nRanked} of 3 agents · {b.N} real runs each · we never named the brand</div></div>
       </div>
-      <p className="mt-6 max-w-[54ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
+      <p className="mt-6 max-w-[68ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
         {nRanked === 0
-          ? <><span className="text-signal">{b.focal} is invisible</span> — not one agent puts it in its top 10. See what they rank instead, below.</>
-          : <>{nRanked} of 3 agents rank {b.focal}{b.avgPos != null ? <>, around <span className="text-signal">#{b.avgPos}</span> of 10</> : null}{nRanked < 3 ? <> — the other {3 - nRanked} leave it off entirely</> : null}.</>}
+          ? <><span className="text-signal">{b.focal} is invisible.</span> Not one agent puts it in its top 10. See what they rank instead, below.</>
+          : <>{nRanked} of 3 agents rank {b.focal}{b.avgPos != null ? <>, around <span className="text-signal">#{b.avgPos}</span> of 10</> : null}{nRanked < 3 ? <>, while the other {3 - nRanked} leave it off entirely</> : null}.</>}
       </p>
 
       <div className="mt-10 grid gap-4 md:grid-cols-3">
@@ -117,13 +160,13 @@ function LiftView({ baseline, lift, brand }: { baseline: Baseline; lift: Lift; b
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">03 · the lift<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH + YOUR CONTENT</span></p>
       <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Apply the moves, and {brand} climbs</h2>
       <div className="mt-8 flex flex-wrap items-end gap-x-6 gap-y-3">
-        <div className="font-display text-5xl font-extrabold leading-none tracking-[-0.05em] text-foreground/40 sm:text-6xl">{bAvg != null ? `#${bAvg}` : "unranked"}</div>
+        <div className="font-display text-5xl font-extrabold leading-none tracking-[-0.05em] text-foreground/40 sm:text-6xl">{bAvg != null ? `#${bAvg}` : "Unranked"}</div>
         <div className="pb-3 text-3xl font-extrabold text-signal">→</div>
-        <div className="font-display text-7xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-8xl">{tAvg != null ? `#${tAvg}` : "—"}</div>
+        <div className="font-display text-7xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-8xl">{tAvg != null ? `#${tAvg}` : "Unranked"}</div>
         <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average rank now · {tRanked} of 3 agents</div><div className="mono-label text-foreground/60">before = today's real search · after = the same real search with your optimized content added</div></div>
       </div>
-      <p className="mt-6 max-w-[54ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
-        With its content made legible, {brand} goes from <span className="text-foreground/55">{bAvg != null ? `#${bAvg}` : "unranked"}</span> to <span className="text-signal">{tAvg != null ? `#${tAvg}` : "—"}</span>{tRanked ? <> — now ranked by {tRanked} of 3 agents</> : null}.
+      <p className="mt-6 max-w-[68ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
+        With its content made legible, {brand} goes from <span className="text-foreground/55">{bAvg != null ? `#${bAvg}` : "Unranked"}</span> to <span className="text-signal">{tAvg != null ? `#${tAvg}` : "Unranked"}</span>{tRanked ? <>, now ranked by {tRanked} of 3 agents</> : null}.
       </p>
       <div className="mt-10 grid gap-4 md:grid-cols-3">
         {lift.agents.map((a) => <AgentCard key={a.name} a={a} focal={brand} />)}
@@ -212,7 +255,7 @@ function Index() {
         <div className="relative mx-auto max-w-[1100px] overflow-hidden px-6 pb-12 pt-16 sm:px-10 sm:pt-24">
           <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[520px] w-[760px] -translate-x-1/2 rounded-full bg-signal/[0.06] blur-3xl" />
           <h1 className="display-xl max-w-[15ch]"><span className="block">Where do AI agents</span><span className="mt-3 block text-muted-foreground">rank your brand?</span></h1>
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground">When a buyer asks an agent, it recommends a few brands. We ask the real agents (live web search) whether yours is one of them — then apply the moves and measure the lift.</p>
+          <p className="mt-6 max-w-xl text-lg text-muted-foreground">When a buyer asks an agent, it recommends a few brands. We ask the real agents (live web search) whether yours is one of them, then apply the moves and measure the lift.</p>
 
           <div className="mt-10 rounded-3xl border-2 border-foreground/15 bg-card p-6 shadow-[0_0_40px_-12px_rgba(0,0,0,0.6)] sm:p-7">
             <div className="grid gap-5 sm:grid-cols-[1fr_1.4fr_auto] sm:items-end">
@@ -231,10 +274,10 @@ function Index() {
         </div>
       </section>
 
-      {/* STAGE 1 — baseline running */}
-      {stage === 1 && <section className="border-b border-border animate-in fade-in"><Running label="measuring · live web search" sub="searching the real web and reading what they recommend — this takes a couple of minutes" /></section>}
+      {/* STAGE 1: baseline running */}
+      {stage === 1 && <section className="border-b border-border animate-in fade-in"><Running label="measuring · live web search" sub="searching the real web and reading what they recommend. This takes a couple of minutes." /></section>}
 
-      {/* STAGE 2 — baseline + sandbox */}
+      {/* STAGE 2: baseline + sandbox */}
       {stage >= 2 && (
         <section id="verdict" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
           {baseline ? <BaselineView b={baseline} /> : <FailNote brand={brand} onRetry={ask} />}
@@ -243,7 +286,7 @@ function Index() {
             <div className="rounded-3xl border border-signal/30 bg-signal/[0.05] p-6 sm:p-8">
               <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">02 · the sandbox</p>
               <h3 className="mt-3 max-w-[34ch] text-2xl font-extrabold tracking-tight sm:text-3xl">Make your signals legible, then test again.</h3>
-              <p className="mt-3 max-w-2xl text-sm text-foreground/70">We optimize your content for the moves you pick, <span className="font-semibold text-foreground">inject it into the agents' real search</span>, and re-measure — so the lift is anchored to today's reality. <span className="font-semibold text-foreground">Writable</span> = content you publish (we generate &amp; test the wording); <span className="font-semibold text-foreground">earnable</span> = a placement you earn.</p>
+              <p className="mt-3 max-w-2xl text-sm text-foreground/70">We optimize your content for the moves you pick, <span className="font-semibold text-foreground">inject it into the agents' real search</span>, and re-measure, so the lift is anchored to today's reality. <span className="font-semibold text-foreground">Writable</span> = content you publish (we generate &amp; test the wording); <span className="font-semibold text-foreground">earnable</span> = a placement you earn.</p>
 
               <div className="mt-6 grid gap-4 lg:grid-cols-[1.6fr_auto] lg:items-start">
                 <div className="space-y-3">
@@ -266,7 +309,7 @@ function Index() {
                         </div>
                         {open && (
                           <div className="animate-in fade-in border-t border-border/60 px-4 py-4 text-[13px] leading-relaxed text-foreground/80">
-                            {f.writable ? <>You publish this. When you enable it, an agent generates a few realistic versions, we run each past the agents, and we keep the wording that moved your brand most — shown under "what to write".</> : <>You earn this — it can't be self-published. We model the placement to measure what it would be worth, but the brand has to genuinely earn it (pitch the editors, get into the independent tests).</>}
+                            {f.writable ? <>You publish this. When you enable it, an agent generates a few realistic versions, we run each past the agents, and we keep the wording that moved your brand most. It is shown under "what to write".</> : <>You earn this, it can't be self-published. We model the placement to measure what it would be worth, but the brand has to genuinely earn it (pitch the editors, get into the independent tests).</>}
                           </div>
                         )}
                       </div>
@@ -284,17 +327,17 @@ function Index() {
         </section>
       )}
 
-      {/* STAGE 3 — lift running */}
-      {stage === 3 && <section className="border-b border-border animate-in fade-in"><Running label="re-testing · live" sub="optimizing your content, then re-running the real search with it added — a few minutes" /></section>}
+      {/* STAGE 3: lift running */}
+      {stage === 3 && <section className="border-b border-border animate-in fade-in"><Running label="re-testing · live" sub="optimizing your content, then re-running the real search with it added. A few minutes." /></section>}
 
-      {/* STAGE 4 — lift */}
+      {/* STAGE 4: lift */}
       {stage === 4 && (
         <section id="result" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
           {lift && baseline ? <LiftView baseline={baseline} lift={lift} brand={brand} /> : <FailNote brand={brand} onRetry={retest} />}
           {lift && <WriteThis iterations={lift.iterations} />}
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
             <p className="mono-label text-foreground/50">
-two layers, both honest · LAYER 1 (today): real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) really web-search your prompt, brand never named, 2 runs each — this is where you rank right now · LAYER 2 (the lift): the SAME real search, with your optimized content added to what the agents read — so the "after" is anchored to today's reality (no clean room) · the lift assumes your content reaches the agents' search; the generated "write this" is illustrative — verify the facts before publishing
+two layers, both honest · LAYER 1 (today): real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) really web-search your prompt, brand never named, 2 runs each. This is where you rank right now · LAYER 2 (the lift): the SAME real search, with your optimized content added to what the agents read, so the "after" is anchored to today's reality (no clean room) · the lift assumes your content reaches the agents' search; the generated "write this" is illustrative, verify the facts before publishing
             </p>
           </div>
         </section>
