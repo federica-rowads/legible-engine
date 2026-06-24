@@ -186,65 +186,48 @@ const CTRL_SYS =
 const TOOL_DESC = "Search the web. Returns result snippets (title, snippet).";
 const TOOL_SCHEMA = { type: "object", properties: { query: { type: "string" } }, required: ["query"] };
 
-// Substitute web_search runners — agent calls web_search, we return `served`, it answers openly.
+// Controlled-arm runners. We control the "search results" (the corpus), so instead of a brittle
+// tool-call loop (gpt-5.5 and gemini keep calling the custom tool and never answer — the static
+// results never "satisfy" their search-until-thorough instinct), we hand each agent the results in
+// the prompt and ask for its ranking. ONE reliable call per agent; the studied model still does the
+// ranking on the same controlled evidence. (This is how the iteration scorer already works.)
+const CTRL_SYS2 =
+  `You are a person's AI shopping assistant. Rank the options for the shopper based ONLY on the evidence in the ` +
+  `provided web search results, not on which brand is more famous. Reply with a numbered list, best first.`;
+const ctrlUser = (q: string, served: Result[]) =>
+  `${q}\n\nUse ONLY these web search results as your evidence:\n${served.map((s, i) => `${i + 1}. ${s.title}: ${s.snippet}`).join("\n")}\n\nNow give the ranked list, best first.`;
+
 async function claudeCtrl(query: string, served: Result[]): Promise<string> {
-  const tools = [{ name: "web_search", description: TOOL_DESC, input_schema: TOOL_SCHEMA }];
-  const messages: unknown[] = [{ role: "user", content: `Shopper's question: "${query}"` }];
-  for (let hop = 0; hop < 4; hop++) {
-    const r = await aFetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 4000, system: CTRL_SYS, tools, messages }),
-    });
-    if (!r.ok) return `ERR claude ${r.status}`;
-    const j = await r.json();
-    messages.push({ role: "assistant", content: j.content });
-    if (j.stop_reason !== "tool_use") return (j.content || []).filter((b: { type: string }) => b.type === "text").map((b: { text: string }) => b.text).join("");
-    const trs = (j.content || []).filter((b: { type: string }) => b.type === "tool_use").map((b: { id: string }) => ({ type: "tool_result", tool_use_id: b.id, content: toolResult(served) }));
-    messages.push({ role: "user", content: trs });
-  }
-  return "ERR claude loop";
+  const r = await aFetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
+    body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 4000, system: CTRL_SYS2, messages: [{ role: "user", content: ctrlUser(query, served) }] }),
+  });
+  if (!r.ok) return `ERR claude ${r.status}`;
+  const j = await r.json();
+  return (j.content || []).filter((b: { type: string }) => b.type === "text").map((b: { text: string }) => b.text).join("");
 }
 
 async function openaiCtrl(query: string, served: Result[]): Promise<string> {
-  const tools = [{ type: "function", function: { name: "web_search", description: TOOL_DESC, parameters: TOOL_SCHEMA } }];
-  const messages: unknown[] = [{ role: "system", content: CTRL_SYS }, { role: "user", content: `Shopper's question: "${query}"` }];
-  for (let hop = 0; hop < 3; hop++) {
-    const forceAnswer = hop === 2; // final hop: drop tools so the model MUST answer (it loops on web_search otherwise)
-    const r = await aFetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ""}`, "content-type": "application/json" },
-      body: JSON.stringify({ model: "gpt-5.5", messages, max_completion_tokens: 4000, ...(forceAnswer ? {} : { tools }) }),
-    });
-    if (!r.ok) return `ERR openai ${r.status}`;
-    const j = await r.json();
-    const msg = j.choices?.[0]?.message;
-    messages.push(msg);
-    if (!msg?.tool_calls?.length) return msg?.content || "";
-    for (const tc of msg.tool_calls) messages.push({ role: "tool", tool_call_id: tc.id, content: toolResult(served) });
-  }
-  return "ERR openai loop";
+  const r = await aFetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ""}`, "content-type": "application/json" },
+    body: JSON.stringify({ model: "gpt-5.5", max_completion_tokens: 4000, messages: [{ role: "system", content: CTRL_SYS2 }, { role: "user", content: ctrlUser(query, served) }] }),
+  });
+  if (!r.ok) return `ERR openai ${r.status}`;
+  const j = await r.json();
+  return j.choices?.[0]?.message?.content || "";
 }
 
 async function geminiCtrl(query: string, served: Result[]): Promise<string> {
-  const tools = [{ functionDeclarations: [{ name: "web_search", description: TOOL_DESC, parameters: TOOL_SCHEMA }] }];
-  const contents: unknown[] = [{ role: "user", parts: [{ text: `Shopper's question: "${query}"` }] }];
-  for (let hop = 0; hop < 3; hop++) {
-    const forceAnswer = hop === 2; // final hop: drop tools so the model MUST answer
-    const r = await aFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ systemInstruction: { parts: [{ text: CTRL_SYS }] }, contents, generationConfig: { maxOutputTokens: 8000 }, ...(forceAnswer ? {} : { tools }) }),
-    });
-    if (!r.ok) return `ERR gemini ${r.status}`;
-    const j = await r.json();
-    const parts = j.candidates?.[0]?.content?.parts || [];
-    contents.push({ role: "model", parts });
-    const calls = parts.filter((p: { functionCall?: unknown }) => p.functionCall);
-    if (!calls.length) return parts.map((p: { text?: string }) => p.text || "").join("");
-    contents.push({ role: "user", parts: calls.map((c: { functionCall: { name: string } }) => ({ functionResponse: { name: c.functionCall.name, response: { results: served } } })) });
-  }
-  return "ERR gemini loop";
+  const r = await aFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: CTRL_SYS2 }] }, contents: [{ role: "user", parts: [{ text: ctrlUser(query, served) }] }], generationConfig: { maxOutputTokens: 8000 } }),
+  });
+  if (!r.ok) return `ERR gemini ${r.status}`;
+  const j = await r.json();
+  return (j.candidates?.[0]?.content?.parts || []).map((p: { text?: string }) => p.text || "").join("");
 }
 
 const CTRL_AGENTS = [
