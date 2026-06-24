@@ -1,0 +1,16 @@
+{
+  "name": "legible-engine-function",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Legible live two-layer engine as a Cloud Functions (2nd gen) HTTP function — long timeout for live multi-agent web search.",
+  "main": "index.mjs",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "functions-framework --target=legible --source=."
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^4.0.0"
+  }
+}
