@@ -20,7 +20,7 @@ async function claudeJSON(system: string, user: string, maxTokens = 800): Promis
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: maxTokens, system, messages: [{ role: "user", content: user }] }),
+    body: JSON.stringify({ model: "claude-haiku-4-5", max_tokens: maxTokens, system, messages: [{ role: "user", content: user }] }),
   });
   if (!r.ok) throw new Error(`claude-json ${r.status}`);
   const j = await r.json();
@@ -31,7 +31,7 @@ async function claudeJSON(system: string, user: string, maxTokens = 800): Promis
 
 // Claude — server-side web_search tool. Single response; may pause_turn to resume.
 async function claudeSearch(query: string): Promise<string> {
-  const tools = [{ type: "web_search_20260209", name: "web_search", max_uses: 6 }];
+  const tools = [{ type: "web_search_20260209", name: "web_search", max_uses: 3 }];
   const messages: unknown[] = [{ role: "user", content: query }];
   for (let hop = 0; hop < 5; hop++) {
     const r = await fetch("https://api.anthropic.com/v1/messages", {
@@ -388,10 +388,14 @@ export type Treatment = { corpus: ControlledCorpus; control: Condition; treatmen
 export async function runTreatment(focal: string, query: string, competitors: string[], levers: string[], N = 3, k = 2): Promise<Treatment> {
   const corpus = await buildControlledCorpus(focal, query, competitors);
   const writable = levers.filter((l) => WRITABLE.includes(l));
-  const iterations = await Promise.all(writable.map((l) => iterateLever(corpus, l, focal, query, k, 2)));
+  // The control arm doesn't depend on the iteration, so run them concurrently; only the
+  // treatment arm waits on the iteration winners.
+  const [iterations, control] = await Promise.all([
+    Promise.all(writable.map((l) => iterateLever(corpus, l, focal, query, k, 2))),
+    runCondition("control", corpus, query, [], {}, N),
+  ]);
   const overrides: Record<string, string> = {};
   for (const it of iterations) if (it.best) overrides[it.lever] = it.best.content;
-  const control = await runCondition("control", corpus, query, [], {}, N);
   const treatment = await runCondition("treatment", corpus, query, levers, overrides, N);
   const lift = { mentionRate: +(treatment.mentionRate - control.mentionRate).toFixed(2), avgPos: treatment.avgPos != null && control.avgPos != null ? +(control.avgPos - treatment.avgPos).toFixed(1) : null };
   return { corpus, control, treatment, iterations, lift };
