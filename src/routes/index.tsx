@@ -54,6 +54,7 @@ function Running({ label, sub }: { label: string; sub: string }) {
 
 // One agent's result: where it ranks the brand (or "not in its top 10") + its REAL top 10.
 function AgentCard({ a, focal }: { a: Baseline["agents"][number]; focal: string }) {
+  const failed = a.runs.length > 0 && a.runs.every((r) => !r.ok); // every call errored — NOT the same as "didn't rank you"
   const ranked = a.mentionRate > 0;
   return (
     <div className={`rounded-2xl border p-5 ${ranked ? "border-signal/60 bg-signal/[0.06]" : "border-border bg-card"}`}>
@@ -63,10 +64,12 @@ function AgentCard({ a, focal }: { a: Baseline["agents"][number]; focal: string 
       </div>
       <div className="mt-4">
         <div className="mono-label text-foreground/70">ranks {focal}</div>
-        {ranked
-          ? <div className="font-display text-5xl font-extrabold tracking-[-0.04em] text-signal">#{a.avgPos}<span className="text-base font-bold text-foreground/40"> of 10</span></div>
-          : <div className="font-display text-3xl font-extrabold tracking-[-0.04em] text-foreground/45">not in its top 10</div>}
-        <div className="mono-label mt-1 text-foreground/50">{ranked && a.posStdev ? `±${a.posStdev} · ` : ""}runs: {a.runs.map((r) => (r.pos != null ? `#${r.pos}` : (r.ok ? "–" : "x"))).join(" ")}</div>
+        {failed
+          ? <div className="font-display text-2xl font-extrabold tracking-[-0.03em] text-foreground/45">didn't respond</div>
+          : ranked
+            ? <div className="font-display text-5xl font-extrabold tracking-[-0.04em] text-signal">#{a.avgPos}<span className="text-base font-bold text-foreground/40"> of 10</span></div>
+            : <div className="font-display text-3xl font-extrabold tracking-[-0.04em] text-foreground/45">not in its top 10</div>}
+        <div className="mono-label mt-1 text-foreground/50">{failed ? "the live call errored — re-test" : `${ranked && a.posStdev ? `±${a.posStdev} · ` : ""}runs: ${a.runs.map((r) => (r.pos != null ? `#${r.pos}` : (r.ok ? "–" : "x"))).join(" ")}`}</div>
       </div>
       <div className="mt-4">
         <div className="mono-label text-foreground/70">its top 10, live</div>
@@ -214,7 +217,7 @@ function Index() {
                 <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="type any brand" className="mt-2 w-full rounded-xl border-2 border-foreground/20 bg-background px-4 py-3.5 text-base font-semibold text-foreground placeholder:font-normal placeholder:text-foreground/40 focus:border-signal focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs font-mono uppercase tracking-[0.14em] text-foreground/80">buyer query</label>
+                <label className="text-xs font-mono uppercase tracking-[0.14em] text-foreground/80">buyer prompt</label>
                 <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="type the buyer's question" className="mt-2 w-full rounded-xl border-2 border-foreground/20 bg-background px-4 py-3.5 text-base text-foreground placeholder:text-foreground/40 focus:border-signal focus:outline-none" />
               </div>
               <button onClick={ask} disabled={!brand.trim() || !query.trim() || stage === 1} className="inline-flex items-center justify-center gap-2 rounded-xl bg-signal px-6 py-3.5 text-base font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-40">Ask the agents <span aria-hidden>→</span></button>

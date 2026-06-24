@@ -14,13 +14,22 @@ const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,
 const jsonExtract = (t: string) => t.match(/\{[\s\S]*\}/)?.[0] || "{}";
 // Force a ranked top-10 so position is a clean, intuitive metric ("#7 of 10" / "unranked").
 const topAsk = (q: string) => `Give me a numbered TOP 10 — the ten best — for this shopper: "${q}". Reply with the ranked list of brand or store names, best first, numbered 1 to 10.`;
+// Retry transient rate-limit / overload / 5xx so a run doesn't silently fail under concurrent load.
+async function aFetch(url: string, opts: RequestInit, tries = 4): Promise<Response> {
+  for (let i = 0; i < tries - 1; i++) {
+    const r = await globalThis.fetch(url, opts);
+    if (r.status !== 429 && r.status !== 529 && r.status < 500) return r;
+    await new Promise((res) => setTimeout(res, 700 * (i + 1) + Math.floor(Math.random() * 500)));
+  }
+  return globalThis.fetch(url, opts);
+}
 
 // One plain Claude JSON call (no tools) — used to extract the brand list from a natural answer.
-async function claudeJSON(system: string, user: string, maxTokens = 800): Promise<string> {
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+async function claudeJSON(system: string, user: string, maxTokens = 800, model = "claude-opus-4-8"): Promise<string> {
+  const r = await aFetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: "claude-haiku-4-5", max_tokens: maxTokens, system, messages: [{ role: "user", content: user }] }),
+    body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role: "user", content: user }] }),
   });
   if (!r.ok) throw new Error(`claude-json ${r.status}`);
   const j = await r.json();
@@ -31,10 +40,10 @@ async function claudeJSON(system: string, user: string, maxTokens = 800): Promis
 
 // Claude — server-side web_search tool. Single response; may pause_turn to resume.
 async function claudeSearch(query: string): Promise<string> {
-  const tools = [{ type: "web_search_20260209", name: "web_search", max_uses: 3 }];
+  const tools = [{ type: "web_search_20260209", name: "web_search", max_uses: 6 }];
   const messages: unknown[] = [{ role: "user", content: query }];
   for (let hop = 0; hop < 5; hop++) {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
+    const r = await aFetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
       body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 2000, messages, tools }),
@@ -49,7 +58,7 @@ async function claudeSearch(query: string): Promise<string> {
 
 // ChatGPT — Responses API with the web_search tool.
 async function openaiSearch(query: string): Promise<string> {
-  const r = await fetch("https://api.openai.com/v1/responses", {
+  const r = await aFetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ""}`, "content-type": "application/json" },
     body: JSON.stringify({ model: "gpt-5.5", input: query, tools: [{ type: "web_search" }] }),
@@ -63,7 +72,7 @@ async function openaiSearch(query: string): Promise<string> {
 
 // Gemini — Google Search grounding.
 async function geminiSearch(query: string): Promise<string> {
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
+  const r = await aFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: query }] }], tools: [{ google_search: {} }] }),
@@ -182,7 +191,7 @@ async function claudeCtrl(query: string, served: Result[]): Promise<string> {
   const tools = [{ name: "web_search", description: TOOL_DESC, input_schema: TOOL_SCHEMA }];
   const messages: unknown[] = [{ role: "user", content: `Shopper's question: "${query}"` }];
   for (let hop = 0; hop < 4; hop++) {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
+    const r = await aFetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
       body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 1400, system: CTRL_SYS, tools, messages }),
@@ -201,7 +210,7 @@ async function openaiCtrl(query: string, served: Result[]): Promise<string> {
   const tools = [{ type: "function", function: { name: "web_search", description: TOOL_DESC, parameters: TOOL_SCHEMA } }];
   const messages: unknown[] = [{ role: "system", content: CTRL_SYS }, { role: "user", content: `Shopper's question: "${query}"` }];
   for (let hop = 0; hop < 4; hop++) {
-    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+    const r = await aFetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ""}`, "content-type": "application/json" },
       body: JSON.stringify({ model: "gpt-5.5", messages, tools, max_completion_tokens: 1400 }),
@@ -220,7 +229,7 @@ async function geminiCtrl(query: string, served: Result[]): Promise<string> {
   const tools = [{ functionDeclarations: [{ name: "web_search", description: TOOL_DESC, parameters: TOOL_SCHEMA }] }];
   const contents: unknown[] = [{ role: "user", parts: [{ text: `Shopper's question: "${query}"` }] }];
   for (let hop = 0; hop < 4; hop++) {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
+    const r = await aFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ systemInstruction: { parts: [{ text: CTRL_SYS }] }, contents, tools, generationConfig: { maxOutputTokens: 1400 } }),
@@ -268,7 +277,8 @@ const CORPUS_SYS =
 export async function buildControlledCorpus(focal: string, query: string, competitorNames: string[]): Promise<ControlledCorpus> {
   const comps = competitorNames.slice(0, 6);
   const out = await claudeJSON(CORPUS_SYS, `Shopper query: "${query}"\nFocal brand: "${focal}"\nReal competitors: ${comps.join(", ")}\nProduce the corpus JSON.`, 2200);
-  const j: { category?: string; competitors?: { name?: string; title?: string; snippet?: string }[]; guide?: { title?: string; base?: string; focal?: string }; community?: { title?: string; base?: string; lead?: string; focalDefault?: string }; levers?: Record<string, string> } = JSON.parse(jsonExtract(out));
+  let j: { category?: string; competitors?: { name?: string; title?: string; snippet?: string }[]; guide?: { title?: string; base?: string; focal?: string }; community?: { title?: string; base?: string; lead?: string; focalDefault?: string }; levers?: Record<string, string> } = {};
+  try { j = JSON.parse(jsonExtract(out)); } catch { /* fall back to a minimal corpus built from the real competitor names below */ }
   const L = j.levers || {};
   const competitors: Result[] = Array.isArray(j.competitors) && j.competitors.length
     ? j.competitors.map((c) => ({ title: String(c.title || `${c.name} review`), snippet: String(c.snippet || "") }))
