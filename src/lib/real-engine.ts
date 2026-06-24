@@ -39,9 +39,11 @@ async function claudeJSON(system: string, user: string, maxTokens = 800, model =
 // ---- Native (REAL) web search per agent — the agent really searches and answers ----
 
 // Claude — server-side web_search tool. Single response; may pause_turn to resume.
-async function claudeSearch(query: string): Promise<string> {
+// `extra` = optional injected content (the brand's optimized signals), appended so the agent
+// weighs it alongside what it really finds on the web. Empty for the baseline.
+async function claudeSearch(query: string, extra = ""): Promise<string> {
   const tools = [{ type: "web_search_20260209", name: "web_search", max_uses: 6 }];
-  const messages: unknown[] = [{ role: "user", content: query }];
+  const messages: unknown[] = [{ role: "user", content: query + extra }];
   for (let hop = 0; hop < 5; hop++) {
     const r = await aFetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -57,11 +59,11 @@ async function claudeSearch(query: string): Promise<string> {
 }
 
 // ChatGPT — Responses API with the web_search tool.
-async function openaiSearch(query: string): Promise<string> {
+async function openaiSearch(query: string, extra = ""): Promise<string> {
   const r = await aFetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ""}`, "content-type": "application/json" },
-    body: JSON.stringify({ model: "gpt-5.5", input: query, tools: [{ type: "web_search" }] }),
+    body: JSON.stringify({ model: "gpt-5.5", input: query + extra, tools: [{ type: "web_search" }] }),
   });
   if (!r.ok) return `ERR openai ${r.status}`;
   const j = await r.json();
@@ -71,11 +73,11 @@ async function openaiSearch(query: string): Promise<string> {
 }
 
 // Gemini — Google Search grounding.
-async function geminiSearch(query: string): Promise<string> {
+async function geminiSearch(query: string, extra = ""): Promise<string> {
   const r = await aFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: query }] }], tools: [{ google_search: {} }] }),
+    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: query + extra }] }], tools: [{ google_search: {} }] }),
   });
   if (!r.ok) return `ERR gemini ${r.status}`;
   const j = await r.json();
@@ -119,10 +121,10 @@ export type RealBaseline = {
   competitors: { name: string; mentions: number }[];
 };
 
-// One real run: native search → extract ordered brands → locate the focal brand.
-async function oneRealRun(agent: typeof AGENTS[number], query: string, token: string): Promise<RealRun> {
+// One real run: native search (+ optional injected content) → extract ordered brands → locate focal.
+async function oneRealRun(agent: typeof AGENTS[number], query: string, token: string, extra = ""): Promise<RealRun> {
   try {
-    const answer = await agent.run(topAsk(query));
+    const answer = await agent.run(topAsk(query), extra);
     const ranked = await extractBrands(answer);
     return { agent: agent.name, model: agent.model, ranked, pos: posOf(ranked, token), ok: ranked.length > 0, answer: answer.slice(0, 600) };
   } catch {
@@ -134,12 +136,14 @@ const mean = (xs: number[]) => (xs.length ? +(xs.reduce((a, b) => a + b, 0) / xs
 // Spread of the focal position across runs — a consistency signal (low = the agents agree).
 const stdev = (xs: number[]) => { if (xs.length < 2) return xs.length ? 0 : null; const m = xs.reduce((a, b) => a + b, 0) / xs.length; return +Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / xs.length).toFixed(1); };
 
-// Phase 1 — the REAL, unbiased baseline. N runs per agent, in parallel.
-export async function runRealBaseline(focal: string, query: string, N = 5): Promise<RealBaseline> {
-  const token = focalTokenOf(focal);
-  const jobs = AGENTS.flatMap((a) => Array.from({ length: N }, () => oneRealRun(a, query, token)));
-  const all = await Promise.all(jobs);
+export type NativeResult = { agents: AgentBaseline[]; mentionRate: number; avgPos: number | null; competitors: { name: string; mentions: number }[] };
 
+// The 3 agents on a REAL web search (+ optional injected content), N times each, in parallel.
+// extra = "" → the unbiased baseline. extra = <the brand's optimized signals> → the treatment.
+// Both arms use the same real search, so the treatment is anchored to reality (no clean room).
+async function runNative(query: string, token: string, extra: string, N: number): Promise<NativeResult> {
+  const jobs = AGENTS.flatMap((a) => Array.from({ length: N }, () => oneRealRun(a, query, token, extra)));
+  const all = await Promise.all(jobs);
   const agents: AgentBaseline[] = AGENTS.map((a) => {
     const runs = all.filter((r) => r.agent === a.name);
     const ok = runs.filter((r) => r.ok);
@@ -150,13 +154,10 @@ export async function runRealBaseline(focal: string, query: string, N = 5): Prom
     const topList = repr ? repr.ranked : [];
     return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present), topList };
   });
-
   const okAll = all.filter((r) => r.ok);
   const presentAll = okAll.filter((r) => r.pos != null).map((r) => r.pos as number);
   const mentionRate = okAll.length ? +(presentAll.length / okAll.length).toFixed(2) : 0;
   const avgPos = mean(presentAll);
-
-  // Real competitor set: frequency across every run (focal excluded), most-mentioned first.
   const tally = new Map<string, number>();
   const display = new Map<string, string>();
   for (const r of okAll) for (const b of r.ranked) {
@@ -166,181 +167,39 @@ export async function runRealBaseline(focal: string, query: string, N = 5): Prom
     tally.set(nb, (tally.get(nb) || 0) + 1);
   }
   const competitors = [...tally.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([k, v]) => ({ name: display.get(k) || k, mentions: v }));
+  return { agents, mentionRate, avgPos, competitors };
+}
 
-  return { focal, focalToken: token, query, N, agents, mentionRate, avgPos, competitors };
+// Layer 1 — the REAL, unbiased baseline (no injection). N runs per agent.
+export async function runRealBaseline(focal: string, query: string, N = 5): Promise<RealBaseline> {
+  const token = focalTokenOf(focal);
+  const nr = await runNative(query, token, "", N);
+  return { focal, focalToken: token, query, N, agents: nr.agents, mentionRate: nr.mentionRate, avgPos: nr.avgPos, competitors: nr.competitors };
 }
 
 // ============================================================================
-// LAYER 2 — CONTROLLED LIFT, grounded in the REAL competitor set from Layer 1.
-// We replace the agents' web_search with controlled results: the REAL competitors,
-// plus (treatment) the focal brand's injected signals. Same open question, natural
-// answer, multi-run. The lift (treatment - control) is the causal effect of the signals.
+// LAYER 2 — LIFT via INJECTION ON THE REAL SEARCH (anchored to the baseline).
+// The treatment is the SAME real web search as the baseline, plus the brand's optimized
+// content injected into the prompt — so the agent weighs it alongside what it really finds.
+// Both arms use real search, so the "before" is the real baseline itself (no clean room).
 // ============================================================================
-
-type Result = { title: string; snippet: string };
-const toolResult = (served: Result[]) => JSON.stringify({ results: served });
-const CTRL_SYS =
-  `You are a person's AI shopping assistant with web access. Use the web_search tool to research the shopper's question, ` +
-  `then recommend the best stores or brands for them. Judge ONLY on the evidence in the search results, not on which brand is more famous. ` +
-  `Give your natural recommendation, listing the brands you'd suggest, best first.`;
-const TOOL_DESC = "Search the web. Returns result snippets (title, snippet).";
-const TOOL_SCHEMA = { type: "object", properties: { query: { type: "string" } }, required: ["query"] };
-
-// Controlled-arm runners. We control the "search results" (the corpus), so instead of a brittle
-// tool-call loop (gpt-5.5 and gemini keep calling the custom tool and never answer — the static
-// results never "satisfy" their search-until-thorough instinct), we hand each agent the results in
-// the prompt and ask for its ranking. ONE reliable call per agent; the studied model still does the
-// ranking on the same controlled evidence. (This is how the iteration scorer already works.)
-const CTRL_SYS2 =
-  `You are a person's AI shopping assistant. Rank the options for the shopper based ONLY on the evidence in the ` +
-  `provided web search results, not on which brand is more famous. Reply with a numbered list, best first.`;
-const ctrlUser = (q: string, served: Result[]) =>
-  `${q}\n\nUse ONLY these web search results as your evidence:\n${served.map((s, i) => `${i + 1}. ${s.title}: ${s.snippet}`).join("\n")}\n\nNow give the ranked list, best first.`;
-
-async function claudeCtrl(query: string, served: Result[]): Promise<string> {
-  const r = await aFetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 4000, system: CTRL_SYS2, messages: [{ role: "user", content: ctrlUser(query, served) }] }),
-  });
-  if (!r.ok) return `ERR claude ${r.status}`;
-  const j = await r.json();
-  return (j.content || []).filter((b: { type: string }) => b.type === "text").map((b: { text: string }) => b.text).join("");
-}
-
-async function openaiCtrl(query: string, served: Result[]): Promise<string> {
-  const r = await aFetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ""}`, "content-type": "application/json" },
-    body: JSON.stringify({ model: "gpt-5.5", max_completion_tokens: 4000, messages: [{ role: "system", content: CTRL_SYS2 }, { role: "user", content: ctrlUser(query, served) }] }),
-  });
-  if (!r.ok) return `ERR openai ${r.status}`;
-  const j = await r.json();
-  return j.choices?.[0]?.message?.content || "";
-}
-
-async function geminiCtrl(query: string, served: Result[]): Promise<string> {
-  const r = await aFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ systemInstruction: { parts: [{ text: CTRL_SYS2 }] }, contents: [{ role: "user", parts: [{ text: ctrlUser(query, served) }] }], generationConfig: { maxOutputTokens: 8000 } }),
-  });
-  if (!r.ok) return `ERR gemini ${r.status}`;
-  const j = await r.json();
-  return (j.candidates?.[0]?.content?.parts || []).map((p: { text?: string }) => p.text || "").join("");
-}
-
-const CTRL_AGENTS = [
-  { name: "ChatGPT", model: "gpt-5.5", run: openaiCtrl },
-  { name: "Claude", model: "claude-opus-4-8", run: claudeCtrl },
-  { name: "Gemini", model: "gemini-pro-latest", run: geminiCtrl },
-];
-
-// ---- The controlled corpus, SEEDED WITH THE REAL COMPETITORS ----
-
-export type ControlledCorpus = {
-  focal: string; focalToken: string; category: string;
-  competitors: Result[];
-  guideTitle: string; guideBase: string; guideFocal: string;
-  communityTitle: string; communityBase: string; communityLead: string; communityFocalDefault: string;
-  specsTitle: string; specsDefault: string;
-  reviewsTitle: string; reviewsDefault: string;
-  authorityTitle: string; authorityDefault: string;
-  comparisonTitle: string; comparisonDefault: string;
-};
-
-const CORPUS_SYS =
-  `You build a CONTROLLED search environment for an experiment that measures how AI shopping assistants rank a brand. ` +
-  `Use the REAL competitor brands provided (do not invent competitors). Return ONLY JSON:\n` +
-  `{"category":"<short noun phrase for what the shopper is choosing>",` +
-  `"competitors":[{"name":"<one of the given real competitors, verbatim>","title":"<realistic result title>","snippet":"<1 sentence on why shoppers pick it>"} — one per given competitor],` +
-  `"guide":{"title":"<a plausible best-of guide title>","base":"<snippet that recommends the real competitors (focal brand ABSENT)>","focal":"<the SAME guide now ALSO including the focal brand among the picks, listed neutrally with a genuine merit, NOT as the winner>"},` +
-  `"community":{"title":"<a forum/Reddit thread title>","base":"<comments naming the real competitors (focal ABSENT)>","lead":"<comments naming the real competitors, ending so a focal mention can follow>","focalDefault":"<one realistic community comment recommending the focal brand>"},` +
-  `"levers":{"specsTitle":"<title>","specs":"<a product-detail result for the FOCAL brand: the concrete attributes shoppers in this category compare>","reviewsTitle":"<title>","reviews":"<a customer-reviews result for the focal brand: a rating, a review count, a concrete strength>","authorityTitle":"<title>","authority":"<an independent expert/editorial assessment of the focal brand; use a GENERIC source ('an independent review','testers') — do NOT invent a specific named third-party score>","comparisonTitle":"<title>","comparison":"<an honest head-to-head of the focal brand vs the category leader>"}}\n` +
-  `RULES: realistic and specific; the focal brand must be WINNABLE on evidence but never pre-ranked #1; do NOT attribute a fabricated score to a real named organization.`;
-
-export async function buildControlledCorpus(focal: string, query: string, competitorNames: string[]): Promise<ControlledCorpus> {
-  const comps = competitorNames.slice(0, 6);
-  const out = await claudeJSON(CORPUS_SYS, `Shopper query: "${query}"\nFocal brand: "${focal}"\nReal competitors: ${comps.join(", ")}\nProduce the corpus JSON.`, 4000);
-  let j: { category?: string; competitors?: { name?: string; title?: string; snippet?: string }[]; guide?: { title?: string; base?: string; focal?: string }; community?: { title?: string; base?: string; lead?: string; focalDefault?: string }; levers?: Record<string, string> } = {};
-  try { j = JSON.parse(jsonExtract(out)); } catch { /* fall back to a minimal corpus built from the real competitor names below */ }
-  const L = j.levers || {};
-  const competitors: Result[] = Array.isArray(j.competitors) && j.competitors.length
-    ? j.competitors.map((c) => ({ title: String(c.title || `${c.name} review`), snippet: String(c.snippet || "") }))
-    : comps.map((n) => ({ title: `${n} — recommended`, snippet: `A frequently recommended pick for this need.` }));
-  return {
-    focal, focalToken: focalTokenOf(focal), category: String(j.category || query),
-    competitors,
-    guideTitle: String(j.guide?.title || "Best picks, reviewed"), guideBase: String(j.guide?.base || ""), guideFocal: String(j.guide?.focal || ""),
-    communityTitle: String(j.community?.title || "Community thread"), communityBase: String(j.community?.base || ""), communityLead: String(j.community?.lead || j.community?.base || ""), communityFocalDefault: String(j.community?.focalDefault || ""),
-    specsTitle: String(L.specsTitle || `${focal} details`), specsDefault: String(L.specs || ""),
-    reviewsTitle: String(L.reviewsTitle || `${focal} customer reviews`), reviewsDefault: String(L.reviews || ""),
-    authorityTitle: String(L.authorityTitle || `${focal} expert review`), authorityDefault: String(L.authority || ""),
-    comparisonTitle: String(L.comparisonTitle || `${focal} vs the leader`), comparisonDefault: String(L.comparison || ""),
-  };
-}
-
-// Build the served result set for a condition. No levers = control (focal absent).
-export function servedControlled(c: ControlledCorpus, levers: string[], overrides: Record<string, string> = {}): Result[] {
-  const on = (l: string) => levers.includes(l);
-  const ov = (l: string, def: string) => overrides[l] ?? def;
-  const out: Result[] = [...c.competitors];
-  out.push({ title: c.guideTitle, snippet: on("editorial") ? c.guideFocal : c.guideBase });
-  out.push({ title: c.communityTitle, snippet: on("community") ? `${c.communityLead} ${ov("community", c.communityFocalDefault)}` : c.communityBase });
-  if (on("specs")) out.push({ title: c.specsTitle, snippet: ov("specs", c.specsDefault) });
-  if (on("reviews")) out.push({ title: c.reviewsTitle, snippet: ov("reviews", c.reviewsDefault) });
-  if (on("authority")) out.push({ title: c.authorityTitle, snippet: ov("authority", c.authorityDefault) });
-  if (on("comparison")) out.push({ title: c.comparisonTitle, snippet: ov("comparison", c.comparisonDefault) });
-  return out;
-}
-
-export type Condition = { label: string; agents: AgentBaseline[]; mentionRate: number; avgPos: number | null };
-
-async function oneCtrlRun(agent: typeof CTRL_AGENTS[number], query: string, served: Result[], token: string): Promise<RealRun> {
-  try {
-    const answer = await agent.run(topAsk(query), served);
-    const ranked = await extractBrands(answer);
-    return { agent: agent.name, model: agent.model, ranked, pos: posOf(ranked, token), ok: ranked.length > 0, answer: answer.slice(0, 600) };
-  } catch {
-    return { agent: agent.name, model: agent.model, ranked: [], pos: null, ok: false };
-  }
-}
-
-async function runCondition(label: string, c: ControlledCorpus, query: string, levers: string[], overrides: Record<string, string>, N: number): Promise<Condition> {
-  const served = servedControlled(c, levers, overrides);
-  const jobs = CTRL_AGENTS.flatMap((a) => Array.from({ length: N }, () => oneCtrlRun(a, query, served, c.focalToken)));
-  const all = await Promise.all(jobs);
-  const agents: AgentBaseline[] = CTRL_AGENTS.map((a) => {
-    const runs = all.filter((r) => r.agent === a.name);
-    const ok = runs.filter((r) => r.ok);
-    const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);
-    const okP = ok.filter((r) => r.pos != null);
-    const ap = mean(present) ?? 0;
-    const repr = okP.length ? okP.reduce((b, r) => (Math.abs((r.pos as number) - ap) < Math.abs((b.pos as number) - ap) ? r : b)) : (ok[0] ?? null);
-    const topList = repr ? repr.ranked : [];
-    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present), topList };
-  });
-  const ok = all.filter((r) => r.ok);
-  const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);
-  return { label, agents, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present) };
-}
-
-// ---- The "write exactly this" iteration (writable levers), grounded + multi-run ----
 
 const LEVER_BRIEF: Record<string, string> = {
   specs: "a product-detail or spec result for the brand — the concrete attributes shoppers in this category actually compare (materials, fit, sizing, price, etc.)",
   reviews: "a customer-reviews result for the brand — a rating, a review count, a concrete strength",
   community: "a community forum comment where a real user recommends the brand for this exact need",
   comparison: "an honest head-to-head of the brand vs the category leader, fair and specific",
+  editorial: "an editorial best-of guide entry that lists the brand among its picks",
+  authority: "an independent expert assessment of the brand — use a GENERIC source ('an independent review', 'testers'), never a fabricated named score",
 };
 export const WRITABLE = ["specs", "reviews", "comparison", "community"];
 
 export type Version = { label: string; content: string };
-async function generateVersions(leverId: string, brand: string, query: string, category: string, k: number): Promise<Version[]> {
+async function generateVersions(leverId: string, brand: string, query: string, k: number): Promise<Version[]> {
   const brief = LEVER_BRIEF[leverId] || "a search result that makes the brand more credible for this query";
   const system =
-    `You help a brand become legible to AI shopping assistants. The brand is "${brand}" in the category "${category}", for the shopper query "${query}". ` +
-    `Generate ${k} DIFFERENT, realistic versions of ${brief}. Each is a short search-result snippet (1-3 sentences) the brand could honestly publish or earn. Vary the angle and specifics. ` +
+    `You help a brand become legible to AI shopping assistants. The brand is "${brand}", for the shopper query "${query}". ` +
+    `Generate ${k} DIFFERENT, realistic versions of ${brief}. Each is a short snippet (1-3 sentences) the brand could honestly publish or earn. Vary the angle and specifics. ` +
     `BRAND SAFETY: never invent a specific named third-party score or award (no "Vogue named it #1", no "RunRepeat 88/100"); no fabricated audited review counts. Honest, publishable content only. ` +
     `Respond with ONLY JSON: {"versions":[{"label":"2-4 word tag","content":"the snippet"}]}.`;
   try {
@@ -351,56 +210,52 @@ async function generateVersions(leverId: string, brand: string, query: string, c
   }
 }
 
-// Fast single-agent open recommendation (Claude, no tools) — scores a version's focal position.
-async function quickPos(query: string, served: Result[], token: string): Promise<number | null> {
-  const sys = `You are a shopping assistant. Given these web search results, recommend the best stores/brands for the shopper, best first, judging on the evidence. List the brand names in order.`;
-  const user = `Shopper: "${query}"\n\nSearch results:\n${served.map((s, i) => `${i + 1}. ${s.title}: ${s.snippet}`).join("\n")}\n\nYour recommended brands, best first:`;
+// Fast proxy scorer — given the real competitors + a candidate content snippet, where does the brand
+// land? Used ONLY to pick the best wording per lever; the final lift is measured live (real search).
+async function quickScore(focal: string, query: string, competitors: string[], content: string): Promise<number | null> {
+  const sys = `You are a shopping assistant. Rank the brands/stores for the shopper, best first, judging only on the evidence. Reply with a numbered list of names.`;
+  const user = `Shopper's question: "${query}"\nBrands people usually recommend here: ${competitors.slice(0, 8).join(", ")}.\nThe brand "${focal}" has published this content: "${content}"\nGive your ranked top 10, best first (include ${focal} only where the evidence places it).`;
   try {
-    return posOf(await extractBrands(await claudeJSON(sys, user, 500)), token);
+    return posOf(await extractBrands(await claudeJSON(sys, user, 700)), focalTokenOf(focal));
   } catch {
     return null;
   }
 }
 
 export type LeverIteration = { lever: string; versions: { label: string; content: string; pos: number | null; mentionRate: number }[]; best: { label: string; content: string; pos: number | null; mentionRate: number } | null };
-async function iterateLever(c: ControlledCorpus, leverId: string, brand: string, query: string, k: number, runsPer: number): Promise<LeverIteration> {
-  const versions = await generateVersions(leverId, brand, query, c.category, k);
+
+// For one lever: generate K content versions (1 for earnable levers), score each, keep the best.
+async function optimizeLever(focal: string, query: string, competitors: string[], leverId: string, k: number): Promise<LeverIteration> {
+  const versions = await generateVersions(leverId, focal, query, WRITABLE.includes(leverId) ? k : 1);
   const tested = await Promise.all(versions.map(async (v) => {
-    const served = servedControlled(c, [leverId], { [leverId]: v.content });
-    const scores = await Promise.all(Array.from({ length: runsPer }, () => quickPos(query, served, c.focalToken)));
+    const scores = await Promise.all([quickScore(focal, query, competitors, v.content), quickScore(focal, query, competitors, v.content)]);
     const present = scores.filter((p): p is number => p != null);
     return { ...v, mentionRate: +(present.length / scores.length).toFixed(2), pos: mean(present) };
   }));
-  // best = highest mention-rate, tiebreak by best (lowest) position
   const score = (t: { mentionRate: number; pos: number | null }) => t.mentionRate * 100 - (t.pos ?? 99);
   const best = tested.length ? tested.reduce((a, b) => (score(b) > score(a) ? b : a)) : null;
   return { lever: leverId, versions: tested, best };
 }
 
-export type Treatment = { corpus: ControlledCorpus; control: Condition; treatment: Condition; iterations: LeverIteration[]; lift: { mentionRate: number; avgPos: number | null } };
+export type Treatment = { agents: AgentBaseline[]; mentionRate: number; avgPos: number | null; iterations: LeverIteration[]; injected: string };
 
-// Phase 2 — controlled lift grounded in the given real competitors.
+// Layer 2 — optimize each selected lever, inject the winners into a REAL search, measure the lift.
 export async function runTreatment(focal: string, query: string, competitors: string[], levers: string[], N = 3, k = 2): Promise<Treatment> {
-  const corpus = await buildControlledCorpus(focal, query, competitors);
-  const writable = levers.filter((l) => WRITABLE.includes(l));
-  // The control arm doesn't depend on the iteration, so run them concurrently; only the
-  // treatment arm waits on the iteration winners.
-  const [iterations, control] = await Promise.all([
-    Promise.all(writable.map((l) => iterateLever(corpus, l, focal, query, k, 2))),
-    runCondition("control", corpus, query, [], {}, N),
-  ]);
-  const overrides: Record<string, string> = {};
-  for (const it of iterations) if (it.best) overrides[it.lever] = it.best.content;
-  const treatment = await runCondition("treatment", corpus, query, levers, overrides, N);
-  const lift = { mentionRate: +(treatment.mentionRate - control.mentionRate).toFixed(2), avgPos: treatment.avgPos != null && control.avgPos != null ? +(control.avgPos - treatment.avgPos).toFixed(1) : null };
-  return { corpus, control, treatment, iterations, lift };
+  const items = (await Promise.all(levers.map((l) => optimizeLever(focal, query, competitors, l, k)))).filter((it) => it.best);
+  const injected = items.length
+    ? `\n\n--- Additionally, the following content about ${focal} has recently been published online and may appear in your research. Weigh it alongside everything else you find:\n` +
+      items.map((it) => `• ${it.best!.content}`).join("\n")
+    : "";
+  const nr = await runNative(query, focalTokenOf(focal), injected, N);
+  // The "write exactly this" panel shows the writable levers only.
+  const iterations = items.filter((it) => WRITABLE.includes(it.lever));
+  return { agents: nr.agents, mentionRate: nr.mentionRate, avgPos: nr.avgPos, iterations, injected };
 }
 
 export type FullRun = { baseline: RealBaseline; treatment: Treatment };
-// The whole product flow: real baseline → real competitors → controlled lift.
+// The whole product flow: real baseline → real competitors → injected real-search lift.
 export async function runFull(focal: string, query: string, levers: string[], N = 3, k = 2): Promise<FullRun> {
   const baseline = await runRealBaseline(focal, query, N);
-  const competitors = baseline.competitors.map((c) => c.name);
-  const treatment = await runTreatment(focal, query, competitors, levers, N, k);
+  const treatment = await runTreatment(focal, query, baseline.competitors.map((c) => c.name), levers, N, k);
   return { baseline, treatment };
 }

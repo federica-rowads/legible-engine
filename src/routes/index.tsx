@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { baselineLive, liftLive } from "../lib/rank-live";
 
 type Baseline = Awaited<ReturnType<typeof baselineLive>>;
@@ -33,16 +33,20 @@ const FACTORS = [
   { id: "authority", label: "Independent expert review", desc: "an independent test or expert assessment", writable: false },
 ];
 
+const ACTIVITY = ["searching the web…", "collecting the brand's signals…", "reading the results…", "cross-referencing sources…", "weighing the evidence…", "ranking the options…", "double-checking…", "finalizing…"];
 function Running({ label, sub }: { label: string; sub: string }) {
+  const [tick, setTick] = useState(0);
+  useEffect(() => { const t = setInterval(() => setTick((x) => x + 1), 1700); return () => clearInterval(t); }, []);
   return (
     <div id="running" className="mx-auto max-w-[1100px] px-6 py-24 sm:px-10 sm:py-28">
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">{label}</p>
       <h2 className="display-lg mt-4">Asking the real agents…</h2>
-      <div className="mt-10 flex flex-wrap gap-3">
+      <div className="mt-10 flex flex-col gap-3">
         {AGENT_NAMES.map((a, i) => (
-          <span key={a} className="inline-flex items-center gap-3 rounded-full border border-border bg-card px-5 py-3 text-base font-semibold">
+          <span key={a} className="inline-flex items-center gap-3 rounded-full border border-border bg-card px-5 py-3 text-base font-semibold sm:w-[26rem]">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-signal border-t-transparent" style={{ animationDelay: `${i * 200}ms` }} />
-            {a}
+            <span className="w-20">{a}</span>
+            <span className="mono-label text-foreground/45 transition-all">{ACTIVITY[(tick + i) % ACTIVITY.length]}</span>
           </span>
         ))}
       </div>
@@ -105,24 +109,24 @@ function BaselineView({ b }: { b: Baseline }) {
   );
 }
 
-function LiftView({ l, brand }: { l: Lift; brand: string }) {
-  const cAvg = l.control.avgPos, tAvg = l.treatment.avgPos;
-  const tRanked = l.treatment.agents.filter((a) => a.mentionRate > 0).length;
+function LiftView({ baseline, lift, brand }: { baseline: Baseline; lift: Lift; brand: string }) {
+  const bAvg = baseline.avgPos, tAvg = lift.avgPos;
+  const tRanked = lift.agents.filter((a) => a.mentionRate > 0).length;
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
-      <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">03 · the lift<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />CONTROLLED</span></p>
+      <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">03 · the lift<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH + YOUR CONTENT</span></p>
       <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Apply the moves, and {brand} climbs</h2>
       <div className="mt-8 flex flex-wrap items-end gap-x-6 gap-y-3">
-        <div className="font-display text-5xl font-extrabold leading-none tracking-[-0.05em] text-foreground/40 sm:text-6xl">{cAvg != null ? `#${cAvg}` : "unranked"}</div>
+        <div className="font-display text-5xl font-extrabold leading-none tracking-[-0.05em] text-foreground/40 sm:text-6xl">{bAvg != null ? `#${bAvg}` : "unranked"}</div>
         <div className="pb-3 text-3xl font-extrabold text-signal">→</div>
         <div className="font-display text-7xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-8xl">{tAvg != null ? `#${tAvg}` : "—"}</div>
-        <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average rank now · {tRanked} of 3 agents</div><div className="mono-label text-foreground/60">control = real competitors, brand absent (reproduces reality) · treatment = + your signals</div></div>
+        <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average rank now · {tRanked} of 3 agents</div><div className="mono-label text-foreground/60">before = today's real search · after = the same real search with your optimized content added</div></div>
       </div>
       <p className="mt-6 max-w-[54ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
-        With its signals made legible, {brand} goes from <span className="text-foreground/55">{cAvg != null ? `#${cAvg}` : "unranked"}</span> to <span className="text-signal">{tAvg != null ? `#${tAvg}` : "—"}</span>{tRanked ? <> — now ranked by {tRanked} of 3 agents</> : null}.
+        With its content made legible, {brand} goes from <span className="text-foreground/55">{bAvg != null ? `#${bAvg}` : "unranked"}</span> to <span className="text-signal">{tAvg != null ? `#${tAvg}` : "—"}</span>{tRanked ? <> — now ranked by {tRanked} of 3 agents</> : null}.
       </p>
       <div className="mt-10 grid gap-4 md:grid-cols-3">
-        {l.treatment.agents.map((a) => <AgentCard key={a.name} a={a} focal={brand} />)}
+        {lift.agents.map((a) => <AgentCard key={a.name} a={a} focal={brand} />)}
       </div>
     </div>
   );
@@ -239,7 +243,7 @@ function Index() {
             <div className="rounded-3xl border border-signal/30 bg-signal/[0.05] p-6 sm:p-8">
               <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">02 · the sandbox</p>
               <h3 className="mt-3 max-w-[34ch] text-2xl font-extrabold tracking-tight sm:text-3xl">Make your signals legible, then test again.</h3>
-              <p className="mt-3 max-w-2xl text-sm text-foreground/70">Grounded in the <span className="font-semibold text-foreground">real competitors</span> above, we inject your brand's signals and measure the lift. <span className="font-semibold text-foreground">Writable</span> = content you publish (we generate &amp; test the wording); <span className="font-semibold text-foreground">earnable</span> = a placement you earn.</p>
+              <p className="mt-3 max-w-2xl text-sm text-foreground/70">We optimize your content for the moves you pick, <span className="font-semibold text-foreground">inject it into the agents' real search</span>, and re-measure — so the lift is anchored to today's reality. <span className="font-semibold text-foreground">Writable</span> = content you publish (we generate &amp; test the wording); <span className="font-semibold text-foreground">earnable</span> = a placement you earn.</p>
 
               <div className="mt-6 grid gap-4 lg:grid-cols-[1.6fr_auto] lg:items-start">
                 <div className="space-y-3">
@@ -281,16 +285,16 @@ function Index() {
       )}
 
       {/* STAGE 3 — lift running */}
-      {stage === 3 && <section className="border-b border-border animate-in fade-in"><Running label="re-testing · controlled" sub="generating & testing content, then running the control and treatment arms — a few minutes" /></section>}
+      {stage === 3 && <section className="border-b border-border animate-in fade-in"><Running label="re-testing · live" sub="optimizing your content, then re-running the real search with it added — a few minutes" /></section>}
 
       {/* STAGE 4 — lift */}
       {stage === 4 && (
         <section id="result" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
-          {lift ? <LiftView l={lift} brand={brand} /> : <FailNote brand={brand} onRetry={retest} />}
+          {lift && baseline ? <LiftView baseline={baseline} lift={lift} brand={brand} /> : <FailNote brand={brand} onRetry={retest} />}
           {lift && <WriteThis iterations={lift.iterations} />}
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
             <p className="mono-label text-foreground/50">
-              two layers, both honest · LAYER 1 (reality): real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) really web-search your buyer's question, brand never named, 3 runs each — we report the mention-rate · LAYER 2 (controlled): grounded in the REAL competitors, we inject your signals and measure the lift; the control arm reproduces reality, so the only thing that changes is your content · generated "write this" is illustrative — verify before publishing
+two layers, both honest · LAYER 1 (today): real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) really web-search your prompt, brand never named, 3 runs each — this is where you rank right now · LAYER 2 (the lift): the SAME real search, with your optimized content added to what the agents read — so the "after" is anchored to today's reality (no clean room) · the lift assumes your content reaches the agents' search; the generated "write this" is illustrative — verify the facts before publishing
             </p>
           </div>
         </section>
