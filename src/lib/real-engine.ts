@@ -209,11 +209,12 @@ async function claudeCtrl(query: string, served: Result[]): Promise<string> {
 async function openaiCtrl(query: string, served: Result[]): Promise<string> {
   const tools = [{ type: "function", function: { name: "web_search", description: TOOL_DESC, parameters: TOOL_SCHEMA } }];
   const messages: unknown[] = [{ role: "system", content: CTRL_SYS }, { role: "user", content: `Shopper's question: "${query}"` }];
-  for (let hop = 0; hop < 4; hop++) {
+  for (let hop = 0; hop < 3; hop++) {
+    const forceAnswer = hop === 2; // final hop: drop tools so the model MUST answer (it loops on web_search otherwise)
     const r = await aFetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ""}`, "content-type": "application/json" },
-      body: JSON.stringify({ model: "gpt-5.5", messages, tools, max_completion_tokens: 1400 }),
+      body: JSON.stringify({ model: "gpt-5.5", messages, max_completion_tokens: 1400, ...(forceAnswer ? {} : { tools }) }),
     });
     if (!r.ok) return `ERR openai ${r.status}`;
     const j = await r.json();
@@ -228,11 +229,12 @@ async function openaiCtrl(query: string, served: Result[]): Promise<string> {
 async function geminiCtrl(query: string, served: Result[]): Promise<string> {
   const tools = [{ functionDeclarations: [{ name: "web_search", description: TOOL_DESC, parameters: TOOL_SCHEMA }] }];
   const contents: unknown[] = [{ role: "user", parts: [{ text: `Shopper's question: "${query}"` }] }];
-  for (let hop = 0; hop < 4; hop++) {
+  for (let hop = 0; hop < 3; hop++) {
+    const forceAnswer = hop === 2; // final hop: drop tools so the model MUST answer
     const r = await aFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ systemInstruction: { parts: [{ text: CTRL_SYS }] }, contents, tools, generationConfig: { maxOutputTokens: 1400 } }),
+      body: JSON.stringify({ systemInstruction: { parts: [{ text: CTRL_SYS }] }, contents, generationConfig: { maxOutputTokens: 1400 }, ...(forceAnswer ? {} : { tools }) }),
     });
     if (!r.ok) return `ERR gemini ${r.status}`;
     const j = await r.json();
