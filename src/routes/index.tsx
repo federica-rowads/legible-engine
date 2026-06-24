@@ -254,7 +254,7 @@ function Index() {
       <section className="border-b border-border">
         <div className="relative mx-auto max-w-[1100px] overflow-hidden px-6 pb-12 pt-16 sm:px-10 sm:pt-24">
           <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[520px] w-[760px] -translate-x-1/2 rounded-full bg-signal/[0.06] blur-3xl" />
-          <h1 className="display-xl max-w-[15ch]"><span className="block">Where do AI agents</span><span className="mt-3 block text-muted-foreground">rank your brand?</span></h1>
+          <h1 className="display-xl max-w-[15ch]"><span className="block">How do AI agents</span><span className="mt-3 block text-muted-foreground">rank your brand?</span></h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">When a buyer asks an agent, it recommends a few brands. We ask the real agents (live web search) whether yours is one of them, then apply the moves and measure the lift.</p>
 
           <div className="mt-10 rounded-3xl border-2 border-foreground/15 bg-card p-6 shadow-[0_0_40px_-12px_rgba(0,0,0,0.6)] sm:p-7">

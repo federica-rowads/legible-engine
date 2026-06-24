@@ -77,9 +77,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Legible — See your brand the way an AI agent does." },
+      { title: "Legible: See your brand the way an AI agent does." },
       { name: "description", content: "Brand intelligence for the AI-agent era. Find out whether AI agents recommend your brand, why, and the single highest-leverage move to fix it." },
-      { property: "og:title", content: "Legible — Brand intelligence for the AI-agent era" },
+      { property: "og:title", content: "Legible: Brand intelligence for the AI-agent era" },
       { property: "og:description", content: "See your brand the way an AI agent does." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
