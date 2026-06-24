@@ -46,7 +46,7 @@ async function claudeSearch(query: string): Promise<string> {
     const r = await aFetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 2000, messages, tools }),
+      body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 4000, messages, tools }),
     });
     if (!r.ok) return `ERR claude ${r.status}`;
     const j = await r.json();
@@ -194,7 +194,7 @@ async function claudeCtrl(query: string, served: Result[]): Promise<string> {
     const r = await aFetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 1400, system: CTRL_SYS, tools, messages }),
+      body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 4000, system: CTRL_SYS, tools, messages }),
     });
     if (!r.ok) return `ERR claude ${r.status}`;
     const j = await r.json();
@@ -214,7 +214,7 @@ async function openaiCtrl(query: string, served: Result[]): Promise<string> {
     const r = await aFetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY || ""}`, "content-type": "application/json" },
-      body: JSON.stringify({ model: "gpt-5.5", messages, max_completion_tokens: 1400, ...(forceAnswer ? {} : { tools }) }),
+      body: JSON.stringify({ model: "gpt-5.5", messages, max_completion_tokens: 4000, ...(forceAnswer ? {} : { tools }) }),
     });
     if (!r.ok) return `ERR openai ${r.status}`;
     const j = await r.json();
@@ -278,7 +278,7 @@ const CORPUS_SYS =
 
 export async function buildControlledCorpus(focal: string, query: string, competitorNames: string[]): Promise<ControlledCorpus> {
   const comps = competitorNames.slice(0, 6);
-  const out = await claudeJSON(CORPUS_SYS, `Shopper query: "${query}"\nFocal brand: "${focal}"\nReal competitors: ${comps.join(", ")}\nProduce the corpus JSON.`, 2200);
+  const out = await claudeJSON(CORPUS_SYS, `Shopper query: "${query}"\nFocal brand: "${focal}"\nReal competitors: ${comps.join(", ")}\nProduce the corpus JSON.`, 4000);
   let j: { category?: string; competitors?: { name?: string; title?: string; snippet?: string }[]; guide?: { title?: string; base?: string; focal?: string }; community?: { title?: string; base?: string; lead?: string; focalDefault?: string }; levers?: Record<string, string> } = {};
   try { j = JSON.parse(jsonExtract(out)); } catch { /* fall back to a minimal corpus built from the real competitor names below */ }
   const L = j.levers || {};
