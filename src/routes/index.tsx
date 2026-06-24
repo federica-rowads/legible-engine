@@ -16,9 +16,20 @@ export const Route = createFileRoute("/")({
 });
 
 const STEPS = ["Where you stand", "Apply the moves", "Measure the lift"];
-const TAG: Record<string, string> = { ChatGPT: "GPT", Claude: "CLD", Gemini: "GEM" };
 const AGENT_NAMES = ["ChatGPT", "Claude", "Gemini"];
 const MODELS: Record<string, string> = { ChatGPT: "gpt-5.5", Claude: "claude-opus-4-8", Gemini: "gemini-pro-latest" };
+// Readable display labels for the real model IDs above, shown in the agent card header.
+const MODEL_LABEL: Record<string, string> = { ChatGPT: "GPT-5.5", Claude: "Opus 4.8", Gemini: "Gemini Pro" };
+// Shared agent-card header: a green name pill + the readable model beside it. Used by
+// ThinkingCard (loading) and AgentCard (result) so the card looks identical in both states.
+function AgentHeader({ name }: { name: string }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border/60 pb-3">
+      <span className="rounded-md bg-signal/15 px-2.5 py-1 text-sm font-extrabold tracking-tight text-signal">{name}</span>
+      <span className="mono-label text-foreground/60">{MODEL_LABEL[name] || MODELS[name]}</span>
+    </div>
+  );
+}
 const pct = (x: number | null | undefined) => (x == null ? "n/a" : `${Math.round(x * 100)}%`);
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 const isFocalName = (b: string, focal: string) => { const t = norm(focal).split(/\s+/)[0] || norm(focal); const nb = norm(b); return nb.length >= 2 && (nb.includes(t) || t.includes(nb)); };
@@ -27,22 +38,22 @@ const meanOf = (xs: number[]) => (xs.length ? +(xs.reduce((a, b) => a + b, 0) / 
 const errAgent = (name: string): AgentB => ({ name, model: MODELS[name] || "", runs: [{ agent: name, model: MODELS[name] || "", ranked: [], pos: null, ok: false }], mentionRate: 0, avgPos: null, posStdev: null, topList: [] });
 const positions = (slots: AgentB[]) => slots.flatMap((a) => a.runs.filter((r) => r.ok && r.pos != null).map((r) => r.pos as number));
 const anyOk = (slots: AgentB[]) => slots.some((a) => a.runs.some((r) => r.ok));
-// The real competitor set, tallied across the agents' live top-10s (focal excluded) — grounds the injection.
+// The real competitor set, tallied across the agents' live top-10s (focal excluded), grounds the injection.
 function competitorsOf(slots: (AgentB | null)[], focal: string): string[] {
   const tally = new Map<string, { name: string; n: number }>();
   for (const a of slots) { if (!a) continue; for (const b of a.topList) { if (isFocalName(b, focal)) continue; const k = norm(b); const e = tally.get(k); if (e) e.n++; else tally.set(k, { name: b, n: 1 }); } }
   return [...tally.values()].sort((x, y) => y.n - x.n).slice(0, 10).map((e) => e.name);
 }
 
-// The six moves. Writable = the brand publishes the content (we generate & test it);
-// earnable = the brand earns the placement.
+// The six moves. `what` is a plain explanation and `examples` are two concrete action items,
+// shown in the expand panel. The engine decides writability by lever id internally.
 const FACTORS = [
-  { id: "comparison", label: "Head-to-head comparison", desc: "an honest page pitting you against the category leader", writable: true },
-  { id: "reviews", label: "Owner reviews & ratings", desc: "a visible body of customer reviews and a rating", writable: true },
-  { id: "community", label: "Community recommendation", desc: "real users recommending you in forums / Reddit", writable: true },
-  { id: "specs", label: "Product details / specs", desc: "a clear, machine-readable detail page", writable: true },
-  { id: "editorial", label: "Editorial best-of placement", desc: "appear in the best-of guides agents cite", writable: false },
-  { id: "authority", label: "Independent expert review", desc: "an independent test or expert assessment", writable: false },
+  { id: "comparison", label: "Head-to-head comparison", desc: "an honest page pitting you against the category leader", what: "An honest side-by-side of you against the brand agents recommend most, so the agent has a basis to place you.", examples: ["Publish a '[you] vs [category leader]' page: price, materials, fit, who each is best for.", "Add a line the agent can quote, e.g. '[you]: machine-washable, $X. [leader]: dry-clean, $Y.'"] },
+  { id: "reviews", label: "Owner reviews & ratings", desc: "a visible body of customer reviews and a rating", what: "A visible body of real customer reviews and an aggregate rating on your product pages.", examples: ["Show a rating with a real count, e.g. '4.5/5 across 2,000+ verified owners' (substantiate the numbers).", "Surface two or three quoted reviews that name the use case, e.g. 'best for flat feet'."] },
+  { id: "community", label: "Community recommendation", desc: "real users recommending you in forums / Reddit", what: "Real users recommending you where agents read, like Reddit and niche forums.", examples: ["Earn an honest Reddit thread where owners recommend you for this exact need.", "Get named in a forum reply comparing options for the buyer's use case."] },
+  { id: "specs", label: "Product details / specs", desc: "a clear, machine-readable detail page", what: "A clear, machine-readable detail page with the attributes shoppers actually compare.", examples: ["Publish a spec block: materials, fit, sizing, weight, price, care.", "Add structured product data the agent can parse."] },
+  { id: "editorial", label: "Editorial best-of placement", desc: "appear in the best-of guides agents cite", what: "A spot in the 'best [category]' guides agents cite. You earn or place this, you do not self-publish it.", examples: ["Get listed in a respected '[category] best-of' roundup.", "Land a mention in a buyer's guide for this use case (PR or paid placement both count)."] },
+  { id: "authority", label: "Independent expert review", desc: "an independent test or expert assessment", what: "An independent test or expert verdict on your product. You earn this, but you can pursue it.", examples: ["Get an independent reviewer or lab to test your product.", "Earn an expert's verdict the agent can cite."] },
 ];
 
 // Placebo thinking-feed phrases (not wired to real agent state). Agent-reasoning style.
@@ -59,18 +70,23 @@ const ACTIVITY = [
   "finalizing the shortlist…",
 ];
 
-// Ticks once every 2300ms while `active`, driving the placebo thinking feeds. Frozen when idle.
-function useTick(active: boolean) {
-  const [tick, setTick] = useState(0);
-  useEffect(() => { if (!active) return; const t = setInterval(() => setTick((x) => x + 1), 2300); return () => clearInterval(t); }, [active]);
-  return tick;
-}
-
 // One agent's rolling "thinking feed": a window of the last up-to-3 phrases that
 // advances one line at a time. Newest line sits at the bottom (full opacity + spinner);
-// older lines above it fade out. The phrase stream is offset per column so the three
-// feeds look independent rather than moving in lockstep.
-function ThinkingFeed({ tick, offset }: { tick: number; offset: number }) {
+// older lines above it fade out. Self-timed: each step schedules the next on a fresh
+// random delay (~1700-3000ms) so the three feeds tick at their own organic rhythm rather
+// than in lockstep, and each starts on a different phrase (offset per column). The card
+// unmounts when the agent's result arrives, so the feed stops naturally via cleanup.
+function ThinkingFeed({ offset }: { offset: number }) {
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      const delay = 1700 + Math.random() * 1300; // ~1700ms .. ~3000ms
+      timer = setTimeout(() => { setTick((x) => x + 1); schedule(); }, delay);
+    };
+    schedule();
+    return () => clearTimeout(timer);
+  }, []);
   const phrase = (k: number) => ACTIVITY[((k + offset) % ACTIVITY.length + ACTIVITY.length) % ACTIVITY.length];
   const start = Math.max(0, tick - 2);
   const lines: { key: number; text: string }[] = [];
@@ -93,14 +109,11 @@ function ThinkingFeed({ tick, offset }: { tick: number; offset: number }) {
 }
 
 // A still-running agent: same card chrome as the result card, with the live thinking feed below.
-function ThinkingCard({ name, tick, offset }: { name: string; tick: number; offset: number }) {
+function ThinkingCard({ name, offset }: { name: string; offset: number }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
-      <div className="flex items-center justify-between border-b border-border/60 pb-3">
-        <div><div className="text-lg font-extrabold tracking-tight text-foreground">{name}</div><div className="mono-label text-foreground/50">{MODELS[name]}</div></div>
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal/15 text-[11px] font-extrabold text-signal">{TAG[name]}</span>
-      </div>
-      <ThinkingFeed tick={tick} offset={offset} />
+      <AgentHeader name={name} />
+      <ThinkingFeed offset={offset} />
     </div>
   );
 }
@@ -111,10 +124,7 @@ function AgentCard({ a, focal }: { a: AgentB; focal: string }) {
   const ranked = a.mentionRate > 0;
   return (
     <div className={`rounded-2xl border p-5 animate-in fade-in duration-500 ${ranked ? "border-signal/60 bg-signal/[0.06]" : "border-border bg-card"}`}>
-      <div className="flex items-center justify-between border-b border-border/60 pb-3">
-        <div><div className="text-lg font-extrabold tracking-tight text-foreground">{a.name}</div><div className="mono-label text-foreground/50">{a.model}</div></div>
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal/15 text-[11px] font-extrabold text-signal">{TAG[a.name]}</span>
-      </div>
+      <AgentHeader name={a.name} />
       <div className="mt-4">
         <div className="mono-label text-foreground/70">ranks {focal}</div>
         {failed
@@ -136,10 +146,10 @@ function AgentCard({ a, focal }: { a: AgentB; focal: string }) {
 }
 
 // The progressive grid: each cell is a result card once that agent resolves, a thinking card until then.
-function AgentGrid({ slots, focal, tick }: { slots: (AgentB | null)[]; focal: string; tick: number }) {
+function AgentGrid({ slots, focal }: { slots: (AgentB | null)[]; focal: string }) {
   return (
     <div className="mt-10 grid gap-4 md:grid-cols-3">
-      {AGENT_NAMES.map((name, i) => (slots[i] ? <AgentCard key={name} a={slots[i] as AgentB} focal={focal} /> : <ThinkingCard key={name} name={name} tick={tick} offset={i * 3} />))}
+      {AGENT_NAMES.map((name, i) => (slots[i] ? <AgentCard key={name} a={slots[i] as AgentB} focal={focal} /> : <ThinkingCard key={name} name={name} offset={i * 3} />))}
     </div>
   );
 }
@@ -153,8 +163,8 @@ function RunningHead({ label, n }: { label: string; n: number }) {
   );
 }
 
-// 01 — the baseline verdict, filled in progressively as each agent answers.
-function VerdictView({ slots, focal, tick, onRetry }: { slots: (AgentB | null)[]; focal: string; tick: number; onRetry: () => void }) {
+// 01 the baseline verdict, filled in progressively as each agent answers.
+function VerdictView({ slots, focal, onRetry }: { slots: (AgentB | null)[]; focal: string; onRetry: () => void }) {
   const loaded = slots.filter(Boolean) as AgentB[];
   const allDone = loaded.length === slots.length;
   const avgPos = meanOf(positions(loaded));
@@ -164,7 +174,7 @@ function VerdictView({ slots, focal, tick, onRetry }: { slots: (AgentB | null)[]
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">01 · the verdict, today<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH</span></p>
-      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">How do the agents rank {focal}?</h2>
+      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">How do the agents rank the brand: <span className="italic">{focal}</span>?</h2>
       {!allDone ? (
         <RunningHead label="Measuring live" n={loaded.length} />
       ) : allFailed ? (
@@ -173,22 +183,22 @@ function VerdictView({ slots, focal, tick, onRetry }: { slots: (AgentB | null)[]
         <>
           <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-3">
             <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-9xl">{avgPos != null ? `#${avgPos}` : "Unranked"}</div>
-            <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average rank, when an agent ranks it at all</div><div className="mono-label text-foreground/60">ranked by {nRanked} of 3 agents · {N} real runs each · we never named the brand</div></div>
+            <div className="pb-2"><div className="text-xl font-extrabold text-foreground">{avgPos != null ? "average rank, when an agent ranks it at all" : "not in any agent's top 10"}</div><div className="mono-label text-foreground/60">ranked by {nRanked} of 3 agents · {N} real runs each · we never named the brand</div></div>
           </div>
           <p className="mt-6 max-w-[68ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
             {nRanked === 0
-              ? <><span className="text-signal">{focal} is invisible.</span> Not one agent puts it in its top 10. See what they rank instead, below.</>
-              : <>{nRanked} of 3 agents rank {focal}{avgPos != null ? <>, around <span className="text-signal">#{avgPos}</span> of 10</> : null}{nRanked < 3 ? <>, while the other {3 - nRanked} leave it off entirely</> : null}.</>}
+              ? <><span className="text-signal">The brand: <span className="italic">{focal}</span> is invisible.</span> Not one agent puts it in its top 10. See what they rank instead, below.</>
+              : <>{nRanked} of 3 agents rank the brand: <span className="italic">{focal}</span>{avgPos != null ? <>, around <span className="text-signal">#{avgPos}</span> of 10</> : null}{nRanked < 3 ? <>, while the other {3 - nRanked} leave it off entirely</> : null}.</>}
           </p>
         </>
       )}
-      <AgentGrid slots={slots} focal={focal} tick={tick} />
+      <AgentGrid slots={slots} focal={focal} />
     </div>
   );
 }
 
-// 03 — the lift: optimize the content, then re-run each agent progressively. before vs after.
-function LiftView({ bSlots, tSlots, brand, tick, optimizing }: { bSlots: (AgentB | null)[]; tSlots: (AgentB | null)[]; brand: string; tick: number; optimizing: boolean }) {
+// 03 the lift: optimize the content, then re-run each agent progressively. before vs after.
+function LiftView({ bSlots, tSlots, brand, optimizing }: { bSlots: (AgentB | null)[]; tSlots: (AgentB | null)[]; brand: string; optimizing: boolean }) {
   const bAvg = meanOf(positions(bSlots.filter(Boolean) as AgentB[]));
   const tLoaded = tSlots.filter(Boolean) as AgentB[];
   const allDone = !optimizing && tLoaded.length === tSlots.length;
@@ -197,7 +207,7 @@ function LiftView({ bSlots, tSlots, brand, tick, optimizing }: { bSlots: (AgentB
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">03 · the lift<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH + YOUR CONTENT</span></p>
-      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Apply the moves, and {brand} climbs</h2>
+      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Apply the moves, and the brand: <span className="italic">{brand}</span> climbs</h2>
       {optimizing ? (
         <div className="mt-8 flex items-center gap-3"><span className="h-5 w-5 animate-spin rounded-full border-2 border-signal border-t-transparent" /><div className="text-xl font-extrabold text-foreground">Optimizing your content<span className="text-foreground/50"> · generating and scoring the best version</span></div></div>
       ) : !allDone ? (
@@ -211,11 +221,11 @@ function LiftView({ bSlots, tSlots, brand, tick, optimizing }: { bSlots: (AgentB
             <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average rank now · {tRanked} of 3 agents</div><div className="mono-label text-foreground/60">before = today's real search · after = the same real search with your optimized content added</div></div>
           </div>
           <p className="mt-6 max-w-[68ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
-            With its content made legible, {brand} goes from <span className="text-foreground/55">{bAvg != null ? `#${bAvg}` : "Unranked"}</span> to <span className="text-signal">{tAvg != null ? `#${tAvg}` : "Unranked"}</span>{tRanked ? <>, now ranked by {tRanked} of 3 agents</> : null}.
+            With its content made legible, <span className="italic">{brand}</span> goes from <span className="text-foreground/55">{bAvg != null ? `#${bAvg}` : "Unranked"}</span> to <span className="text-signal">{tAvg != null ? `#${tAvg}` : "Unranked"}</span>{tRanked ? <>, now ranked by {tRanked} of 3 agents</> : null}.
           </p>
         </>
       )}
-      {!optimizing && <AgentGrid slots={tSlots} focal={brand} tick={tick} />}
+      {!optimizing && <AgentGrid slots={tSlots} focal={brand} />}
     </div>
   );
 }
@@ -257,7 +267,6 @@ function Index() {
   const bDone = bStarted && bSlots.every((s) => s !== null);
   const bPending = bStarted && bSlots.some((s) => s === null);
   const tPending = tStarted && (optimizing || tSlots.some((s) => s === null));
-  const tick = useTick(bPending || tPending);
 
   const activeStep = stage <= 1 ? 0 : stage === 4 ? 2 : 1;
   const scrollTo = (id: string) => setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 70);
@@ -317,7 +326,7 @@ function Index() {
         <div className="relative mx-auto max-w-[1100px] overflow-hidden px-6 pb-12 pt-16 sm:px-10 sm:pt-24">
           <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[520px] w-[760px] -translate-x-1/2 rounded-full bg-signal/[0.06] blur-3xl" />
           <h1 className="display-xl max-w-[15ch]"><span className="block">How do AI agents</span><span className="mt-3 block text-muted-foreground">rank your brand?</span></h1>
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground">When a buyer asks an agent, it recommends a few brands. We ask the real agents (live web search) whether yours is one of them, then apply the moves and measure the lift.</p>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">When a buyer asks an agent, it recommends a few brands. We ask the real agents (live web search) whether yours is one of them, then apply the moves and measure the lift.</p>
 
           <div className="mt-10 rounded-3xl border-2 border-foreground/15 bg-card p-6 shadow-[0_0_40px_-12px_rgba(0,0,0,0.6)] sm:p-7">
             <div className="grid gap-5 sm:grid-cols-[1fr_1.4fr_auto] sm:items-end">
@@ -339,13 +348,13 @@ function Index() {
       {/* STAGE 2: baseline (progressive) + sandbox */}
       {stage >= 2 && (
         <section id="verdict" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
-          <VerdictView slots={bSlots} focal={brand} tick={tick} onRetry={ask} />
+          <VerdictView slots={bSlots} focal={brand} onRetry={ask} />
 
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
             <div className="rounded-3xl border border-signal/30 bg-signal/[0.05] p-6 sm:p-8">
               <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">02 · the sandbox</p>
               <h3 className="mt-3 max-w-[34ch] text-2xl font-extrabold tracking-tight sm:text-3xl">Make your signals legible, then test again.</h3>
-              <p className="mt-3 max-w-2xl text-sm text-foreground/70">We optimize your content for the moves you pick, <span className="font-semibold text-foreground">inject it into the agents' real search</span>, and re-measure, so the lift is anchored to today's reality. <span className="font-semibold text-foreground">Writable</span> = content you publish (we generate &amp; test the wording); <span className="font-semibold text-foreground">earnable</span> = a placement you earn.</p>
+              <p className="mt-3 max-w-2xl text-sm text-foreground/70">Pick the moves to test. We optimize your content for each, <span className="font-semibold text-foreground">inject it into the agents' real search</span>, and re-measure, so the lift is anchored to today's reality.</p>
 
               <div className="mt-6 grid gap-4 lg:grid-cols-[1.6fr_auto] lg:items-start">
                 <div className="space-y-3">
@@ -358,17 +367,17 @@ function Index() {
                             <span className={`flex h-7 w-7 items-center justify-center rounded-md border-2 text-sm font-extrabold transition-colors ${on ? "border-signal bg-signal text-signal-foreground" : "border-foreground/50 bg-background text-transparent"}`}>✓</span>
                           </button>
                           <button onClick={() => toggleOpen(f.id)} className="flex-1 text-left">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-sm font-bold text-foreground">{f.label}</span>
-                              <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide ${f.writable ? "bg-signal/20 text-signal" : "bg-muted text-foreground/70"}`}>{f.writable ? "writable" : "earnable"}</span>
-                            </div>
+                            <span className="block text-sm font-bold text-foreground">{f.label}</span>
                             <span className="mt-0.5 block font-mono text-[0.72rem] text-foreground/60">{f.desc}</span>
                           </button>
                           <button onClick={() => toggleOpen(f.id)} aria-label="expand" className="w-6 shrink-0 text-center text-xl text-foreground/50 hover:text-foreground">{open ? "−" : "+"}</button>
                         </div>
                         {open && (
                           <div className="animate-in fade-in border-t border-border/60 px-4 py-4 text-[13px] leading-relaxed text-foreground/80">
-                            {f.writable ? <>You publish this. When you enable it, an agent generates a few realistic versions, we run each past the agents, and we keep the wording that moved your brand most. It is shown under "what to write".</> : <>You earn this, it can't be self-published. We model the placement to measure what it would be worth, but the brand has to genuinely earn it (pitch the editors, get into the independent tests).</>}
+                            <p>{f.what}</p>
+                            <ul className="mt-2 list-disc space-y-1 pl-5 text-[12px] text-foreground/55">
+                              {f.examples.map((ex, i) => <li key={i}>{ex}</li>)}
+                            </ul>
                           </div>
                         )}
                       </div>
@@ -389,7 +398,7 @@ function Index() {
       {/* STAGE 4: lift (progressive) */}
       {stage === 4 && (
         <section id="result" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
-          <LiftView bSlots={bSlots} tSlots={tSlots} brand={brand} tick={tick} optimizing={optimizing} />
+          <LiftView bSlots={bSlots} tSlots={tSlots} brand={brand} optimizing={optimizing} />
           <WriteThis iterations={iterations} />
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
             <p className="mono-label text-foreground/50">
