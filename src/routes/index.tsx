@@ -9,22 +9,45 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Legible: How do AI agents rank your brand?" },
-      { name: "description", content: "See whether AI agents recommend your brand today (real web search), then apply the moves and measure the lift. Real agents, real data, honest." },
+      { name: "description", content: "See whether AI agents recommend your brand today (real web search), then apply the changes and measure the lift. Real agents, real data, honest." },
     ],
   }),
   component: Index,
 });
 
-const STEPS = ["Where you stand", "Apply the moves", "Measure the lift"];
+const STEPS = ["Where you stand", "Apply the changes", "Measure the lift"];
 const AGENT_NAMES = ["ChatGPT", "Claude", "Gemini"];
 const MODELS: Record<string, string> = { ChatGPT: "gpt-5.5", Claude: "claude-opus-4-8", Gemini: "gemini-pro-latest" };
 // Readable display labels for the real model IDs above, shown in the agent card header.
 const MODEL_LABEL: Record<string, string> = { ChatGPT: "GPT-5.5", Claude: "Opus 4.8", Gemini: "Gemini Pro" };
-// Shared agent-card header: a green name pill + the readable model beside it. Used by
-// ThinkingCard (loading) and AgentCard (result) so the card looks identical in both states.
+// Inline brand marks for each agent, rendered in a subtle rounded badge in the shared header.
+// Each is a clean recognizable mark in the brand's color (OpenAI white, Claude #D97757,
+// Gemini #4796E3). currentColor is set on the wrapper so the mark picks up the brand color.
+const AGENT_LOGOS: Record<string, ReactNode> = {
+  ChatGPT: (
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden>
+      <path d="M22.28 9.82a5.98 5.98 0 0 0-.52-4.91 6.05 6.05 0 0 0-6.51-2.9A5.98 5.98 0 0 0 10.74 0a6.05 6.05 0 0 0-5.77 4.19 5.98 5.98 0 0 0-4 2.9 6.05 6.05 0 0 0 .75 7.09 5.98 5.98 0 0 0 .51 4.91 6.05 6.05 0 0 0 6.52 2.9A5.98 5.98 0 0 0 13.26 24a6.05 6.05 0 0 0 5.77-4.2 5.98 5.98 0 0 0 4-2.9 6.05 6.05 0 0 0-.75-7.08Zm-9.02 12.6a4.48 4.48 0 0 1-2.88-1.04l.14-.08 4.78-2.76a.78.78 0 0 0 .39-.68v-6.74l2.02 1.17a.07.07 0 0 1 .04.05v5.58a4.5 4.5 0 0 1-4.5 4.5ZM3.6 18.1a4.48 4.48 0 0 1-.54-3.01l.14.08 4.78 2.76a.78.78 0 0 0 .78 0l5.84-3.37v2.33a.07.07 0 0 1-.03.06l-4.83 2.79a4.5 4.5 0 0 1-6.14-1.64ZM2.34 7.9a4.48 4.48 0 0 1 2.34-1.97V11.6a.78.78 0 0 0 .39.68l5.84 3.37-2.02 1.17a.07.07 0 0 1-.07 0l-4.83-2.79a4.5 4.5 0 0 1-1.65-6.14Zm16.6 3.86-5.84-3.37 2.02-1.16a.07.07 0 0 1 .07 0l4.83 2.78a4.5 4.5 0 0 1-.68 8.12v-5.69a.78.78 0 0 0-.4-.68Zm2.01-3.03-.14-.09-4.78-2.76a.78.78 0 0 0-.78 0L9.4 9.25V6.92a.07.07 0 0 1 .03-.06l4.83-2.79a4.5 4.5 0 0 1 6.68 4.66ZM8.3 12.86l-2.02-1.17a.07.07 0 0 1-.04-.05V6.07a4.5 4.5 0 0 1 7.38-3.45l-.14.08L8.7 5.46a.78.78 0 0 0-.39.68v6.72Zm1.1-2.37 2.6-1.5 2.6 1.5v3l-2.6 1.5-2.6-1.5v-3Z" />
+    </svg>
+  ),
+  Claude: (
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden>
+      <path d="M4.71 15.16 9.4 12.5l.08-.23-.08-.13H9.2l-.78-.05-2.66-.07-2.3-.1-2.24-.12-.56-.12L0 11l.05-.35.47-.31.68.06 1.49.1 2.24.16 1.62.1 2.4.24h.39l.05-.16-.13-.1-.1-.1-2.36-1.6-2.55-1.69-1.34-.97-.72-.49-.37-.46-.16-1.02.67-.74.9.06.22.06.91.7 1.95 1.5 2.54 1.88.37.31.15-.1.02-.08-.17-.28-1.39-2.5-1.48-2.55-.66-1.06-.17-.63a3 3 0 0 1-.11-.75l.77-1.04L6 0l1.03.14.43.38.64 1.46 1.04 2.3 1.6 3.14.48.93.25.85.1.27h.16V11l.13-1.76.25-2.16.24-2.78.08-.78.4-.96.78-.52.62.3.5.72-.07.46-.3 1.96-.59 3.06-.38 2.05h.22l.26-.26 1.04-1.39 1.76-2.2.78-.87.9-.97.59-.46h1.1l.8 1.21-.36 1.25-1.13 1.42-.93 1.21-1.34 1.8-.84 1.45.08.12.2-.02 3.06-.65 1.65-.3 1.97-.34.9.42.1.42-.36.87-2.13.53-2.5.5-3.72.88-.05.03.06.08 1.68.16.72.04h1.76l3.28.24.86.57.5.7-.08.51-1.32.68-1.78-.43-4.16-.99-1.43-.36h-.2v.12l1.2 1.16 2.18 1.98 2.74 2.54.14.63-.35.5-.37-.06-2.4-1.8-.93-.82-2.1-1.76h-.13v.18l.48.71 2.56 3.85.13 1.18-.18.39-.66.23-.72-.13-1.49-2.09-1.54-2.35-1.24-2.11-.15.08-.73 7.85-.34.4-.79.3-.66-.5-.34-.81.34-1.59.42-2.07.34-1.64.3-2.04.18-.68v-.04l-.16.02-1.55 2.13-2.37 3.2-1.87 2-.45.18-.78-.41.07-.72.43-.64 2.6-3.3 1.56-2.05 1.01-1.18-.01-.16h-.06l-6.4 4.16-1.14.15-.49-.46.06-.74.23-.25 1.93-1.32Z" />
+    </svg>
+  ),
+  Gemini: (
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden>
+      <path d="M12 0c.18 5.86 6.14 11.82 12 12-5.86.18-11.82 6.14-12 12-.18-5.86-6.14-11.82-12-12C5.86 11.82 11.82 5.86 12 0Z" />
+    </svg>
+  ),
+};
+const AGENT_LOGO_COLOR: Record<string, string> = { ChatGPT: "#FFFFFF", Claude: "#D97757", Gemini: "#4796E3" };
+
+// Shared agent-card header: a brand-mark badge, then a green name pill + the readable model.
+// Used by ThinkingCard (loading) and AgentCard (result) so the card looks identical in both states.
 function AgentHeader({ name }: { name: string }) {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border/60 pb-3">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border/60 bg-foreground/[0.06]" style={{ color: AGENT_LOGO_COLOR[name] }} aria-hidden>{AGENT_LOGOS[name]}</span>
       <span className="rounded-md bg-signal/15 px-2.5 py-1 text-sm font-extrabold tracking-tight text-signal">{name}</span>
       <span className="mono-label text-foreground/60">{MODEL_LABEL[name] || MODELS[name]}</span>
     </div>
@@ -45,7 +68,7 @@ function competitorsOf(slots: (AgentB | null)[], focal: string): string[] {
   return [...tally.values()].sort((x, y) => y.n - x.n).slice(0, 10).map((e) => e.name);
 }
 
-// The six moves. `what` is a plain explanation and `examples` are two concrete action items,
+// The six changes. `what` is a plain explanation and `examples` are two concrete action items,
 // shown in the expand panel. The engine decides writability by lever id internally.
 const FACTORS = [
   { id: "comparison", label: "Head-to-head comparison", desc: "an honest page pitting you against the category leader", what: "An honest side-by-side of you against the brand agents recommend most, so the agent has a basis to place you.", examples: ["Publish a '[you] vs [category leader]' page: price, materials, fit, who each is best for.", "Add a line the agent can quote, e.g. '[you]: machine-washable, $X. [leader]: dry-clean, $Y.'"] },
@@ -135,7 +158,8 @@ function AgentCard({ a, focal }: { a: AgentB; focal: string }) {
         <div className="mono-label mt-1 text-foreground/50">{failed ? "the live call errored, re-test" : `${ranked && a.posStdev ? `±${a.posStdev} · ` : ""}runs: ${a.runs.map((r) => (r.pos != null ? `#${r.pos}` : (r.ok ? "–" : "x"))).join(" ")}`}</div>
       </div>
       <div className="mt-4">
-        <div className="mono-label text-foreground/70">its top 10, live</div>
+        <div className="mono-label text-[0.62rem] text-foreground/40">agent answer</div>
+        <div className="mono-label mt-1 text-foreground/70">its top 10, live</div>
         <ol className="mt-1.5 space-y-0.5">
           {a.topList.slice(0, 10).map((b, i) => <li key={i} className={`text-[13px] ${isFocalName(b, focal) ? "font-extrabold text-signal" : "text-foreground/70"}`}>{i + 1}. {b}{isFocalName(b, focal) ? " ← you" : ""}</li>)}
           {a.topList.length === 0 && <li className="text-[13px] text-foreground/40">(no ranking returned)</li>}
@@ -169,12 +193,12 @@ function VerdictView({ slots, focal, onRetry }: { slots: (AgentB | null)[]; foca
   const allDone = loaded.length === slots.length;
   const avgPos = meanOf(positions(loaded));
   const nRanked = loaded.filter((a) => a.mentionRate > 0).length;
+  const okCount = loaded.filter((a) => a.runs.some((r) => r.ok)).length; // agents that actually responded
   const N = loaded.find((a) => a.runs.length)?.runs.length ?? 2;
   const allFailed = allDone && !anyOk(loaded);
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">01 · the verdict, today<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH</span></p>
-      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">How do the agents rank the brand: <span className="italic">{focal}</span>?</h2>
       {!allDone ? (
         <RunningHead label="Measuring live" n={loaded.length} />
       ) : allFailed ? (
@@ -182,12 +206,12 @@ function VerdictView({ slots, focal, onRetry }: { slots: (AgentB | null)[]; foca
       ) : (
         <>
           <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-3">
-            <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-9xl">{avgPos != null ? `#${avgPos}` : "Unranked"}</div>
-            <div className="pb-2"><div className="text-xl font-extrabold text-foreground">{avgPos != null ? "average rank, when an agent ranks it at all" : "not in any agent's top 10"}</div><div className="mono-label text-foreground/60">ranked by {nRanked} of 3 agents · {N} real runs each · we never named the brand</div></div>
+            <div className="font-display text-8xl font-extrabold leading-none tracking-[-0.06em] text-signal duration-700 animate-in fade-in zoom-in-95 sm:text-9xl">{avgPos != null ? `#${avgPos}` : "Unranked"}</div>
+            <div className="pb-2 duration-700 animate-in fade-in slide-in-from-bottom-3"><div className="text-xl font-extrabold text-foreground">{avgPos != null ? "average agent rank, when an agent ranks it at all" : "not in any agent's top 10"}</div><div className="mono-label text-foreground/60">ranked by {nRanked} of 3 agents · {N} real runs each · we never named the brand</div></div>
           </div>
-          <p className="mt-6 max-w-[68ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
+          <p className="mt-6 max-w-[68ch] text-lg font-semibold leading-snug text-foreground duration-700 animate-in fade-in slide-in-from-bottom-3 sm:text-xl">
             {nRanked === 0
-              ? <><span className="text-signal">The brand: <span className="italic">{focal}</span> is invisible.</span> Not one agent puts it in its top 10. See what they rank instead, below.</>
+              ? <><span className="text-signal">The brand: <span className="italic">{focal}</span> is invisible.</span><br />{okCount > 1 ? "Every agent that answered picks something else, and they are confident." : "The agent that answered picks something else, and it is confident."} See what they rank instead, below.</>
               : <>{nRanked} of 3 agents rank the brand: <span className="italic">{focal}</span>{avgPos != null ? <>, around <span className="text-signal">#{avgPos}</span> of 10</> : null}{nRanked < 3 ? <>, while the other {3 - nRanked} leave it off entirely</> : null}.</>}
           </p>
         </>
@@ -206,8 +230,8 @@ function LiftView({ bSlots, tSlots, brand, optimizing }: { bSlots: (AgentB | nul
   const tRanked = tLoaded.filter((a) => a.mentionRate > 0).length;
   return (
     <div className="mx-auto max-w-[1100px] px-6 py-16 sm:px-10 sm:py-20">
-      <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">03 · the lift<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH + YOUR CONTENT</span></p>
-      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-4xl">Apply the moves, and the brand: <span className="italic">{brand}</span> climbs</h2>
+      <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">03 · after the changes<span className="ml-2 inline-flex items-center gap-1 rounded bg-signal px-1.5 py-0.5 text-[10px] font-bold text-signal-foreground"><span className="h-1.5 w-1.5 rounded-full bg-signal-foreground" />REAL SEARCH + YOUR CONTENT</span></p>
+      <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground duration-700 animate-in fade-in slide-in-from-bottom-3 sm:text-4xl">Apply the changes, and the brand: <span className="italic">{brand}</span> climbs</h2>
       {optimizing ? (
         <div className="mt-8 flex items-center gap-3"><span className="h-5 w-5 animate-spin rounded-full border-2 border-signal border-t-transparent" /><div className="text-xl font-extrabold text-foreground">Optimizing your content<span className="text-foreground/50"> · generating and scoring the best version</span></div></div>
       ) : !allDone ? (
@@ -217,8 +241,8 @@ function LiftView({ bSlots, tSlots, brand, optimizing }: { bSlots: (AgentB | nul
           <div className="mt-8 flex flex-wrap items-end gap-x-6 gap-y-3">
             <div className="font-display text-5xl font-extrabold leading-none tracking-[-0.05em] text-foreground/40 sm:text-6xl">{bAvg != null ? `#${bAvg}` : "Unranked"}</div>
             <div className="pb-3 text-3xl font-extrabold text-signal">→</div>
-            <div className="font-display text-7xl font-extrabold leading-none tracking-[-0.06em] text-signal sm:text-8xl">{tAvg != null ? `#${tAvg}` : "Unranked"}</div>
-            <div className="pb-2"><div className="text-xl font-extrabold text-foreground">average rank now · {tRanked} of 3 agents</div><div className="mono-label text-foreground/60">before = today's real search · after = the same real search with your optimized content added</div></div>
+            <div className="font-display text-7xl font-extrabold leading-none tracking-[-0.06em] text-signal duration-700 animate-in fade-in zoom-in-95 sm:text-8xl">{tAvg != null ? `#${tAvg}` : "Unranked"}</div>
+            <div className="pb-2 duration-700 animate-in fade-in slide-in-from-bottom-3"><div className="text-xl font-extrabold text-foreground">average agent rank now · {tRanked} of 3 agents</div><div className="mono-label text-foreground/60">before = today's real search · after = the same real search with your optimized content added</div></div>
           </div>
           <p className="mt-6 max-w-[68ch] text-lg font-semibold leading-snug text-foreground sm:text-xl">
             With its content made legible, <span className="italic">{brand}</span> goes from <span className="text-foreground/55">{bAvg != null ? `#${bAvg}` : "Unranked"}</span> to <span className="text-signal">{tAvg != null ? `#${tAvg}` : "Unranked"}</span>{tRanked ? <>, now ranked by {tRanked} of 3 agents</> : null}.
@@ -237,7 +261,7 @@ function WriteThis({ iterations }: { iterations: Opt["iterations"] }) {
     <div className="mx-auto max-w-[1100px] px-6 pb-12 sm:px-10">
       <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">04 · what to write</p>
       <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">We tested the content live. Write exactly this.</h3>
-      <p className="mt-2 max-w-2xl text-sm text-foreground/70">For each writable move, an agent generated variations, we ran them past the agents, and kept the one that moved the brand most. Verify the facts before you publish.</p>
+      <p className="mt-2 max-w-2xl text-sm text-foreground/70">For each writable change, an agent generated variations, we ran them past the agents, and kept the one that moved the brand most. Verify the facts before you publish.</p>
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         {withBest.map((it) => (
           <div key={it.lever} className="rounded-2xl border border-signal/40 bg-signal/[0.04] p-5">
@@ -309,7 +333,7 @@ function Index() {
     <main className="min-h-screen bg-background text-foreground antialiased">
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between gap-4 px-6 py-4 sm:px-10">
-          <span className="text-lg font-extrabold tracking-tight">Legible<span className="text-signal">.</span></span>
+          <span className="text-2xl font-extrabold tracking-tight">Legible<span className="text-signal">.</span></span>
           <nav className="hidden items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] sm:flex">
             {STEPS.map((label, i) => (
               <span key={label} className="flex items-center gap-2">
@@ -326,21 +350,21 @@ function Index() {
         <div className="relative mx-auto max-w-[1100px] overflow-hidden px-6 pb-12 pt-16 sm:px-10 sm:pt-24">
           <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[520px] w-[760px] -translate-x-1/2 rounded-full bg-signal/[0.06] blur-3xl" />
           <h1 className="display-xl max-w-[15ch]"><span className="block">How do AI agents</span><span className="mt-3 block text-muted-foreground">rank your brand?</span></h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">When a buyer asks an agent, it recommends a few brands. We ask the real agents (live web search) whether yours is one of them, then apply the moves and measure the lift.</p>
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">When a buyer asks an agent, it recommends one brand.<br />See where yours lands today, apply the changes we find, and watch it climb.</p>
 
           <div className="mt-10 rounded-3xl border-2 border-foreground/15 bg-card p-6 shadow-[0_0_40px_-12px_rgba(0,0,0,0.6)] sm:p-7">
             <div className="grid gap-5 sm:grid-cols-[1fr_1.4fr_auto] sm:items-end">
               <div>
                 <label className="text-xs font-mono uppercase tracking-[0.14em] text-foreground/80">your brand</label>
-                <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="type any brand" className="mt-2 w-full rounded-xl border-2 border-foreground/20 bg-background px-4 py-3.5 text-base font-semibold text-foreground placeholder:font-normal placeholder:text-foreground/40 focus:border-signal focus:outline-none" />
+                <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="enter your brand" className="mt-2 w-full rounded-xl border-2 border-foreground/20 bg-background px-4 py-3.5 text-base font-semibold text-foreground placeholder:font-normal placeholder:text-foreground/40 focus:border-signal focus:outline-none" />
               </div>
               <div>
                 <label className="text-xs font-mono uppercase tracking-[0.14em] text-foreground/80">buyer prompt</label>
-                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="type the buyer's question" className="mt-2 w-full rounded-xl border-2 border-foreground/20 bg-background px-4 py-3.5 text-base text-foreground placeholder:text-foreground/40 focus:border-signal focus:outline-none" />
+                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="enter the question" className="mt-2 w-full rounded-xl border-2 border-foreground/20 bg-background px-4 py-3.5 text-base text-foreground placeholder:text-foreground/40 focus:border-signal focus:outline-none" />
               </div>
               <button onClick={ask} disabled={!brand.trim() || !query.trim() || bPending} className="inline-flex items-center justify-center gap-2 rounded-xl bg-signal px-6 py-3.5 text-base font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-40">Ask the agents <span aria-hidden>→</span></button>
             </div>
-            {stage === 0 && <p className="mono-label mt-5 text-foreground/50">real agents · live web search · 2 runs each · cards fill in as each agent answers</p>}
+            {stage === 0 && <p className="mono-label mt-5 text-foreground/50">We ask each real agent several times, to cover for hallucination · cards fill in as each agent answers</p>}
           </div>
         </div>
       </section>
@@ -353,8 +377,8 @@ function Index() {
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
             <div className="rounded-3xl border border-signal/30 bg-signal/[0.05] p-6 sm:p-8">
               <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">02 · the sandbox</p>
-              <h3 className="mt-3 max-w-[34ch] text-2xl font-extrabold tracking-tight sm:text-3xl">Make your signals legible, then test again.</h3>
-              <p className="mt-3 max-w-2xl text-sm text-foreground/70">Pick the moves to test. We optimize your content for each, <span className="font-semibold text-foreground">inject it into the agents' real search</span>, and re-measure, so the lift is anchored to today's reality.</p>
+              <h3 className="mt-3 max-w-[34ch] text-2xl font-extrabold tracking-tight sm:text-3xl">Apply the changes, then test again.</h3>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">Each change is a brand-safe action that improves the results.<br />Tap any one to expand what it means and how to do it.<br /><span className="text-signal">Measured</span> = we tested its lift on real agents; <span className="text-signal">research-backed</span> = strong evidence, test pending.</p>
 
               <div className="mt-6 grid gap-4 lg:grid-cols-[1.6fr_auto] lg:items-start">
                 <div className="space-y-3">
@@ -370,7 +394,9 @@ function Index() {
                             <span className="block text-sm font-bold text-foreground">{f.label}</span>
                             <span className="mt-0.5 block font-mono text-[0.72rem] text-foreground/60">{f.desc}</span>
                           </button>
-                          <button onClick={() => toggleOpen(f.id)} aria-label="expand" className="w-6 shrink-0 text-center text-xl text-foreground/50 hover:text-foreground">{open ? "−" : "+"}</button>
+                          <button onClick={() => toggleOpen(f.id)} aria-label={open ? "collapse" : "expand"} aria-expanded={open} className="-m-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-foreground/50 transition-colors hover:bg-foreground/10 hover:text-foreground">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`} aria-hidden><path d="m6 9 6 6 6-6" /></svg>
+                          </button>
                         </div>
                         {open && (
                           <div className="animate-in fade-in border-t border-border/60 px-4 py-4 text-[13px] leading-relaxed text-foreground/80">
@@ -385,8 +411,7 @@ function Index() {
                   })}
                 </div>
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-6 text-center lg:sticky lg:top-24 lg:w-52">
-                  <div className="mono-label text-foreground/70">{factors.size} moves enabled</div>
-                  <button onClick={retest} disabled={factors.size === 0 || !bDone || tPending} className="mt-4 w-full rounded-xl bg-signal px-4 py-3 text-sm font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-40">{tPending ? "Re-testing…" : !bDone ? "Measuring…" : "Test again ↻"}</button>
+                  <button onClick={retest} disabled={factors.size === 0 || !bDone || tPending} className="w-full rounded-xl bg-signal px-4 py-3 text-sm font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-40">{tPending ? "Re-testing…" : !bDone ? "Measuring…" : "Test again ↻"}</button>
                   <p className="mono-label mt-3 text-foreground/40">re-runs the agents live</p>
                 </div>
               </div>
@@ -407,13 +432,6 @@ two layers, both honest · LAYER 1 (today): real agents (ChatGPT gpt-5.5 · Clau
           </div>
         </section>
       )}
-
-      <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-[1100px] items-center justify-between px-6 py-8 sm:px-10">
-          <span className="text-base font-extrabold tracking-tight">Legible<span className="text-signal">.</span></span>
-          <span className="mono-label">the SEO of the agent era</span>
-        </div>
-      </footer>
     </main>
   );
 }
