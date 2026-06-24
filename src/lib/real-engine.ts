@@ -234,7 +234,7 @@ async function geminiCtrl(query: string, served: Result[]): Promise<string> {
     const r = await aFetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${process.env.GEMINI_API_KEY || ""}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ systemInstruction: { parts: [{ text: CTRL_SYS }] }, contents, generationConfig: { maxOutputTokens: 1400 }, ...(forceAnswer ? {} : { tools }) }),
+      body: JSON.stringify({ systemInstruction: { parts: [{ text: CTRL_SYS }] }, contents, generationConfig: { maxOutputTokens: 8000 }, ...(forceAnswer ? {} : { tools }) }),
     });
     if (!r.ok) return `ERR gemini ${r.status}`;
     const j = await r.json();
