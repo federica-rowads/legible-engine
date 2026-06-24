@@ -290,8 +290,8 @@ function WriteThis({ iterations }: { iterations: Opt["iterations"] }) {
 
 function Index() {
   const [stage, setStage] = useState(0); // 0 input · 2 baseline phase · 4 lift phase
-  const [brand, setBrand] = useState("361 Degrees");
-  const [query, setQuery] = useState("best stability running shoes for flat feet");
+  const [brand, setBrand] = useState("");
+  const [query, setQuery] = useState("");
   const [factors, setFactors] = useState<Set<string>>(new Set(["comparison", "reviews", "community"]));
   const [openF, setOpenF] = useState<Set<string>>(new Set());
   const [bSlots, setBSlots] = useState<(AgentB | null)[]>([null, null, null]);
