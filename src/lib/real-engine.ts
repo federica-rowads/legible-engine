@@ -228,7 +228,7 @@ export type LeverIteration = { lever: string; versions: { label: string; content
 async function optimizeLever(focal: string, query: string, competitors: string[], leverId: string, k: number): Promise<LeverIteration> {
   const versions = await generateVersions(leverId, focal, query, WRITABLE.includes(leverId) ? k : 1);
   const tested = await Promise.all(versions.map(async (v) => {
-    const scores = await Promise.all([quickScore(focal, query, competitors, v.content), quickScore(focal, query, competitors, v.content)]);
+    const scores = [await quickScore(focal, query, competitors, v.content)];
     const present = scores.filter((p): p is number => p != null);
     return { ...v, mentionRate: +(present.length / scores.length).toFixed(2), pos: mean(present) };
   }));

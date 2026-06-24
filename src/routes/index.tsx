@@ -177,14 +177,14 @@ function Index() {
   const ask = async () => {
     if (!brand.trim() || !query.trim()) return;
     setBaseline(null); setLift(null); setStage(1); scrollTo("running");
-    try { setBaseline(await baselineLive({ data: { brand, query, n: 3 } })); } catch { setBaseline(null); }
+    try { setBaseline(await baselineLive({ data: { brand, query, n: 2 } })); } catch { setBaseline(null); }
     setStage(2); scrollTo("verdict");
   };
   const retest = async () => {
     setStage(3); scrollTo("running");
     try {
       const competitors = (baseline?.competitors || []).map((c) => c.name);
-      setLift(await liftLive({ data: { brand, query, competitors, levers: [...factors], n: 3 } }));
+      setLift(await liftLive({ data: { brand, query, competitors, levers: [...factors], n: 2 } }));
     } catch { setLift(null); }
     setStage(4); scrollTo("result");
   };
@@ -226,7 +226,7 @@ function Index() {
               </div>
               <button onClick={ask} disabled={!brand.trim() || !query.trim() || stage === 1} className="inline-flex items-center justify-center gap-2 rounded-xl bg-signal px-6 py-3.5 text-base font-bold text-signal-foreground transition-opacity hover:opacity-90 disabled:opacity-40">Ask the agents <span aria-hidden>→</span></button>
             </div>
-            {stage === 0 && <p className="mono-label mt-5 text-foreground/50">real agents · live web search · 3 runs each · a full run takes a couple of minutes</p>}
+            {stage === 0 && <p className="mono-label mt-5 text-foreground/50">real agents · live web search · 2 runs each · a full run takes a couple of minutes</p>}
           </div>
         </div>
       </section>
@@ -294,7 +294,7 @@ function Index() {
           {lift && <WriteThis iterations={lift.iterations} />}
           <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
             <p className="mono-label text-foreground/50">
-two layers, both honest · LAYER 1 (today): real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) really web-search your prompt, brand never named, 3 runs each — this is where you rank right now · LAYER 2 (the lift): the SAME real search, with your optimized content added to what the agents read — so the "after" is anchored to today's reality (no clean room) · the lift assumes your content reaches the agents' search; the generated "write this" is illustrative — verify the facts before publishing
+two layers, both honest · LAYER 1 (today): real agents (ChatGPT gpt-5.5 · Claude opus-4-8 · Gemini pro-latest) really web-search your prompt, brand never named, 2 runs each — this is where you rank right now · LAYER 2 (the lift): the SAME real search, with your optimized content added to what the agents read — so the "after" is anchored to today's reality (no clean room) · the lift assumes your content reaches the agents' search; the generated "write this" is illustrative — verify the facts before publishing
             </p>
           </div>
         </section>
