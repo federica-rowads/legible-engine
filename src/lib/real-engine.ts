@@ -225,23 +225,49 @@ export async function runAgentBaseline(agentName: string, query: string, focal: 
 // Both arms use real search, so the "before" is the real baseline itself (no clean room).
 // ============================================================================
 
+// Each brief DEMANDS a specific, real, NAMED target for this exact category — the actual
+// subreddit, the actual best-of publications, the actual spec fields, the real #1 competitor.
+// {LEADER} is filled at call time with the real category leader (competitors[0]); {RIVALS} with
+// the rest of the real competitor set. Generic phrasing ("a forum", "best-of guides", "the
+// leader") is explicitly forbidden — name the real thing using the model's knowledge of the
+// category's real sources. Fabricating a RESULT (a named score/award/quote/audited count) stays
+// forbidden; naming a real venue/field/competitor is required.
 const LEVER_BRIEF: Record<string, string> = {
-  specs: "a product-detail or spec result for the brand — the concrete attributes shoppers in this category actually compare (materials, fit, sizing, price, etc.)",
-  reviews: "a customer-reviews result for the brand — a rating, a review count, a concrete strength",
-  community: "a community forum comment where a real user recommends the brand for this exact need",
-  comparison: "an honest head-to-head of the brand vs the category leader, fair and specific",
-  editorial: "an editorial best-of guide entry that lists the brand among its picks",
-  authority: "an independent expert assessment of the brand — use a GENERIC source ('an independent review', 'testers'), never a fabricated named score",
+  specs:
+    "a product-page spec block for the brand. NAME the exact spec fields shoppers in THIS category compare and tell the brand to publish them on its product page (e.g. running shoes -> heel-to-toe drop, weight, stack height, support/pronation type, cushioning level, outsole/upper material, sizing/width, price; phones -> chipset, RAM, battery mAh, screen size/refresh, camera MP, weight, price). List the actual field names with the brand's plausible values. Frame it as \"add these fields to your product page\".",
+  reviews:
+    "a customer-reviews result for the brand — an aggregate star rating and a count, plus the concrete, category-specific strength reviewers in THIS category single out (e.g. arch support, durability, true-to-size fit). Make the strength specific to the query, not generic.",
+  community:
+    "a real community post recommending the brand for this EXACT need. NAME the specific real subreddit(s)/forum(s) where shoppers in THIS category actually ask (e.g. running shoes -> r/RunningShoeGeeks, r/running, r/AdvancedRunning; mechanical keyboards -> r/MechanicalKeyboards; skincare -> r/SkincareAddiction) and write the post as it would read there, in that community's voice, naming the subreddit and the angle.",
+  comparison:
+    "an honest, specific head-to-head of the brand vs {LEADER} — the REAL category leader for this query (the brand AI assistants rank #1). Compare on the concrete attributes shoppers weigh; concede where {LEADER} wins and state exactly where the brand wins for THIS shopper. Use {LEADER} by name; do not say \"the leader\" generically.",
+  editorial:
+    "a best-of guide entry that lists the brand among its picks. NAME the specific real publications/round-ups that AI assistants actually cite for THIS category (e.g. running shoes -> RunRepeat, Runner's World, Wirecutter, Believe in the Run; tech -> Wirecutter, Rtings, The Verge; mattresses -> Wirecutter, Sleep Foundation) and say which to prioritize earning a mention in first. Reference the real outlet by name; never say \"a best-of guide\" generically.",
+  authority:
+    "an independent expert assessment of the brand. NAME the specific KIND of independent tester/lab/expert that has real authority in THIS category (e.g. running shoes -> a gait-analysis lab, a podiatrist/sports-medicine clinic, a biomechanics tester; electronics -> an independent lab like Rtings-style bench testing; food -> a registered dietitian) so the brand knows whose endorsement to pursue. Use a GENERIC source for the actual claim ('independent lab testing', 'a sports podiatrist') — NEVER a fabricated named score, rating, or quote.",
 };
+// Fill {LEADER}/{RIVALS} placeholders with the real competitor set.
+const fillBrief = (brief: string, competitors: string[]) =>
+  brief
+    .replace(/\{LEADER\}/g, competitors[0] || "the category leader")
+    .replace(/\{RIVALS\}/g, competitors.slice(0, 6).join(", ") || "the leading brands");
 export const WRITABLE = ["specs", "reviews", "comparison", "community"];
 
 export type Version = { label: string; content: string };
-async function generateVersions(leverId: string, brand: string, query: string, k: number): Promise<Version[]> {
-  const brief = LEVER_BRIEF[leverId] || "a search result that makes the brand more credible for this query";
+async function generateVersions(leverId: string, brand: string, query: string, competitors: string[], k: number): Promise<Version[]> {
+  const brief = fillBrief(LEVER_BRIEF[leverId] || "a search result that makes the brand more credible for this query", competitors);
+  const leader = competitors[0] || "";
+  const compLine = competitors.length
+    ? `The REAL competitor set AI assistants rank for this query (most-cited first) is: ${competitors.slice(0, 8).join(", ")}.` +
+      (leader ? ` The current category leader (ranked #1) is ${leader} — when relevant, name it specifically.` : "")
+    : "";
   const system =
     `You help a brand become legible to AI shopping assistants. The brand is "${brand}", for the shopper query "${query}". ` +
-    `Generate ${k} DIFFERENT, realistic versions of ${brief}. Each is a short snippet (1-3 sentences) the brand could honestly publish or earn. Vary the angle and specifics. ` +
-    `BRAND SAFETY: never invent a specific named third-party score or award (no "Vogue named it #1", no "RunRepeat 88/100"); no fabricated audited review counts. Honest, publishable content only. ` +
+    compLine + " " +
+    `Generate ${k} DIFFERENT, realistic versions of ${brief} ` +
+    `Each is a short snippet (1-3 sentences) the brand could honestly publish or earn. Vary the angle and specifics. ` +
+    `BE SPECIFIC AND NAMED — this is the whole point: name the actual subreddit / publication / spec field / the real leading competitor for THIS query using your knowledge of the category's real sources. NEVER write generic placeholders like "a popular forum", "leading review sites", "the category leader", "relevant specs" — name the real thing. A recommendation a marketer cannot act on (because it names nothing) is a failure. ` +
+    `BRAND SAFETY (hard): naming a real subreddit, publication, spec field, or competitor is REQUIRED and fine. Fabricating a RESULT is forbidden — never invent a specific named third-party score or award (no "Vogue named it #1", no "RunRepeat 88/100"), no fabricated audited review counts, no invented quotes. Honest, publishable content only. ` +
     `Respond with ONLY JSON: {"versions":[{"label":"2-4 word tag","content":"the snippet"}]}.`;
   try {
     const o = JSON.parse(jsonExtract(await claudeJSON(system, `Generate ${k} versions.`)));
@@ -267,7 +293,7 @@ export type LeverIteration = { lever: string; versions: { label: string; content
 
 // For one lever: generate K content versions (1 for earnable levers), score each, keep the best.
 async function optimizeLever(focal: string, query: string, competitors: string[], leverId: string, k: number): Promise<LeverIteration> {
-  const versions = await generateVersions(leverId, focal, query, WRITABLE.includes(leverId) ? k : 1);
+  const versions = await generateVersions(leverId, focal, query, competitors, WRITABLE.includes(leverId) ? k : 1);
   const tested = await Promise.all(versions.map(async (v) => {
     const scores = [await quickScore(focal, query, competitors, v.content)];
     const present = scores.filter((p): p is number => p != null);
