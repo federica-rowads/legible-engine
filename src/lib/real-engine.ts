@@ -99,8 +99,8 @@ const focalTokenOf = (focal: string) => norm(focal).split(/\s+/)[0] || norm(foca
 const matchesFocal = (b: string, token: string) => { const nb = norm(b); return nb.length >= 2 && (nb.includes(token) || token.includes(nb)); };
 const posOf = (brands: string[], token: string): number | null => { const i = brands.findIndex((b) => matchesFocal(b, token)); return i >= 0 ? i + 1 : null; };
 
-export type RealRun = { agent: string; model: string; ranked: string[]; pos: number | null; ok: boolean };
-export type AgentBaseline = { name: string; model: string; runs: RealRun[]; mentionRate: number; avgPos: number | null };
+export type RealRun = { agent: string; model: string; ranked: string[]; pos: number | null; ok: boolean; answer?: string };
+export type AgentBaseline = { name: string; model: string; runs: RealRun[]; mentionRate: number; avgPos: number | null; posStdev: number | null };
 export type RealBaseline = {
   focal: string; focalToken: string; query: string; N: number;
   agents: AgentBaseline[];
@@ -113,13 +113,15 @@ async function oneRealRun(agent: typeof AGENTS[number], query: string, token: st
   try {
     const answer = await agent.run(query);
     const ranked = await extractBrands(answer);
-    return { agent: agent.name, model: agent.model, ranked, pos: posOf(ranked, token), ok: ranked.length > 0 };
+    return { agent: agent.name, model: agent.model, ranked, pos: posOf(ranked, token), ok: ranked.length > 0, answer: answer.slice(0, 600) };
   } catch {
     return { agent: agent.name, model: agent.model, ranked: [], pos: null, ok: false };
   }
 }
 
 const mean = (xs: number[]) => (xs.length ? +(xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(1) : null);
+// Spread of the focal position across runs — a consistency signal (low = the agents agree).
+const stdev = (xs: number[]) => { if (xs.length < 2) return xs.length ? 0 : null; const m = xs.reduce((a, b) => a + b, 0) / xs.length; return +Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / xs.length).toFixed(1); };
 
 // Phase 1 — the REAL, unbiased baseline. N runs per agent, in parallel.
 export async function runRealBaseline(focal: string, query: string, N = 5): Promise<RealBaseline> {
@@ -131,7 +133,7 @@ export async function runRealBaseline(focal: string, query: string, N = 5): Prom
     const runs = all.filter((r) => r.agent === a.name);
     const ok = runs.filter((r) => r.ok);
     const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);
-    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present) };
+    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present) };
   });
 
   const okAll = all.filter((r) => r.ok);
@@ -297,7 +299,7 @@ async function oneCtrlRun(agent: typeof CTRL_AGENTS[number], query: string, serv
   try {
     const answer = await agent.run(query, served);
     const ranked = await extractBrands(answer);
-    return { agent: agent.name, model: agent.model, ranked, pos: posOf(ranked, token), ok: ranked.length > 0 };
+    return { agent: agent.name, model: agent.model, ranked, pos: posOf(ranked, token), ok: ranked.length > 0, answer: answer.slice(0, 600) };
   } catch {
     return { agent: agent.name, model: agent.model, ranked: [], pos: null, ok: false };
   }
@@ -311,7 +313,7 @@ async function runCondition(label: string, c: ControlledCorpus, query: string, l
     const runs = all.filter((r) => r.agent === a.name);
     const ok = runs.filter((r) => r.ok);
     const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);
-    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present) };
+    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present) };
   });
   const ok = all.filter((r) => r.ok);
   const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);
