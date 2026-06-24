@@ -350,7 +350,8 @@ function Index() {
         <section id="verdict" className="border-b border-border animate-in fade-in slide-in-from-bottom-3 duration-700">
           <VerdictView slots={bSlots} focal={brand} onRetry={ask} />
 
-          <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10">
+          {bDone && (
+          <div className="mx-auto max-w-[1100px] px-6 pb-20 sm:px-10 animate-in fade-in slide-in-from-bottom-3 duration-700">
             <div className="rounded-3xl border border-signal/30 bg-signal/[0.05] p-6 sm:p-8">
               <p className="text-sm font-mono uppercase tracking-[0.18em] text-signal">02 · the sandbox</p>
               <h3 className="mt-3 max-w-[34ch] text-2xl font-extrabold tracking-tight sm:text-3xl">Make your signals legible, then test again.</h3>
@@ -392,6 +393,7 @@ function Index() {
               </div>
             </div>
           </div>
+          )}
         </section>
       )}
 
