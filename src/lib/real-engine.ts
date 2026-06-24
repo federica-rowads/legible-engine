@@ -14,19 +14,48 @@ const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,
 const jsonExtract = (t: string) => t.match(/\{[\s\S]*\}/)?.[0] || "{}";
 // Force a ranked top-10 so position is a clean, intuitive metric ("#7 of 10" / "unranked").
 const topAsk = (q: string) => `Give me a numbered TOP 10 — the ten best — for this shopper: "${q}". Reply with the ranked list of brand or store names, best first, numbered 1 to 10.`;
-// Retry transient rate-limit / overload / 5xx so a run doesn't silently fail under concurrent load.
-async function aFetch(url: string, opts: RequestInit, tries = 4): Promise<Response> {
-  for (let i = 0; i < tries - 1; i++) {
-    const r = await globalThis.fetch(url, opts);
-    if (r.status !== 429 && r.status !== 529 && r.status < 500) return r;
+// A tiny async semaphore: bounds how many wrapped calls run at once (FIFO queue for the rest).
+function makeLimiter(max: number) {
+  let active = 0;
+  const queue: (() => void)[] = [];
+  return async function limit<T>(fn: () => Promise<T>): Promise<T> {
+    if (active >= max) await new Promise<void>((r) => queue.push(r));
+    active++;
+    try { return await fn(); } finally { active--; queue.shift()?.(); }
+  };
+}
+// Anthropic is the shared bottleneck: Claude's web search AND every internal extraction/scoring
+// call hit it. Cap concurrent Anthropic calls so two runs back-to-back don't burst past the rate
+// limit and stack long backoffs (the "stuck searching forever" symptom). OpenAI/Gemini run free.
+const anthropicLimit = makeLimiter(Number(process.env.ANTHROPIC_CONCURRENCY) || 4);
+
+// fetch with a HARD per-attempt timeout + gentle retry on transient 429/529/5xx. The timeout means
+// a wedged call fails fast (its run is dropped) instead of hanging the whole analysis indefinitely.
+async function aFetch(url: string, opts: RequestInit, tries = 3, timeoutMs = 150000): Promise<Response> {
+  let last: Response | null = null;
+  for (let i = 0; i < tries; i++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const r = await globalThis.fetch(url, { ...opts, signal: ctrl.signal });
+      clearTimeout(timer);
+      if (r.status !== 429 && r.status !== 529 && r.status < 500) return r;
+      last = r;
+    } catch (e) {
+      clearTimeout(timer);
+      if (i === tries - 1) throw e; // out of retries: propagate (caught upstream as a failed run)
+    }
     await new Promise((res) => setTimeout(res, 700 * (i + 1) + Math.floor(Math.random() * 500)));
   }
-  return globalThis.fetch(url, opts);
+  if (last) return last;
+  throw new Error("aFetch: no response");
 }
+// Anthropic calls go through the concurrency cap; OpenAI/Gemini use aFetch directly.
+const anthropicFetch = (url: string, opts: RequestInit) => anthropicLimit(() => aFetch(url, opts));
 
 // One plain Claude JSON call (no tools) — used to extract the brand list from a natural answer.
 async function claudeJSON(system: string, user: string, maxTokens = 800, model = "claude-opus-4-8"): Promise<string> {
-  const r = await aFetch("https://api.anthropic.com/v1/messages", {
+  const r = await anthropicFetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role: "user", content: user }] }),
@@ -45,7 +74,7 @@ async function claudeSearch(query: string, extra = ""): Promise<string> {
   const tools = [{ type: "web_search_20260209", name: "web_search", max_uses: 6 }];
   const messages: unknown[] = [{ role: "user", content: query + extra }];
   for (let hop = 0; hop < 5; hop++) {
-    const r = await aFetch("https://api.anthropic.com/v1/messages", {
+    const r = await anthropicFetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": process.env.ANTHROPIC_API_KEY || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
       body: JSON.stringify({ model: "claude-opus-4-8", max_tokens: 4000, messages, tools }),
@@ -136,6 +165,16 @@ const mean = (xs: number[]) => (xs.length ? +(xs.reduce((a, b) => a + b, 0) / xs
 // Spread of the focal position across runs — a consistency signal (low = the agents agree).
 const stdev = (xs: number[]) => { if (xs.length < 2) return xs.length ? 0 : null; const m = xs.reduce((a, b) => a + b, 0) / xs.length; return +Math.sqrt(xs.reduce((s, x) => s + (x - m) ** 2, 0) / xs.length).toFixed(1); };
 
+// Build one agent's summary from its raw runs (shared by the all-agents and single-agent paths).
+function buildAgentBaseline(a: { name: string; model: string }, runs: RealRun[]): AgentBaseline {
+  const ok = runs.filter((r) => r.ok);
+  const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);
+  const okP = ok.filter((r) => r.pos != null);
+  const ap = mean(present) ?? 0;
+  const repr = okP.length ? okP.reduce((b, r) => (Math.abs((r.pos as number) - ap) < Math.abs((b.pos as number) - ap) ? r : b)) : (ok[0] ?? null);
+  return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present), topList: repr ? repr.ranked : [] };
+}
+
 export type NativeResult = { agents: AgentBaseline[]; mentionRate: number; avgPos: number | null; competitors: { name: string; mentions: number }[] };
 
 // The 3 agents on a REAL web search (+ optional injected content), N times each, in parallel.
@@ -144,16 +183,7 @@ export type NativeResult = { agents: AgentBaseline[]; mentionRate: number; avgPo
 async function runNative(query: string, token: string, extra: string, N: number): Promise<NativeResult> {
   const jobs = AGENTS.flatMap((a) => Array.from({ length: N }, () => oneRealRun(a, query, token, extra)));
   const all = await Promise.all(jobs);
-  const agents: AgentBaseline[] = AGENTS.map((a) => {
-    const runs = all.filter((r) => r.agent === a.name);
-    const ok = runs.filter((r) => r.ok);
-    const present = ok.filter((r) => r.pos != null).map((r) => r.pos as number);
-    const okP = ok.filter((r) => r.pos != null);
-    const ap = mean(present) ?? 0;
-    const repr = okP.length ? okP.reduce((b, r) => (Math.abs((r.pos as number) - ap) < Math.abs((b.pos as number) - ap) ? r : b)) : (ok[0] ?? null);
-    const topList = repr ? repr.ranked : [];
-    return { name: a.name, model: a.model, runs, mentionRate: ok.length ? +(present.length / ok.length).toFixed(2) : 0, avgPos: mean(present), posStdev: stdev(present), topList };
-  });
+  const agents: AgentBaseline[] = AGENTS.map((a) => buildAgentBaseline(a, all.filter((r) => r.agent === a.name)));
   const okAll = all.filter((r) => r.ok);
   const presentAll = okAll.filter((r) => r.pos != null).map((r) => r.pos as number);
   const mentionRate = okAll.length ? +(presentAll.length / okAll.length).toFixed(2) : 0;
@@ -175,6 +205,17 @@ export async function runRealBaseline(focal: string, query: string, N = 5): Prom
   const token = focalTokenOf(focal);
   const nr = await runNative(query, token, "", N);
   return { focal, focalToken: token, query, N, agents: nr.agents, mentionRate: nr.mentionRate, avgPos: nr.avgPos, competitors: nr.competitors };
+}
+
+// One agent, N real runs (+ optional injected content). Powers the progressive per-agent UI:
+// the UI fires this once per agent and renders each card the moment it resolves. extra = "" is a
+// baseline run; extra = <injected content> is that agent's treatment run.
+export async function runAgentBaseline(agentName: string, query: string, focal: string, N = 2, extra = ""): Promise<AgentBaseline> {
+  const agent = AGENTS.find((a) => a.name === agentName);
+  if (!agent) throw new Error(`unknown agent ${agentName}`);
+  const token = focalTokenOf(focal);
+  const runs = await Promise.all(Array.from({ length: N }, () => oneRealRun(agent, query, token, extra)));
+  return buildAgentBaseline(agent, runs);
 }
 
 // ============================================================================
@@ -240,15 +281,22 @@ async function optimizeLever(focal: string, query: string, competitors: string[]
 export type Treatment = { agents: AgentBaseline[]; mentionRate: number; avgPos: number | null; iterations: LeverIteration[]; injected: string };
 
 // Layer 2 — optimize each selected lever, inject the winners into a REAL search, measure the lift.
-export async function runTreatment(focal: string, query: string, competitors: string[], levers: string[], N = 3, k = 2): Promise<Treatment> {
+export type OptimizedContent = { injected: string; iterations: LeverIteration[] };
+// Optimize the selected levers and assemble the injection note + the "write this" data. Split out
+// so the progressive UI can run this once, then fire the per-agent treatment runs against `injected`.
+export async function optimizeContent(focal: string, query: string, competitors: string[], levers: string[], k = 2): Promise<OptimizedContent> {
   const items = (await Promise.all(levers.map((l) => optimizeLever(focal, query, competitors, l, k)))).filter((it) => it.best);
   const injected = items.length
     ? `\n\n--- Additionally, the following content about ${focal} has recently been published online and may appear in your research. Weigh it alongside everything else you find:\n` +
       items.map((it) => `• ${it.best!.content}`).join("\n")
     : "";
-  const nr = await runNative(query, focalTokenOf(focal), injected, N);
   // The "write exactly this" panel shows the writable levers only.
-  const iterations = items.filter((it) => WRITABLE.includes(it.lever));
+  return { injected, iterations: items.filter((it) => WRITABLE.includes(it.lever)) };
+}
+
+export async function runTreatment(focal: string, query: string, competitors: string[], levers: string[], N = 3, k = 2): Promise<Treatment> {
+  const { injected, iterations } = await optimizeContent(focal, query, competitors, levers, k);
+  const nr = await runNative(query, focalTokenOf(focal), injected, N);
   return { agents: nr.agents, mentionRate: nr.mentionRate, avgPos: nr.avgPos, iterations, injected };
 }
 
